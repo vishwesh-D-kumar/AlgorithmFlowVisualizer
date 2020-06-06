@@ -7,6 +7,8 @@ import ast
 import astor
 import graphviz as gv
 
+block_list = []
+
 
 class Block(object):
     """
@@ -31,6 +33,8 @@ class Block(object):
         self.predecessors = []
         # Links to the next blocks in a control flow graph.
         self.exits = []
+        # Storing list of all blocks for storing later
+        block_list.append(self)
 
     def __str__(self):
         if self.statements:
@@ -74,8 +78,8 @@ class Block(object):
         for statement in self.statements:
             if type(statement) in [ast.If, ast.For, ast.While]:
                 src += (astor.to_source(statement)).split('\n')[0] + "\n"
-            elif type(statement) == ast.FunctionDef or\
-                 type(statement) == ast.AsyncFunctionDef:
+            elif type(statement) == ast.FunctionDef or \
+                    type(statement) == ast.AsyncFunctionDef:
                 src += (astor.to_source(statement)).split('\n')[0] + "...\n"
             else:
                 src += astor.to_source(statement)
@@ -178,7 +182,7 @@ class CFG(object):
 
         # Show the block's function calls in a node.
         if calls and block.func_calls:
-            calls_node = str(block.id)+"_calls"
+            calls_node = str(block.id) + "_calls"
             calls_label = block.get_calls().strip()
             graph.node(calls_node, label=calls_label,
                        _attributes={'shape': 'box'})
@@ -192,7 +196,7 @@ class CFG(object):
             graph.edge(str(block.id), str(exit.target.id), label=edgelabel)
 
     def _build_visual(self, format='pdf', calls=True):
-        graph = gv.Digraph(name='cluster'+self.name, format=format,
+        graph = gv.Digraph(name='cluster' + self.name, format=format,
                            graph_attr={'label': self.name})
         self._visit_blocks(graph, self.entryblock, visited=[], calls=calls)
 
