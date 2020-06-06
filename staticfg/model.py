@@ -33,7 +33,7 @@ class Block(object):
         self.predecessors = []
         # Links to the next blocks in a control flow graph.
         self.exits = []
-        # Storing list of all blocks for storing later
+        #Storing list of blocks to map later
         block_list.append(self)
 
     def __str__(self):
@@ -55,6 +55,15 @@ class Block(object):
         """
         if self.statements and self.statements[0].lineno >= 0:
             return self.statements[0].lineno
+        return None
+
+    def end(self):
+        """
+        Get the line number where the function ends
+        :return:
+        """
+        if self.statements and self.statements[-1].lineno >= 0:
+            return self.statements[-1].lineno
         return None
 
     def is_empty(self):
@@ -108,7 +117,7 @@ class Link(object):
     control jump is made.
     """
 
-    __slots__ = ["source", "target", "exitcase"]
+    __slots__ = ["source", "target", "exitcase", "used"]
 
     def __init__(self, source, target, exitcase=None):
         assert type(source) == Block, "Source of a link must be a block"
@@ -119,6 +128,8 @@ class Link(object):
         self.target = target
         # 'Case' leading to a control flow jump through this link.
         self.exitcase = exitcase
+        # defines whether link used in runtime or not
+        self.used = False
 
     def __str__(self):
         return "link from {} to {}".format(str(self.source), str(self.target))
@@ -193,7 +204,8 @@ class CFG(object):
         for exit in block.exits:
             self._visit_blocks(graph, exit.target, visited, calls=calls)
             edgelabel = exit.get_exitcase().strip()
-            graph.edge(str(block.id), str(exit.target.id), label=edgelabel)
+
+            graph.edge(str(block.id), str(exit.target.id), label=edgelabel, color="red" if exit.used else "black")
 
     def _build_visual(self, format='pdf', calls=True):
         graph = gv.Digraph(name='cluster' + self.name, format=format,

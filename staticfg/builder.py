@@ -6,8 +6,10 @@ Control flow graph builder.
 import ast
 from .model import Block, Link, CFG
 #Importing the block list to return along with cfg
-from .model import block_list
+from .model import Block, Link, CFG,block_list
 
+#Adding lines to ignore here, ie : Break and continue statements ,as they have no blocks of their own
+lines_to_leave = []
 
 def invert(node):
     """
@@ -102,6 +104,8 @@ class CFGBuilder(ast.NodeVisitor):
         self.visit(tree)
         self.cfg.net_blocks = block_list
         self.clean_cfg(self.cfg.entryblock)
+        #Returning as a set for O(1) "in" operation later on
+        self.cfg.lines_to_leave = set(lines_to_leave)
         return self.cfg
 
     def build_from_src(self, name, src):
@@ -265,12 +269,18 @@ class CFGBuilder(ast.NodeVisitor):
             elif type(node) == ast.Attribute:
                 # Recursion on series of calls to attributes.
                 func_name = visit_func(node.value)
+
                 func_name += "." + node.attr
                 return func_name
             elif type(node) == ast.Str:
                 return node.s
             elif type(node) == ast.Subscript:
                 return node.value.id
+            # elif type(node) == ast.Call:
+            #     return visit_func(node.func)
+            else:
+                return type(node).__name__
+            #Adding a default return type to ensure no breakage of code
 
         func = node.func
         func_name = visit_func(func)
