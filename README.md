@@ -49,3 +49,17 @@ Current TODO's for Phase #1:
  
  
  
+ ---
+ How to run
+ 
+ *Requires python 3.6 or above, due to use of f-strings*
+1. Save file you want to visualize in the repo
+2. Edit variable name filepath according to name of file saved
+3. Edit function name to debug (required )
+4. Run with 
+    ```bash
+        python connect.py
+    ```
+5. In output folder , you can see the svg files being made.Name of file corresponds to step of program.
+
+ 
