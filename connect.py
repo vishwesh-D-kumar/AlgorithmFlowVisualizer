@@ -1,11 +1,12 @@
 from staticfg import builder
 import importlib.util
 from pathlib import Path
+import sys
 from pprint import pprint
 import os
 import ast
 from flowgenerator import generate_flow
-from staticfg import CFGBuilder, Block
+from staticfg import CFGBuilder, Block,Link
 import time
 import tempfile
 
@@ -19,9 +20,16 @@ def get_cfg():
 
     :return: cfg built by staticfg
     """
-    cfg = CFGBuilder().build_from_file(filepath, './' + filepath)
-    # cfg.build_visual('test', 'pdf')
+    builder=CFGBuilder()
+    cfg = builder.build_from_file(filepath, './' + filepath)
+    cfg.build_visual('test1', 'pdf')
+    # return cfg
 
+    blocks_list = cfg.net_blocks[:]
+    for block in blocks_list:
+        split_block(block,builder)
+
+    cfg.build_visual('test2', 'pdf')
     return cfg
 
 
@@ -48,12 +56,31 @@ def highlight_link_between(node: Block, neigh: Block):
             return link
     return None
 
+def split_block(block: Block, builder:CFGBuilder):
+    #TODO
+
+    if len(block.statements)>1 and type(block.statements[-1])==ast.If:
+        print("YEs")
+        if_block=builder.new_block()
+        if_statement=block.statements[-1]
+        block.statements.remove(if_statement)
+        if_block.statements.append(if_statement)
+        if_block.exits=block.exits[:]
+        block.exits=[]
+        block.exits.append(Link(block,if_block))
+
+
+
+
+
+    # pass
 
 if __name__ == "__main__":
 
     cfg = get_cfg()
     # Net blocks of cfg
     blocks_list = cfg.net_blocks
+
 
     # Timeline of lines
     timeline = generate_flow(filepath, defaultfunc, cfg.lines_to_leave)

@@ -13,6 +13,7 @@ def f(x, t):
         if x[mid] < min(x):
             continue
     return r
+
 def f2(arr):
     n=len(arr)
     for i in range(n):
@@ -37,6 +38,13 @@ def f3():
     else:
         print(5)
 
+def f4(x):
+    for i in range(len(x)):
+        if i==1:
+            print("1")
+        else:
+            break
+    print("End")
 
 # def f1(a):
 #     if a:
