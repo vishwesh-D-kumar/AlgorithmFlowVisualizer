@@ -53,6 +53,7 @@ Current TODO's for Phase #1:
  How to run
  
  *Requires python 3.6 or above, due to use of f-strings*
+0. Install required packages from requirements.txt. Do have a look at how to install graphviz.(will be required to be installed from package managers also (apt-get,brew))
 1. Save file you want to visualize in the repo
 2. Edit variable name filepath according to name of file saved
 3. Edit function name to debug (required )

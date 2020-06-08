@@ -79,6 +79,47 @@ def highlight_link_between(node: Block, neigh: Block):
     return None
 
 
+def split_block(block: Block, builder: CFGBuilder):
+    # TODO
+
+    if len(block.statements):
+        if type(block.statements[-1]) == ast.If:
+            # Adding a new Block ,if there are more than 1 statements
+            if len(block.statements) > 1:
+                print("New if Block")
+
+                if_block = new_decision_block(builder)
+                if_statement = block.statements[-1]
+                block.statements.remove(if_statement)
+                if_block.statements.append(if_statement)
+                if_block.exits = block.exits[:]
+                for link in if_block.exits:
+                    link.source = if_block
+                block.exits = []
+                block.exits.append(Link(block, if_block))
+            else:
+                replace_block(block, DecisionBlock(block.id))
+            # If blocks are loops , replacing them too
+        elif type(block.statements[0]) == ast.While or type(block.statements[0]) == ast.For:
+            replace_block(block, LoopBlock(block.id))
+
+
+def replace_block(old: Block, new: Block):
+    """
+    Utility function for replacing old block with new block in cfg
+    :param old: block to be replaced
+    :param new: block to be replaced with
+    :return: None
+    """
+    for link in old.predecessors[:]:
+        link.target = new
+
+    new.exits = old.exits[:]
+    old.exits = []
+    for link in new.exits:
+        link.source = new
+    new.statements=old.statements
+
 
 def new_decision_block(builder: CFGBuilder):
     builder.current_id += 1
