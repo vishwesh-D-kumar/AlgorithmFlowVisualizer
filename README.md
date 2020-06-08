@@ -41,9 +41,13 @@ Current TODO's for Phase #1:
     * Map comments to corresponding blocks too
 4. Convert the cfg to a flowchart 
 
-    * [ ] Decide on which flowchart blocks to use
+    * [x] Decide on which flowchart blocks to use
     
-    * [ ] Devise a algorithm to break up given cfg blocks based on statements 
+    * [x] Devise a algorithm to break up given cfg blocks based on statements 
+    
+    * [ ] Create a class for the entire process
+    
+    * [ ] Highlight control flow blocks with colors for better visual representation
     
     * [ ] Align the graphviz output to look better (Maybe only use straight lines?)
  
