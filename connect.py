@@ -6,7 +6,7 @@ from pprint import pprint
 import os
 import ast
 from flowgenerator import generate_flow
-from staticfg import CFGBuilder, Block,Link
+from staticfg import CFGBuilder, Block, Link
 import time
 import tempfile
 
@@ -15,19 +15,41 @@ jsonout = 'f.json'
 defaultfunc = "main"
 
 
+# Adding subclasses of blocks for better functionality
+
+class DecisionBlock(Block):
+    """
+    A block for non loop control flow statements
+    """
+
+    def __init__(self, id):
+        super().__init__(id)
+        self.shape = "diamond"
+
+
+class LoopBlock(Block):
+    """
+    A block for loop statements
+    """
+
+    def __init__(self, id):
+        super().__init__(id)
+        self.shape = "oval"
+
+
 def get_cfg():
     """
 
     :return: cfg built by staticfg
     """
-    builder=CFGBuilder()
+    builder = CFGBuilder()
     cfg = builder.build_from_file(filepath, './' + filepath)
     cfg.build_visual('test1', 'pdf')
     # return cfg
 
     blocks_list = cfg.net_blocks[:]
     for block in blocks_list:
-        split_block(block,builder)
+        split_block(block, builder)
 
     cfg.build_visual('test2', 'pdf')
     return cfg
@@ -56,31 +78,25 @@ def highlight_link_between(node: Block, neigh: Block):
             return link
     return None
 
-def split_block(block: Block, builder:CFGBuilder):
-    #TODO
-
-    if len(block.statements)>1 and type(block.statements[-1])==ast.If:
-        print("YEs")
-        if_block=builder.new_block()
-        if_statement=block.statements[-1]
-        block.statements.remove(if_statement)
-        if_block.statements.append(if_statement)
-        if_block.exits=block.exits[:]
-        block.exits=[]
-        block.exits.append(Link(block,if_block))
 
 
-
-
+def new_decision_block(builder: CFGBuilder):
+    builder.current_id += 1
+    return DecisionBlock(builder.current_id)
 
     # pass
+
+
+def new_loop_block(builder: CFGBuilder):
+    builder.current_id += 1
+    return LoopBlock
+
 
 if __name__ == "__main__":
 
     cfg = get_cfg()
     # Net blocks of cfg
     blocks_list = cfg.net_blocks
-
 
     # Timeline of lines
     timeline = generate_flow(filepath, defaultfunc, cfg.lines_to_leave)

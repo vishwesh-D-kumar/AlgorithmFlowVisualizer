@@ -19,7 +19,7 @@ class Block(object):
     a list of Links that represent control flow jumps.
     """
 
-    __slots__ = ["id", "statements", "func_calls", "predecessors", "exits"]
+    __slots__ = ["id", "statements", "func_calls", "predecessors", "exits","shape"]
 
     def __init__(self, id):
         # Id of the block.
@@ -33,6 +33,8 @@ class Block(object):
         self.predecessors = []
         # Links to the next blocks in a control flow graph.
         self.exits = []
+        #Stores the graph shape in which to be rendered
+        self.shape = "rect"
         #Storing list of blocks to map later
         block_list.append(self)
 
@@ -120,8 +122,9 @@ class Link(object):
     __slots__ = ["source", "target", "exitcase", "used"]
 
     def __init__(self, source, target, exitcase=None):
-        assert type(source) == Block, "Source of a link must be a block"
-        assert type(target) == Block, "Target of a link must be a block"
+        #Changed class checking to isinstance checking to allow for subclassing of blocks
+        assert isinstance(source,Block), "Source of a link must be a block or its subclass"
+        assert isinstance(target,Block), "Target of a link must be a block or its subclass"
         # Block from which the control flow jump was made.
         self.source = source
         # Target block of the control flow jump.
@@ -188,7 +191,8 @@ class CFG(object):
 
         nodelabel = block.get_source()
 
-        graph.node(str(block.id), label=nodelabel)
+        #Using shape paramater to change shape of block
+        graph.node(str(block.id), label=nodelabel,shape=block.shape)
         visited.append(block.id)
 
         # Show the block's function calls in a node.

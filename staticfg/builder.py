@@ -149,6 +149,7 @@ class CFGBuilder(ast.NodeVisitor):
         self.current_id += 1
         return Block(self.current_id)
 
+
     def add_statement(self, block, statement):
         """
         Add a statement to a block.
