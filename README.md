@@ -45,7 +45,7 @@ Current TODO's for Phase #1:
     
     * [x] Devise a algorithm to break up given cfg blocks based on statements 
     
-    * [ ] Create a class for the entire process
+    * [x] Create a class for the entire process
     
     * [ ] Highlight control flow blocks with colors for better visual representation
     
