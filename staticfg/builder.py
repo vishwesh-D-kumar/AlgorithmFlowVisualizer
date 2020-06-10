@@ -1,5 +1,5 @@
 """
-Control flow graph builder.
+Control timeline graph builder.
 """
 # Aurelien Coet, 2018.
 
@@ -67,9 +67,9 @@ def merge_exitcases(exit1, exit2):
 
 class CFGBuilder(ast.NodeVisitor):
     """
-    Control flow graph builder.
+    Control timeline graph builder.
 
-    A control flow graph builder is an ast.NodeVisitor that can walk through
+    A control timeline graph builder is an ast.NodeVisitor that can walk through
     a program's AST and iteratively build the corresponding CFG.
     """
 
@@ -308,10 +308,10 @@ class CFGBuilder(ast.NodeVisitor):
         # New block for the case in which the assertion 'fails'.
         failblock = self.new_block()
         self.add_exit(self.current_block, failblock, invert(node.test))
-        # If the assertion fails, the current flow ends, so the fail block is a
+        # If the assertion fails, the current timeline ends, so the fail block is a
         # final block of the CFG.
         self.cfg.finalblocks.append(failblock)
-        # If the assertion is True, continue the flow of the program.
+        # If the assertion is True, continue the timeline of the program.
         successblock = self.new_block()
         self.add_exit(self.current_block, successblock, node.test)
         self.current_block = successblock

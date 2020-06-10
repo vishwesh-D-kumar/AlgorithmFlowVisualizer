@@ -1,5 +1,5 @@
 """
-Control flow graph for Python programs.
+Control timeline graph for Python programs.
 """
 # Aurelien Coet, 2018.
 
@@ -12,14 +12,14 @@ block_list = []
 
 class Block(object):
     """
-    Basic block in a control flow graph.
+    Basic block in a control timeline graph.
 
     Contains a list of statements executed in a program without any control
     jumps. A block of statements is exited through one of its exits. Exits are
-    a list of Links that represent control flow jumps.
+    a list of Links that represent control timeline jumps.
     """
 
-    __slots__ = ["id", "statements", "func_calls", "predecessors", "exits","shape"]
+    __slots__ = ["id", "statements", "func_calls", "predecessors", "exits","shape",'used']
 
     def __init__(self, id):
         # Id of the block.
@@ -29,14 +29,17 @@ class Block(object):
         # Calls to functions inside the block (represents context switches to
         # some functions' CFGs).
         self.func_calls = []
-        # Links to predecessors in a control flow graph.
+        # Links to predecessors in a control timeline graph.
         self.predecessors = []
-        # Links to the next blocks in a control flow graph.
+        # Links to the next blocks in a control timeline graph.
         self.exits = []
         #Stores the graph shape in which to be rendered
         self.shape = "rect"
         #Storing list of blocks to map later
         block_list.append(self)
+        #Shows whether block is used in runtime
+        self.used = False
+
 
     def __str__(self):
         if self.statements:
@@ -112,9 +115,9 @@ class Block(object):
 
 class Link(object):
     """
-    Link between blocks in a control flow graph.
+    Link between blocks in a control timeline graph.
 
-    Represents a control flow jump between two blocks. Contains an exitcase in
+    Represents a control timeline jump between two blocks. Contains an exitcase in
     the form of an expression, representing the case in which the associated
     control jump is made.
     """
@@ -125,11 +128,11 @@ class Link(object):
         #Changed class checking to isinstance checking to allow for subclassing of blocks
         assert isinstance(source,Block), "Source of a link must be a block or its subclass"
         assert isinstance(target,Block), "Target of a link must be a block or its subclass"
-        # Block from which the control flow jump was made.
+        # Block from which the control timeline jump was made.
         self.source = source
-        # Target block of the control flow jump.
+        # Target block of the control timeline jump.
         self.target = target
-        # 'Case' leading to a control flow jump through this link.
+        # 'Case' leading to a control timeline jump through this link.
         self.exitcase = exitcase
         # defines whether link used in runtime or not
         self.used = False
@@ -158,10 +161,10 @@ class Link(object):
 
 class CFG(object):
     """
-    Control flow graph (CFG).
+    Control timeline graph (CFG).
 
-    A control flow graph is composed of basic blocks and links between them
-    representing control flow jumps. It has a unique entry block and several
+    A control timeline graph is composed of basic blocks and links between them
+    representing control timeline jumps. It has a unique entry block and several
     possible 'final' blocks (blocks with no exits representing the end of the
     CFG).
     """
@@ -180,11 +183,16 @@ class CFG(object):
         self.finalblocks = []
         # Sub-CFGs for functions defined inside the current CFG.
         self.functioncfgs = {}
+        #Defines whether cfg used in runtime
+        self.used = False
 
     def __str__(self):
         return "CFG for {}".format(self.name)
 
     def _visit_blocks(self, graph, block, visited=[], calls=True):
+        #If block unused in runtime , continue
+        if not block.used:
+            return
         # Don't visit blocks twice.
         if block.id in visited:
             return
@@ -219,9 +227,11 @@ class CFG(object):
         # Build the subgraphs for the function definitions in the CFG and add
         # them to the graph.
         for subcfg in self.functioncfgs:
-            subgraph = self.functioncfgs[subcfg]._build_visual(format=format,
+            if self.functioncfgs[subcfg].used:
+                print("Yes",subcfg)
+                subgraph = self.functioncfgs[subcfg]._build_visual(format=format,
                                                                calls=calls)
-            graph.subgraph(subgraph)
+                graph.subgraph(subgraph)
 
         return graph
 
