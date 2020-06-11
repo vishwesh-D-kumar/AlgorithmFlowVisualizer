@@ -31,9 +31,9 @@ Current TODO's for Phase #1:
     
     * [x] Create runtime depictor of the program , with a pdf being given as an output at every step
     
-    * [ ] Remove unnecessary produced steps 
+    * [x] Remove unnecessary produced steps 
     
-    * [ ] Only show blocks being used in runtime 
+    * [x] Only show blocks being used in runtime 
     
      
     Additional Features thought of:
