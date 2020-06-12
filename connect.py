@@ -47,8 +47,6 @@ class FlowGen:
         # Cfg generation
         self.builder, self.cfg = self.get_cfg()
         # Timeline generating parameters
-        # Set of lines to leave
-        self.leave = self.cfg.lines_to_leave
         # List of lines executed on every step
         self.timeline = []
         # Here the main timeline generating function occurs
@@ -85,8 +83,7 @@ class FlowGen:
         callback function
         """
         # print(frame.f_code,frame.f_lineno)
-        if not frame.f_lineno in self.leave:
-            self.timeline.append(frame.f_lineno)
+        self.timeline.append(frame.f_lineno)
         return self.trace_callback
 
     def get_timeline(self):
@@ -212,14 +209,18 @@ class FlowGen:
 
     # Output generation functions
 
-    def generate_flowchart(self, format):
+    def generate_flowchart(self, format='pdf',visual=True):
         """
         Stores flowchart of program in output directory
         :param format: format of produced graph ; svg/pdf..
+        :param visual: builds output if true
+        :return timeline of blocks
         """
         output_dir = self.create_output_dir()
         # Stores timeline of blocks visited ,for debugging later
         blocks_timeline = []
+        #Timeline of links used
+        link_used = []
         timeline = self.timeline
         prev_block = self.linesmap[timeline[0]]
         link_used_last = None
@@ -236,11 +237,16 @@ class FlowGen:
                 if link_used_last is not None:
                     link_used_last.used = False
                 link_used_last = self.highlight_link_between(prev_block, self.linesmap[line])
-                self.cfg.build_visual(f'./{output_dir}/output/{i}', format, show=False)
+                #Build output if visual specified
+                if visual:
+                    self.cfg.build_visual(f'./{output_dir}/output/{i}', format, show=False)
+                # if link_used_last:
+                #     blocks_timeline.append(link_used_last)
             prev_block = self.linesmap[line]
             i += 1
             blocks_timeline.append(self.linesmap[line])
         pprint(blocks_timeline)
+        return blocks_timeline
 
     def map_lines(self):
         """
@@ -301,4 +307,5 @@ class FlowGen:
 
 
 f = FlowGen('test.py', 'main')
-f.generate_flowchart('pdf')
+timeline = f.generate_flowchart('pdf')
+
