@@ -55,8 +55,8 @@ class FlowGen:
         self.alter_blocks()
         # Map lines to the blocks they belong to
         self.linesmap = self.map_lines()
-        #alter timeline to show used blocks only
-        self.timeline=self.alter_timeline()
+        # alter timeline to show used blocks only
+        self.timeline = self.alter_timeline()
         pprint(self.linesmap)
         pprint(self.timeline)
         # marking visited blocks and cfgs
@@ -209,7 +209,7 @@ class FlowGen:
 
     # Output generation functions
 
-    def generate_flowchart(self, format='pdf',visual=True):
+    def generate_flowchart(self, format='pdf', visual=True):
         """
         Stores flowchart of program in output directory
         :param format: format of produced graph ; svg/pdf..
@@ -219,10 +219,11 @@ class FlowGen:
         output_dir = self.create_output_dir()
         # Stores timeline of blocks visited ,for debugging later
         blocks_timeline = []
-        #Timeline of links used
+        # Timeline of links used
         link_used = []
         timeline = self.timeline
         prev_block = self.linesmap[timeline[0]]
+        blocks_timeline.append(prev_block)
         link_used_last = None
         i = 0
         for line in timeline:
@@ -237,14 +238,14 @@ class FlowGen:
                 if link_used_last is not None:
                     link_used_last.used = False
                 link_used_last = self.highlight_link_between(prev_block, self.linesmap[line])
-                #Build output if visual specified
+                # Build output if visual specified
                 if visual:
                     self.cfg.build_visual(f'./{output_dir}/output/{i}', format, show=False)
-                # if link_used_last:
-                #     blocks_timeline.append(link_used_last)
+                blocks_timeline.append(self.linesmap[line])
+
             prev_block = self.linesmap[line]
             i += 1
-            blocks_timeline.append(self.linesmap[line])
+
         pprint(blocks_timeline)
         return blocks_timeline
 
@@ -306,6 +307,9 @@ class FlowGen:
         return None
 
 
-f = FlowGen('test.py', 'main')
-timeline = f.generate_flowchart('pdf')
-
+if __name__ == "__main__":
+    # f = FlowGen('test.py', 'main')
+    f = FlowGen('test.py', 'f4')
+    # f = FlowGen('test_files/simple_loop.py','break_test')
+    timeline = f.generate_flowchart('pdf',True)
+    print("Executed")
