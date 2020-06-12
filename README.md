@@ -51,7 +51,10 @@ Current TODO's for Phase #1:
     
     * [ ] Align the graphviz output to look better (Maybe only use straight lines?)
  
- 
+5. Write unittests for the same
+
+    * [x] Write simple tests to check for continue/break statements
+    * [ ] Check with popular sorting algorithms
  
  ---
  How to run
