@@ -8,8 +8,6 @@ from .model import Block, Link, CFG
 #Importing the block list to return along with cfg
 from .model import Block, Link, CFG,block_list
 
-#Adding lines to ignore here, ie : Break and continue statements ,as they have no blocks of their own
-lines_to_leave = []
 
 def invert(node):
     """
@@ -104,8 +102,6 @@ class CFGBuilder(ast.NodeVisitor):
         self.visit(tree)
         self.cfg.net_blocks = block_list
         self.clean_cfg(self.cfg.entryblock)
-        #Returning as a set for O(1) "in" operation later on
-        self.cfg.lines_to_leave = set(lines_to_leave)
         return self.cfg
 
     def build_from_src(self, name, src):
