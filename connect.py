@@ -35,15 +35,17 @@ class LoopBlock(Block):
 
 
 class FlowGen:
-    def __init__(self, file, func):
+    def __init__(self, file, func, *args):
         """
 
         :param file:path to file
         :param func: function to be used
+        :param args:args to pass to function
         """
 
         self.file = file
         self.func = func
+        self.args = args
         # Cfg generation
         self.builder, self.cfg = self.get_cfg()
         # Timeline generating parameters
@@ -99,7 +101,7 @@ class FlowGen:
         # If debugging , set back the original debugger later
         curr_tracer = sys.gettrace()
         sys.settrace(self.trace_callback)
-        func()
+        func(*self.args)
         sys.settrace(curr_tracer)
 
     def get_cfg(self):
@@ -309,7 +311,7 @@ class FlowGen:
 
 if __name__ == "__main__":
     # f = FlowGen('test.py', 'main')
-    f = FlowGen('test.py', 'f4')
+    f = FlowGen('test.py', 'f4',[1,2,3,4,5])
     # f = FlowGen('test_files/simple_loop.py','break_test')
-    timeline = f.generate_flowchart('pdf',True)
+    # timeline = f.generate_flowchart('pdf', True)
     print("Executed")
