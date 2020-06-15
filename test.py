@@ -14,17 +14,20 @@ def f(x, t):
             continue
     return r
 
+
 def f2(arr):
-    n=len(arr)
+    n = len(arr)
     for i in range(n):
         for j in range(n):
-            if i==j:
+            if i == j:
                 break
-            print(i,j)
-        if i<j:
-            print(i,j)
+            print(i, j)
+        if i < j:
+            print(i, j)
             break
     print("Got here")
+
+
 def f3():
     if a:
         if b:
@@ -38,13 +41,13 @@ def f3():
     else:
         print(5)
 
+
 def f4(x):
+    print(x)
     for i in range(len(x)):
-        if i==1:
+        if i == 0:
             print("1")
-        else:
-            break
-    print("End")
+
 
 # def f1(a):
 #     if a:
@@ -69,7 +72,8 @@ def f4(x):
 def main():
     l = 1
     f([1, 3, 4, 5, 6, 10, 11], 6)
-    f4([1,2,3])
+    f4([1, 2, 3])
+
 
 if __name__ == "__main__":
     main()

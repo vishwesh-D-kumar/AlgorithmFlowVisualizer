@@ -3,35 +3,10 @@ import os
 import ast
 from flowgenerator import generate_flow
 from staticfg import CFGBuilder, Block, Link
+from control_models import DecisionBlock,LoopBlock
 import importlib
 import sys
 from pathlib import Path
-
-
-class DecisionBlock(Block):
-    """
-    A block for non loop control timeline statements
-    """
-
-    def __init__(self, id):
-        super().__init__(id)
-        self.shape = "diamond"
-
-    def __str__(self):
-        return "Decision " + super().__str__()
-
-
-class LoopBlock(Block):
-    """
-    A block for loop statements
-    """
-
-    def __init__(self, id):
-        super().__init__(id)
-        self.shape = "oval"
-
-    def __str__(self):
-        return "Loop " + super().__str__()
 
 
 class FlowGen:
@@ -60,7 +35,7 @@ class FlowGen:
         # alter timeline to show used blocks only
         self.timeline = self.alter_timeline()
         pprint(self.linesmap)
-        pprint(self.timeline)
+        # print(self.timeline)
         # marking visited blocks and cfgs
         self.mark_used_blocks()
         self.mark_used_cfg()
@@ -248,7 +223,8 @@ class FlowGen:
             prev_block = self.linesmap[line]
             i += 1
 
-        pprint(blocks_timeline)
+        # pprint(blocks_timeline)
+        pprint([(block.used, block.at()) for block in blocks_timeline])
         return blocks_timeline
 
     def map_lines(self):
@@ -310,8 +286,10 @@ class FlowGen:
 
 
 if __name__ == "__main__":
-    # f = FlowGen('test.py', 'main')
-    f = FlowGen('test.py', 'f4',[1,2,3,4,5])
+    f = FlowGen('test.py', 'main')
+    # f = FlowGen('test.py', 'f4',[1,2,3,4,5])
+    # f = FlowGen("test_files/recursion.py", "knapSack", 5, [2, 4], [13, 4], 2)
     # f = FlowGen('test_files/simple_loop.py','break_test')
-    # timeline = f.generate_flowchart('pdf', True)
+    timeline = f.generate_flowchart('pdf', True)
+
     print("Executed")

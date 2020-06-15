@@ -19,7 +19,7 @@ class Block(object):
     a list of Links that represent control timeline jumps.
     """
 
-    __slots__ = ["id", "statements", "func_calls", "predecessors", "exits","shape",'used']
+    __slots__ = ["id", "statements", "func_calls", "predecessors", "exits","shape",'used','color']
 
     def __init__(self, id):
         # Id of the block.
@@ -39,6 +39,7 @@ class Block(object):
         block_list.append(self)
         #Shows whether block is used in runtime
         self.used = False
+        self.color = "lightblue"
 
 
     def __str__(self):
@@ -200,7 +201,7 @@ class CFG(object):
         nodelabel = block.get_source()
 
         #Using shape paramater to change shape of block
-        graph.node(str(block.id), label=nodelabel,shape=block.shape)
+        graph.node(str(block.id), label=nodelabel,shape=block.shape,fillcolor=block.color)
         visited.append(block.id)
 
         # Show the block's function calls in a node.
@@ -208,7 +209,7 @@ class CFG(object):
             calls_node = str(block.id) + "_calls"
             calls_label = block.get_calls().strip()
             graph.node(calls_node, label=calls_label,
-                       _attributes={'shape': 'box'})
+                       _attributes={'shape': 'box3d'})
             graph.edge(str(block.id), calls_node, label="calls",
                        _attributes={'style': 'dashed'})
 
@@ -221,7 +222,13 @@ class CFG(object):
 
     def _build_visual(self, format='pdf', calls=True):
         graph = gv.Digraph(name='cluster' + self.name, format=format,
-                           graph_attr={'label': self.name})
+                           graph_attr={'label': self.name,'bgcolor':'darkgray'},
+                           node_attr={ 'style': 'filled'},
+                           edge_attr={'color':'white'}
+                           )
+        # graph.attr(colorscheme='greys85',bgcolor="grey11")
+        # graph.attr(style='filled', fillcolor='5')
+
         self._visit_blocks(graph, self.entryblock, visited=[], calls=calls)
 
         # Build the subgraphs for the function definitions in the CFG and add

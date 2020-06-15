@@ -47,27 +47,37 @@ Current TODO's for Phase #1:
     
     * [x] Create a class for the entire process
     
-    * [ ] Highlight control flow blocks with colors for better visual representation
+    * [x] Highlight control flow blocks with colors for better visual representation
     
-    * [ ] Align the graphviz output to look better (Maybe only use straight lines?)
+    * [x] Align the graphviz output to look better (Maybe only use straight lines?)
+    
+    * [ ] Add a legend for users to refer to
  
 5. Write unittests for the same
 
     * [x] Write simple tests to check for continue/break statements
-    * [ ] Check with popular sorting algorithms
+    * [x] Check with popular sorting algorithms
  
  ---
  How to run
  
  *Requires python 3.6 or above, due to use of f-strings*
 0. Install required packages from requirements.txt. Do have a look at how to install graphviz.(will be required to be installed from package managers also (apt-get,brew))
-1. Save file you want to visualize in the repo
-2. Edit variable name filepath according to name of file saved
-3. Edit function name to debug (required )
-4. Run with 
-    ```bash
-        python connect.py
+1. Lets call the file you want to visualize as test.py (a sample test.py is in the repo)
+2. Instantiate in the following manner
+    ```python
+   from connect import FlowGen
+   f = FlowGen('test.py', 'f4',[1,2,3,4,5])
     ```
-5. In output folder , you can see the svg files being made.Name of file corresponds to step of program.
+   where f4  is the function name , test.py is the file name , and [1,2,3,4] are the arguments to pass to the function (can be multiple)
+3. To generate the flowchart in a directory output in the same directory as test.py/file which was passed , 
+    ```python
+   timeline = f.generate_flowchart('pdf')
+    ```
+   Or if you just want the blocks timeline ,without any pdf/svg creted
+   ```python
+   timeline = f.generate_flowchart('pdf', True)
+   ```
+5. In output folder , you can see the svg/pdf files being made.Name of file corresponds to step of program.
 
  
