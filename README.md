@@ -4,7 +4,8 @@ This is a GSOC'20 project .
 
 I am currently using the [my public fork of StatiCfg](https://github.com/vishwesh-D-kumar/staticfg). 
 Version history of 1.Staticfg's changes can be found in the repo.
-This [PR](https://github.com/coetaur0/staticfg/pull/13) has been sent also , containing general purpose improvements
+This [PR](https://github.com/coetaur0/staticfg/pull/13) has been sent also , containing general purpose improvements.
+The above PR has been merged into master of StatiCfg !
 
 
 Current TODO's for Phase #1:
@@ -62,6 +63,7 @@ Current TODO's for Phase #1:
  How to run
  
  *Requires python 3.6 or above, due to use of f-strings*
+ 
 0. Install required packages from requirements.txt. Do have a look at how to install graphviz.(will be required to be installed from package managers also (apt-get,brew))
 1. Lets call the file you want to visualize as test.py (a sample test.py is in the repo)
 2. Instantiate in the following manner
@@ -76,7 +78,7 @@ Current TODO's for Phase #1:
     ```
    Or if you just want the blocks timeline ,without any pdf/svg creted
    ```python
-   timeline = f.generate_flowchart('pdf', True)
+   timeline = f.generate_flowchart('pdf', False)
    ```
 5. In output folder , you can see the svg/pdf files being made.Name of file corresponds to step of program.
 
