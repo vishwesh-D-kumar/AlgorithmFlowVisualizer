@@ -82,4 +82,10 @@ Current TODO's for Phase #1:
    ```
 5. In output folder , you can see the svg/pdf files being made.Name of file corresponds to step of program.
 
+ Current TODO's for Phase #2:
+ 
+ * [x] Add the stack frame on every call , while noting parameters being called on 
+        Using frame.f_locals as of now , can switch to inspect module instead if errors occur
+
+ * [ ] Figure out a way to figure out the function parameters called with(i+1,j-1 instead of 1,2)(Can be done by parsing AST?)
  
