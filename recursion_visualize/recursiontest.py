@@ -5,7 +5,11 @@ def g():
 def main():
     s=1
     # print(f(1))
-    print(rec(5))
+    # print(rec(5))
+    f2(1)
+def f2(i):
+    print(i)
+    i+=1
 def rec(i):
     if i==0:return 0
     return rec(i-1)+1
