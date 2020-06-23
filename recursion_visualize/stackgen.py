@@ -5,6 +5,41 @@ from pathlib import Path
 import astor
 import ast
 
+#Making a variable watcher
+#TODO : Add support for imports using dll library, by deepcopying globals
+#TODO: remove tracing of stdlib functions
+import sys
+class VarWatcher(object):
+    def __init__(self, frame,var, attr=None):
+        self.changers=[]
+        self.prev_frame = None
+        self.var = var
+        self.attr = attr
+        self.val=self.get_val(frame)
+        print("DONE")
+        sys.settrace(self.trace)
+    def get_val(self,frame):
+        try:
+            currvar=frame.f_locals[self.var]
+            if  self.attr:
+                return getattr(currvar, attr)
+            return currvar
+        except:
+            return self.val
+    def check_changed(self,frame):
+        curr = self.get_val(frame)
+        is_changed =  self.val!=curr
+        self.val = curr
+        self.changers.append(self.prev_frame)
+        return is_changed
+
+    def trace(self, frame, event, arg):
+        print(frame)
+        if event=='line':
+            self.check_changed(frame)
+        self.prev_frame=frame
+        return self.trace
+
 
 # Making a Nodevisitor to save calls
 class CallsVisitor(ast.NodeVisitor):
@@ -19,6 +54,7 @@ class CallsVisitor(ast.NodeVisitor):
     def visit_Call(self, node):
         self.lines_func_map[node.lineno] = self.lines_func_map.get(node.lineno, []) + [[node.func, node.args]]
         self.generic_visit(node)
+
 
 
 c = CallsVisitor("recursiontest.py")
@@ -72,6 +108,17 @@ def go():
     defaultfunc = "main"
     print(generate_flow(filepath, defaultfunc))
     print(flow)
+    # i=0
+    # w = VarWatcher(sys._getframe(0),'i')
+    # # sys.settrace(w.trace)
+    # i+=1
+    #
+    # i**=2
+    # print("YES")
+    # i//=2
+    # # sys.settrace(None)
+    # print(w.changers)
+    # # sys.settrace(None)
 
 
 
