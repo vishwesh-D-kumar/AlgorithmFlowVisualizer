@@ -1,13 +1,4 @@
 # import traceback
-# import dill
-#TODO: remove tracing of stdlib functions
-#TODO : Add support for imports using dll library, by deepcopying globals
-import sys
-import sys
-import re
-import inspect
-
-# import traceback
 # TODO: remove tracing of stdlib functions
 import sys
 import re
@@ -15,7 +6,52 @@ import inspect
 
 
 # TODO : Need to add function passing logic for mutable objects
-class VarWatcher:
+class Tracer:
+    def __init__(self):
+        # Add a global tracer
+        self.local_tracers_stack = []  # Stack of local tracers , 1 per frame
+
+    def new_frame(self, frame):
+        # TODO
+        # add new local tracer for frame
+        passed_locals = []
+        new_tracer = LocalsTracer()
+        if not self.local_tracers_stack:  # First Stack Frame
+            self.local_tracers_stack.append(new_tracer)
+            return
+        old_tracer = self.local_tracers_stack[-1]
+        for name, attr, val in zip(old_tracer.names, old_tracer.attrs, old_tracer.vals):
+            if self.is_mutable(val):
+                for name_new in frame.f_locals:
+                    if frame.f_locals[name_new] is val:
+                        new_tracer.add(name_new, val, attr)
+        print("Variables transfered are", new_tracer.names)
+        self.local_tracers_stack.append(new_tracer)
+        # Transfer Locals that are transfered with calls (Mutable only)
+
+    def is_mutable(self, obj):
+        immutable_types = [bool, int, float, tuple, str, frozenset]
+        return type(obj) not in immutable_types
+
+    def trace(self, frame, event, arg):
+        if event == "call":
+            print("New trace initialized at", frame.f_lineno)
+            self.new_frame(frame)
+        curr_local_tracer = self.local_tracers_stack[-1]
+        curr_local_tracer.trace(frame, event, arg)
+        # TODO send params for tracing globally
+
+        # TODO Check for possible changes in return statement(shift this line after check?)
+        if event == "return":
+            # Remove current tracer from stack
+            # TODO check about mmu in this case, should I use del?
+            self.local_tracers_stack.pop()
+            # Return , as nothing else executed on this statement
+            return
+        return self.trace
+
+
+class LocalsTracer:
     def __init__(self):
         # TODO, add functionaly to check multiple variables
         # TODO, add checking in globals
@@ -28,7 +64,6 @@ class VarWatcher:
         # self.val=self.getval(frame.f_locals)
         self.prev_line = 0
         self.prev_event = "line"
-        # print("initialized")
 
     def add(self, name, val, attr=None):
         self.vals.append(val)
@@ -47,7 +82,7 @@ class VarWatcher:
     def get_val(self, name, attr, f_locals):
         obj = f_locals[name]
         if attr:
-            return obj.getattr(obj, attr)
+            return getattr(obj, attr)
         else:
             return obj
 
@@ -63,24 +98,22 @@ class VarWatcher:
                 comment = None
                 if match:
                     comment = match.group(1) or match.group(2)  # Take whichever matches
-                    print(comment)
+                    # print(comment)
                 self.lines_comments[currline] = comment
                 currline += 1
         return self.lines_comments[frame.f_lineno]
 
     def trace(self, frame, event, arg):
-        # print(frame.f_locals)
-        # print(arg)
-        # print(event)
         # Adding variables defined on last line's  comments
-        print(self.toadd, frame.f_lineno)
+        # print(self.toadd,frame.f_lineno,"TOADD")
+        # print(self.names,"ADDED")
         while (self.toadd):
             name, attr = self.toadd.pop()
             print("adding Variable", name)
             val = self.get_val(name, attr, frame.f_locals)
             self.add(name, val, attr)
         if event == "line" or event == "return":
-            print(frame.f_locals)
+            # print(frame.f_locals)
             self.check(frame.f_locals)
             comment = self.get_comments(frame)
             if comment:
@@ -101,11 +134,16 @@ class TestClass:
         self.x = x
         self.y = y
 
+    def cool(self, x, t):
+        return self.t.append(1)
+
 
 def check():
     i = 0  # watchvar i
-    y = []
+    y = []  # watchvar y
     c = TestClass(0, y)  # watchvar c.y
+    c.y = [1, 2, 3]
+    c.cool(i, y)
     j = 0  # watchvar j
     i += 1
     i *= 2
@@ -114,14 +152,15 @@ def check():
 
 def go():
     i = 0
-    w = VarWatcher()
+    w = Tracer()
     sys.settrace(w.trace)
     check()
     sys.settrace(None)
-    # print(w.changers)
     # sys.settrace(None)
 
-if __name__=="__main__":
+
+go()
+if __name__ == "__main__":
     go()
     # print(w.changers)
     # sys.settrace(None)
