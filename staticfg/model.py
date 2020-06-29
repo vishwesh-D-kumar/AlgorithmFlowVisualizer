@@ -7,9 +7,6 @@ import ast
 import astor
 import graphviz as gv
 
-block_list = []
-
-
 class Block(object):
     """
     Basic block in a control timeline graph.
@@ -217,8 +214,9 @@ class CFG(object):
         for exit in block.exits:
             self._visit_blocks(graph, exit.target, visited, calls=calls)
             edgelabel = exit.get_exitcase().strip()
-
-            graph.edge(str(block.id), str(exit.target.id), label=edgelabel, color="red" if exit.used else "black")
+            #Only draw links if the corresponding exits are being utilsed
+            if exit.target.used:
+                graph.edge(str(block.id), str(exit.target.id), label=edgelabel, color="red" if exit.used else "black")
 
     def _build_visual(self, format='pdf', calls=True):
         graph = gv.Digraph(name='cluster' + self.name, format=format,

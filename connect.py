@@ -41,6 +41,7 @@ class FlowGen:
         self.mark_used_cfg()
 
         pprint([(block.used, block.at()) for block in self.cfg.net_blocks])
+        self.cfg.net_blocks=[]
         print(self.timeline)
 
     def create_output_dir(self):
@@ -280,16 +281,23 @@ class FlowGen:
         for link in node.exits:
             if link.target == neigh:
                 link.used = True
-                # print("####", link)
+                print("####", link)
                 return link
         return None
 
 
 if __name__ == "__main__":
     f = FlowGen('test.py', 'main')
+    # arr = [1,2,3,4,5,6]
+    # f = FlowGen("test_files/sorts.py","selection_sort",arr) #Sorted the array in place
+    timeline = f.generate_flowchart('pdf', True)
+    # print("Arr after sorting :",arr)
+    # input("Array has been sorted! Press any key to continue")
+    # f = FlowGen("test_files/searches.py","binarySearch",arr,6) #Searching via binary search
+    # timeline = f.generate_flowchart('pdf',True)
     # f = FlowGen('test.py', 'f4',[1,2,3,4,5])
     # f = FlowGen("test_files/recursion.py", "knapSack", 5, [2, 4], [13, 4], 2)
     # f = FlowGen('test_files/simple_loop.py','break_test')
-    timeline = f.generate_flowchart('pdf', True)
+    # timeline = f.generate_flowchart('pdf', True)
 
     print("Executed")

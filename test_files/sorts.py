@@ -10,6 +10,7 @@ def selection_sort(A):
         min_idx = i
         for j in range(i + 1, len(A)):
             if A[min_idx] > A[j]:
+                print("Executed")
                 min_idx = j
 
                 # Swap the found minimum element with

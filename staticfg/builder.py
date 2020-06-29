@@ -6,7 +6,7 @@ Control timeline graph builder.
 import ast
 from .model import Block, Link, CFG
 #Importing the block list to return along with cfg
-from .model import Block, Link, CFG,block_list
+from .model import Block, Link, CFG
 
 
 def invert(node):
@@ -100,7 +100,7 @@ class CFGBuilder(ast.NodeVisitor):
         self.cfg.entryblock = self.current_block
         # Actual building of the CFG is done here.
         self.visit(tree)
-        self.cfg.net_blocks = block_list
+        self.cfg.net_blocks = [block for block in self.cfg]
         self.clean_cfg(self.cfg.entryblock)
         return self.cfg
 
