@@ -287,17 +287,18 @@ class FlowGen:
 
 
 if __name__ == "__main__":
+    print("Yes")
     f = FlowGen('test.py', 'main')
-    # arr = [1,2,3,4,5,6]
-    # f = FlowGen("test_files/sorts.py","selection_sort",arr) #Sorted the array in place
+    arr = [1,2,3,4,5,6]
+    f = FlowGen("test_files/sorts.py","selection_sort",arr) #Sorted the array in place
     timeline = f.generate_flowchart('pdf', True)
-    # print("Arr after sorting :",arr)
-    # input("Array has been sorted! Press any key to continue")
-    # f = FlowGen("test_files/searches.py","binarySearch",arr,6) #Searching via binary search
-    # timeline = f.generate_flowchart('pdf',True)
+    print("Arr after sorting :",arr)
+    input("Array has been sorted! Press any key to continue")
+    f = FlowGen("test_files/searches.py","binarySearch",arr,6) #Searching via binary search
+    timeline = f.generate_flowchart('pdf',True)
     # f = FlowGen('test.py', 'f4',[1,2,3,4,5])
     # f = FlowGen("test_files/recursion.py", "knapSack", 5, [2, 4], [13, 4], 2)
     # f = FlowGen('test_files/simple_loop.py','break_test')
+    # f = FlowGen("test_files/sorts.py", "selection_sort", [64, 25, 12, 22])
     # timeline = f.generate_flowchart('pdf', True)
-
-    print("Executed")
+    # print("Executed")

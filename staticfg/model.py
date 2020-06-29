@@ -33,7 +33,7 @@ class Block(object):
         #Stores the graph shape in which to be rendered
         self.shape = "rect"
         #Storing list of blocks to map later
-        block_list.append(self)
+        # block_list.append(self)
         #Shows whether block is used in runtime
         self.used = False
         self.color = "lightblue"
@@ -264,6 +264,7 @@ class CFG(object):
         to_visit = [self.entryblock]
 
         while to_visit:
+            #TODO : either use a deque for this , or pop() , to avoid o(n) complexity of pop
             block = to_visit.pop(0)
             visited.add(block)
             for exit_ in block.exits:

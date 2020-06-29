@@ -2,10 +2,49 @@
 
 This is a GSOC'20 project .
 
+Welcome to Algorithm Flow Visualizer ! 
+
+The flowchart visualizer attempts to do the following : Given a function to visualize , it breaks it down into every step of its.
+Then , it shows the control flow jumps being made with every step . This aims to give the programmer a great deal of help in 
+visualizing the flow of a algorithm , and how they actually behave given an input.
+
+####For instructions on how to run , go to the bottom!.The file [connect.py](/connect.py) 
+contains a sample run at the end of the file
+
+##Features :
+
+
+1. Created a runtime based depictor of program , rather than a static version enveloping the entire program regardless of its use or not
+Only created cfgs of functions being used in runtime , with blocks being show if they were used in runtime
+
+2. Added functionality for arguments to be passed  to the function being debugged
+
+3. There are currently two modes available , a visual mode , and a non visual mode.
+A generated timeline of blocks is created : which is basically the timeline of the control flow of the code on runtime.
+
+    If the visual mode is used , the program creates a flowchart highlighting every link being used at every step.Formats that can be selected are 
+    among graphviz's formats ,can be seen [here](https://graphviz.org/doc/info/output.html)
+
+4. A flowchart on every step  allow for stepping back and forth, through every step of the code.
+
+5. Have subclassed blocks for ease of developement/extensibility, and replaced generated blocks with new subclassed blocks. 
+
+6. Subclassing of blocks allowed for user changes to the appearance of control flow blocks, using  color and shape,
+extending to the full range of [graphviz's options](https://graphviz.org/doc/info/shapes.html)
+ To try it out , just go ahead in [control_models.py](control_models.py) and change LoopBlock.shape="polygon" and colour to "red"
+
+7.  Since StatiCfg was the repo I was using , I added support for control flow statements in addition to the ones it was covering (refer to TODO #1 for Phase #1).
+This greatly helped me understand the working of the code , and how to use it in my project.
+
+
+[This blog](https://vishwesh-d-kumar.github.io/GSoC-2020-Journey-so-far!/) post has been written about the same , which has a overwiew of what I learnt , and the logic I followed in implementing the targets.
+
 I am currently using the [my public fork of StatiCfg](https://github.com/vishwesh-D-kumar/staticfg). 
 Version history of 1.Staticfg's changes can be found in the repo.
+
 This [PR](https://github.com/coetaur0/staticfg/pull/13) has been sent also , containing general purpose improvements.
-The above PR has been merged into master of StatiCfg !
+
+[UPDATE] The above PR has been merged into master of StatiCfg !
 
 
 Current TODO's for Phase #1:
@@ -76,7 +115,7 @@ Current TODO's for Phase #1:
     ```python
    timeline = f.generate_flowchart('pdf')
     ```
-   Or if you just want the blocks timeline ,without any pdf/svg creted
+   Or if you just want the blocks timeline ,without any pdf/svg created, pass the parameter False after the type
    ```python
    timeline = f.generate_flowchart('pdf', False)
    ```
