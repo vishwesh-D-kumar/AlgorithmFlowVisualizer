@@ -4,7 +4,7 @@ import ast
 from flowgenerator import generate_flow
 from staticfg import CFGBuilder, Block, Link
 from control_models import DecisionBlock,LoopBlock
-import importlib
+import importlib.util
 import sys
 from pathlib import Path
 
