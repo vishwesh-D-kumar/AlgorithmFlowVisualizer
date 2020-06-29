@@ -1,4 +1,4 @@
-#Algorithm flow Visualizer
+# Algorithm flow Visualizer
 
 This is a GSOC'20 project .
 
@@ -8,10 +8,9 @@ The flowchart visualizer attempts to do the following : Given a function to visu
 Then , it shows the control flow jumps being made with every step . This aims to give the programmer a great deal of help in 
 visualizing the flow of a algorithm , and how they actually behave given an input.
 
-####For instructions on how to run , go to the bottom!.The file [connect.py](/connect.py) 
-contains a sample run at the end of the file
+#### For instructions on how to run , go to the bottom!.The file [connect.py](/connect.py) contains a sample run at the end of the file
 
-##Features :
+## Features :
 
 
 1. Created a runtime based depictor of program , rather than a static version enveloping the entire program regardless of its use or not
@@ -36,6 +35,7 @@ extending to the full range of [graphviz's options](https://graphviz.org/doc/inf
 7.  Since StatiCfg was the repo I was using , I added support for control flow statements in addition to the ones it was covering (refer to TODO #1 for Phase #1).
 This greatly helped me understand the working of the code , and how to use it in my project.
 
+8. Implemented tests on popular algorithms ,selection sort , insertion sort , knapsack.
 
 [This blog](https://vishwesh-d-kumar.github.io/GSoC-2020-Journey-so-far!/) post has been written about the same , which has a overwiew of what I learnt , and the logic I followed in implementing the targets.
 
