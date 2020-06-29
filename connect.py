@@ -41,7 +41,6 @@ class FlowGen:
         self.mark_used_cfg()
 
         pprint([(block.used, block.at()) for block in self.cfg.net_blocks])
-        self.cfg.net_blocks=[]
         print(self.timeline)
 
     def create_output_dir(self):
@@ -138,17 +137,20 @@ class FlowGen:
                         link.source = if_block
                     block.exits = []
                     block.exits.append(Link(block, if_block))
-                    # self.cfg.net_blocks.append(if_block)
+                    if_block.predecessors.append(Link(block,if_block))
+                    self.cfg.net_blocks.append(if_block)
                     return block
                 else:
                     if_block = DecisionBlock(block.id)
                     self.replace_block(block, if_block)
+                    self.cfg.net_blocks.append(if_block)
                     return if_block
 
                 # If blocks are loops , replacing them too
             elif type(block.statements[0]) == ast.While or type(block.statements[0]) == ast.For:
                 loop_block = LoopBlock(block.id)
                 self.replace_block(block, loop_block)
+                self.cfg.net_blocks.append(loop_block)
                 return loop_block
         return block
 
@@ -301,4 +303,4 @@ if __name__ == "__main__":
     # f = FlowGen('test_files/simple_loop.py','break_test')
     # f = FlowGen("test_files/sorts.py", "selection_sort", [64, 25, 12, 22])
     # timeline = f.generate_flowchart('pdf', True)
-    # print("Executed")
+    print("Executed")
