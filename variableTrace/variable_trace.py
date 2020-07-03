@@ -3,19 +3,28 @@
 import sys
 import re
 import inspect
+import copy
 
 
-# TODO : Need to add function passing logic for mutable objects
+class Variable:
+    def __init_(self, name, val, attr):
+        self.name = name
+        self.val = val
+        self.attr = attr
+        self.history = []
+        self.prev = None  # Pointer to the previous Variable, if any
+
+
 class Tracer:
     def __init__(self):
         # Add a global tracer
         self.local_tracers_stack = []  # Stack of local tracers , 1 per frame
-
+        self.prev_line=0
     def new_frame(self, frame):
         # TODO
         # add new local tracer for frame
         passed_locals = []
-        new_tracer = LocalsTracer()
+        new_tracer = LocalsTracer(frame,self.prev_line)
         if not self.local_tracers_stack:  # First Stack Frame
             self.local_tracers_stack.append(new_tracer)
             return
@@ -25,6 +34,7 @@ class Tracer:
                 for name_new in frame.f_locals:
                     if frame.f_locals[name_new] is val:
                         new_tracer.add(name_new, val, attr)
+                        print(name, "->", name_new)
         print("Variables transfered are", new_tracer.names)
         self.local_tracers_stack.append(new_tracer)
         # Transfer Locals that are transfered with calls (Mutable only)
@@ -38,35 +48,52 @@ class Tracer:
             print("New trace initialized at", frame.f_lineno)
             self.new_frame(frame)
         curr_local_tracer = self.local_tracers_stack[-1]
+        # print(self.local_tracers_stack)
         curr_local_tracer.trace(frame, event, arg)
         # TODO send params for tracing globally
-
+        self.prev_line=frame.f_lineno
         # TODO Check for possible changes in return statement(shift this line after check?)
         if event == "return":
             # Remove current tracer from stack
             # TODO check about mmu in this case, should I use del?
             self.local_tracers_stack.pop()
             # Return , as nothing else executed on this statement
-            return
+            # return
+        # TODO : RENDER
+        self.render()
         return self.trace
+
+    def render(self):
+        # TODO
+        for tracer in reversed(self.local_tracers_stack):
+            print("----------------")
+            print("|",tracer,"|")
+            print("-----------------")
+        input()
 
 
 class LocalsTracer:
-    def __init__(self):
+    __slots__ = ['func', 'vals', 'names', 'attrs', 'comments', 'lines_comments', 'toadd', 'prev_line', 'deepcopy_vals']
+
+    def __init__(self, frame,prev_line):
         # TODO, add functionaly to check multiple variables
         # TODO, add checking in globals
-        self.vals = []
+        #Tuple storing location of function
+        self.func = (frame.f_lineno,frame.f_code.co_name)
+        self.vals = []  # Values attached by reference : used for is check while passing variables
         self.names = []
         self.attrs = []
+        self.deepcopy_vals = []  # Values attached by reference : used to check for change in value
         self.comments = []
         self.lines_comments = {}
         self.toadd = []  # variables parsed from last line comments
         # self.val=self.getval(frame.f_locals)
-        self.prev_line = 0
-        self.prev_event = "line"
+        self.prev_line = prev_line
+        # self.prev_event="line"
 
     def add(self, name, val, attr=None):
         self.vals.append(val)
+        self.deepcopy_vals.append(copy.deepcopy(val))
         self.names.append(name)
         self.attrs.append(attr)
 
@@ -78,6 +105,7 @@ class LocalsTracer:
             if new != self.vals[idx]:
                 print(self.names[idx], "changed on line ", self.prev_line)
             self.vals[idx] = new
+            self.deepcopy_vals[idx] = copy.deepcopy(new)  # Deepcopying to avoid mutability errors
 
     def get_val(self, name, attr, f_locals):
         obj = f_locals[name]
@@ -125,9 +153,13 @@ class LocalsTracer:
                 else:
                     self.toadd.append((parts[0], parts[1]))
             self.prev_line = frame.f_lineno
-        self.prev_event = event
-        return self.trace
+        # self.prev_event=event
+        # return self.trace
 
+    def __str__(self):
+        return str(self.func) + ' Frame'
+    def __repr__(self):
+        return str(self.func) + ' Frame'
 
 class TestClass:
     def __init__(self, x, y):
@@ -135,7 +167,7 @@ class TestClass:
         self.y = y
 
     def cool(self, x, t):
-        return self.t.append(1)
+        return t.append(1)
 
 
 def check():
@@ -150,16 +182,33 @@ def check():
     j = i
 
 
+def binSearch(arr, t):
+    n = len(arr)
+    l = 0  # watchvar l
+    r = n - 1  # watchvar r
+    while (l <= r):
+        mid = (r + l) // 2
+        if arr[mid] == t:
+            return mid
+        if arr[mid] > t:
+            r = mid - 1
+        else:
+            l = mid + 1
+    return -1
+
+
 def go():
+    print('Started')
     i = 0
     w = Tracer()
     sys.settrace(w.trace)
     check()
+    # binSearch([1,2,3,4],4)
     sys.settrace(None)
+    print("ended")
     # sys.settrace(None)
 
 
-go()
 if __name__ == "__main__":
     go()
     # print(w.changers)
