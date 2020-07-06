@@ -103,7 +103,14 @@ Current TODO's for Phase #1:
  
  *Requires python 3.6 or above, due to use of f-strings*
  
-0. Install required packages from requirements.txt. Do have a look at how to install graphviz.(will be required to be installed from package managers also (apt-get,brew))
+0. Install required packages from requirements.txt. Do have a look at how to install [graphviz](https://graphviz.gitlab.io/download)
+
+    Assuming apt to be your system package manager , this should work
+    ```
+        pip3 install -r requirements.txt
+        apt-get install graphviz  
+    ```
+
 1. Lets call the file you want to visualize as test.py (a sample test.py is in the repo)
 2. Instantiate in the following manner
     ```python
@@ -119,7 +126,7 @@ Current TODO's for Phase #1:
    ```python
    timeline = f.generate_flowchart('pdf', False)
    ```
-5. In output folder , you can see the svg/pdf files being made.Name of file corresponds to step of program.
+4. In output folder , you can see the svg/pdf files being made.Name of file corresponds to step of program.
 
  Current TODO's for Recursion Visualizer:
  
