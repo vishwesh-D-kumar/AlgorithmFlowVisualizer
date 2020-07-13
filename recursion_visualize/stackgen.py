@@ -70,14 +70,15 @@ class StackVisualizer:
         self.output_dir = self.create_output_dir()
         self.graph = gv.Digraph('Call Stack', filename='call_stack.gv', node_attr={'shape': 'record'})
         self.prev_event = "line"
+        self.step = 1
 
     def trace_callback(self, frame, event, arg):
-        print("#########")
-        pprint(self.stack)
-        print("##########")
+        # print("#########")
+        # pprint(self.stack)
+        # print("##########")
         if self.prev_event == "call" or self.prev_event == "return":
             self.render()
-            input("Enter To continue")
+            # input("Enter To continue")
         # print('###')
         # print(frame)
         # print(event)
@@ -134,21 +135,30 @@ class StackVisualizer:
 
     def render(self):
         # For vertical orientation use rankdir, {} for flipping orientation
-        graph = gv.Digraph('Call Stack', filename='call_stack.gv', node_attr={'shape': 'record'})
+        graph = gv.Digraph('Call Stack', filename='call_stack', node_attr={'shape': 'record'})
         call_stack = "{"
         i = 0
         for call in self.stack:
             called_as, args, line_no = call
             call_stack += "{"
             call_stack += f'<f{i}> {called_as.strip()}'
-            call_stack += '| ' + 'line:' + str(i) + ' }|'
+            call_stack += '| ' + 'line:' + str(i)
+            formatted_args = str(args).strip()
+            formatted_args=formatted_args.replace('{','\{')
+            formatted_args=formatted_args.replace('}','\}')
+            formatted_args=formatted_args.replace('[','\[')
+            formatted_args=formatted_args.replace(']','\]')
+            print(formatted_args,"###")
+            call_stack +=  '| ' + 'args ' + formatted_args
+            call_stack += "}|"
             i += 1
         call_stack = call_stack[:-1]
         call_stack += "}"
 
         print(call_stack)
         graph.node('call_stack', call_stack)
-        graph.view()
+        graph.render(filename=f'output/call_stack{self.step}',view=False)
+        self.step += 1
 
 
 # c = CallsVisitor("recursiontest.py")
