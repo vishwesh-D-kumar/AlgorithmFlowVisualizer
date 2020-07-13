@@ -15,35 +15,38 @@ class Variable:
         self.prev = None  # Pointer to the previous Variable, if any
 
 
+def is_mutable(obj):
+    immutable_types = [bool, int, float, tuple, str, frozenset]
+    return type(obj) not in immutable_types
+
+
 class Tracer:
-    def __init__(self):
+    def __init__(self, include_files=[]):
         # Add a global tracer
         self.local_tracers_stack = []  # Stack of local tracers , 1 per frame
-        self.prev_line=0
+        self.prev_line = 0
+        self.include_files = [file.lower() for file in include_files]  # Files to include while tracing
+        #IMP:Does not support case sensitive files right now
     def new_frame(self, frame):
-        # TODO
-        # add new local tracer for frame
         passed_locals = []
-        new_tracer = LocalsTracer(frame,self.prev_line)
+        new_tracer = LocalsTracer(frame, self.prev_line)
         if not self.local_tracers_stack:  # First Stack Frame
             self.local_tracers_stack.append(new_tracer)
             return
         old_tracer = self.local_tracers_stack[-1]
         for name, attr, val in zip(old_tracer.names, old_tracer.attrs, old_tracer.vals):
-            if self.is_mutable(val):
+            if is_mutable(val):
                 for name_new in frame.f_locals:
                     if frame.f_locals[name_new] is val:
                         new_tracer.add(name_new, val, attr)
                         print(name, "->", name_new)
-        print("Variables transfered are", new_tracer.names)
+        print("Variables transferred are", new_tracer.names)
         self.local_tracers_stack.append(new_tracer)
         # Transfer Locals that are transfered with calls (Mutable only)
 
-    def is_mutable(self, obj):
-        immutable_types = [bool, int, float, tuple, str, frozenset]
-        return type(obj) not in immutable_types
-
     def trace(self, frame, event, arg):
+        if not self.check_in_path(frame):
+            return self.trace
         if event == "call":
             print("New trace initialized at", frame.f_lineno)
             self.new_frame(frame)
@@ -51,8 +54,8 @@ class Tracer:
         # print(self.local_tracers_stack)
         curr_local_tracer.trace(frame, event, arg)
         # TODO send params for tracing globally
-        self.prev_line=frame.f_lineno
-        # TODO Check for possible changes in return statement(shift this line after check?)
+        self.prev_line = frame.f_lineno
+        # TODO Check for possible changes in return statement(shift this line after check?):
         if event == "return":
             # Remove current tracer from stack
             # TODO check about mmu in this case, should I use del?
@@ -63,23 +66,38 @@ class Tracer:
         self.render()
         return self.trace
 
+    def check_in_path(self, frame):
+        """
+        Returns whether file in current included files
+        If no included file given , return true for all
+        :param frame:current frame to be checked
+        :return: true if match or no files given to include , else false.
+        """
+        if self.include_files:
+            curr_file = frame.f_code.co_filename.replace('\\', '/').lower()
+            # print(curr_file)
+            # print(self.include_files)
+            return True in [curr_file.startswith(included_file) for included_file in self.include_files]
+
+        return True
+
     def render(self):
         # TODO
         for tracer in reversed(self.local_tracers_stack):
             print("----------------")
-            print("|",tracer,"|")
+            print("|", tracer, "|")
             print("-----------------")
-        input()
+        input("Press Enter to continue")
 
 
 class LocalsTracer:
     __slots__ = ['func', 'vals', 'names', 'attrs', 'comments', 'lines_comments', 'toadd', 'prev_line', 'deepcopy_vals']
 
-    def __init__(self, frame,prev_line):
+    def __init__(self, frame, prev_line):
         # TODO, add functionaly to check multiple variables
         # TODO, add checking in globals
-        #Tuple storing location of function
-        self.func = (frame.f_lineno,frame.f_code.co_name)
+        # Tuple storing location of function
+        self.func = (frame.f_lineno, frame.f_code.co_name)
         self.vals = []  # Values attached by reference : used for is check while passing variables
         self.names = []
         self.attrs = []
@@ -135,7 +153,7 @@ class LocalsTracer:
         # Adding variables defined on last line's  comments
         # print(self.toadd,frame.f_lineno,"TOADD")
         # print(self.names,"ADDED")
-        while (self.toadd):
+        while self.toadd:
             name, attr = self.toadd.pop()
             print("adding Variable", name)
             val = self.get_val(name, attr, frame.f_locals)
@@ -158,8 +176,10 @@ class LocalsTracer:
 
     def __str__(self):
         return str(self.func) + ' Frame'
+
     def __repr__(self):
         return str(self.func) + ' Frame'
+
 
 class TestClass:
     def __init__(self, x, y):
@@ -200,10 +220,10 @@ def binSearch(arr, t):
 def go():
     print('Started')
     i = 0
-    w = Tracer()
+    w = Tracer(include_files=['/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/flowchart_gen/variableTrace'])
     sys.settrace(w.trace)
-    check()
-    # binSearch([1,2,3,4],4)
+    # check()
+    binSearch([1,2,3,4],4)
     sys.settrace(None)
     print("ended")
     # sys.settrace(None)
