@@ -7,6 +7,8 @@ import ast
 from pprint import pprint
 from staticfg.builder import invert
 import copy
+import os
+import graphviz as gv
 
 
 # Making a Nodevisitor to save calls
@@ -57,25 +59,32 @@ class CallsVisitor(ast.NodeVisitor):
                 self.visit(child)
         self.curr_test = prev_test
 
+
 class StackVisualizer:
     def __init__(self, filepath, func):
         self.stack = []
         self.prev_line = 0
-        self.filepath=filepath
+        self.filepath = filepath
         self.calls_tracer = CallsVisitor(self.filepath)
         self.func = func
+        self.output_dir = self.create_output_dir()
+        self.graph = gv.Digraph('Call Stack', filename='call_stack.gv', node_attr={'shape': 'record'})
+        self.prev_event = "line"
 
     def trace_callback(self, frame, event, arg):
         print("#########")
         pprint(self.stack)
         print("##########")
+        if self.prev_event == "call" or self.prev_event == "return":
+            self.render()
+            input("Enter To continue")
         # print('###')
         # print(frame)
         # print(event)
         # print("###")
         # input()
         # print(lines_to_leave)
-        if event == "call" and self.prev_line!=0:
+        if event == "call" and self.prev_line != 0:
             args_passed, _, _, locals = inspect.getargvalues(frame)
             call_made = astor.to_source(self.calls_tracer.lines_func_map[self.prev_line])
             if 'self' in args_passed: args_passed.remove('self')
@@ -97,6 +106,7 @@ class StackVisualizer:
                 print(self.stack.pop(), "popped with return", arg)
                 print("return condition used ", return_condition)
         self.prev_line = frame.f_lineno
+        self.prev_event = event
         return self.trace_callback
 
     def generate_flow(self):
@@ -109,6 +119,37 @@ class StackVisualizer:
         sys.settrace(self.trace_callback)
         func()
         sys.settrace(None)
+
+    def create_output_dir(self):
+        """
+        Creates a output directory
+        :return output directory path
+        """
+        output_dir = os.path.dirname(f'./{self.filepath}')
+        try:
+            os.mkdir(f'./{output_dir}/output')
+        except:
+            pass
+        return output_dir
+
+    def render(self):
+        # For vertical orientation use rankdir, {} for flipping orientation
+        graph = gv.Digraph('Call Stack', filename='call_stack.gv', node_attr={'shape': 'record'})
+        call_stack = "{"
+        i = 0
+        for call in self.stack:
+            called_as, args, line_no = call
+            call_stack += "{"
+            call_stack += f'<f{i}> {called_as.strip()}'
+            call_stack += '| ' + 'line:' + str(i) + ' }|'
+            i += 1
+        call_stack = call_stack[:-1]
+        call_stack += "}"
+
+        print(call_stack)
+        graph.node('call_stack', call_stack)
+        graph.view()
+
 
 # c = CallsVisitor("recursiontest.py")
 # c = CallsVisitor("dptests.py")
@@ -161,10 +202,9 @@ def go():
     defaultfunc = "main"
     # print(generate_flow(filepath, defaultfunc))
     # print(flow)
-    s=StackVisualizer(filepath,defaultfunc)
+    s = StackVisualizer(filepath, defaultfunc)
     s.generate_flow()
+
 
 if __name__ == "__main__":
     go()
-
-
