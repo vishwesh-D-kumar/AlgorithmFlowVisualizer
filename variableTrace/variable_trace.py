@@ -9,12 +9,42 @@ import copy
 
 
 class Variable:
-    def __init_(self, name, val, attr):
+    __slots__ = ['name','deepcopy_val', 'val', 'attr', 'history', 'prev', 'is_global']
+
+    def __init__(self, name, val, attr):
         self.name = name
-        self.val = val
+        self.deepcopy_val = copy.deepcopy(val)
         self.attr = attr
+        self.val = val
         self.history = []
         self.prev = None  # Pointer to the previous Variable, if any
+        self.is_global = False
+
+    def check(self, frame, prev_line):
+        print(self,"&&&",self.is_global)
+        if self.is_global:
+            # print(self,"$$$$$",self.is_global)
+            new = get_variable_val(self, frame.f_globals)
+        else:
+            try:
+                new = get_variable_val(self, frame.f_locals)
+            except KeyError:
+                new = get_variable_val(self, frame.f_globals)
+                print("global used with", self.name)
+                self.is_global = True
+        old = self.deepcopy_val
+        print(old, new, "$$$")
+        changed = False
+        if new != old:
+            print("Variable changed from", old, "to", new, "on line", prev_line)
+            changed = True
+        self.deepcopy_val = copy.deepcopy(new)
+        self.val = new
+        if changed:
+            return old, new, self.name
+
+    def __repr__(self):
+        return f"{self.name} ,{self.attr}, {self.val}"
 
 
 def is_mutable(obj):
@@ -26,14 +56,28 @@ def process_change(new_val, old_val, var_name, line_no, changes):
     changes.append([copy.deepcopy(new_val), old_val, var_name, line_no])
 
 
+def get_val(name, attr, f_locals):
+    obj = f_locals[name]
+    if attr:
+        return getattr(obj, attr)
+    else:
+        return obj
+
+
+def get_variable_val(var: Variable, f_locals):
+    return get_val(var.name, var.attr, f_locals)
+
+
 class Tracer:
     def __init__(self, include_files=[]):
         # Add a global tracer
+        self.global_tracer = LocalsTracer(None, -1)
         self.local_tracers_stack = []  # Stack of local tracers , 1 per frame
         self.prev_line = 0
         self.include_files = [file.lower() for file in include_files]  # Files to include while tracing
         # IMP:Does not support case sensitive files right now
         self.changes = []
+
 
     def new_frame(self, frame):
         passed_locals = []
@@ -42,26 +86,52 @@ class Tracer:
             self.local_tracers_stack.append(new_tracer)
             return
         old_tracer = self.local_tracers_stack[-1]
-        for name, attr, val in zip(old_tracer.names, old_tracer.attrs, old_tracer.vals):
-            if is_mutable(val):
+        # for var in old_tracer.variables:
+        #     var: Variable
+        #     if var.is_global:
+        #         new_tracer.add(var)
+        # for name, attr, val in zip(old_tracer.names, old_tracer.attrs, old_tracer.vals):
+        #     if is_mutable(val):
+        #         for name_new in frame.f_locals:
+        #             if frame.f_locals[name_new] is val:
+        #                 new_tracer.add(name_new, val, attr)
+        #                 print(name, "->", name_new)
+        for var in old_tracer.variables:
+            var: Variable
+            if var.is_global:
+                continue
+            if is_mutable(var.val):
                 for name_new in frame.f_locals:
-                    if frame.f_locals[name_new] is val:
-                        new_tracer.add(name_new, val, attr)
-                        print(name, "->", name_new)
-        print("Variables transferred are", new_tracer.names)
+                    if frame.f_locals[name_new] is var.val:
+                        new_var = Variable(name_new, var.val, var.attr)
+                        new_var.history = var.history + [var.name]
+                        new_tracer.add(new_var)
+                        print(var.name, "->", name_new)
+        print("Variables transferred are", new_tracer.variables)
         self.local_tracers_stack.append(new_tracer)
-        # Transfer Locals that are transfered with calls (Mutable only)
+        # Transfer Locals that are transferred with calls (Mutable only)
 
     def trace(self, frame, event, arg):
+        print("--------Line", frame.f_lineno,"--------")
         if not self.check_in_path(frame):
             return self.trace
         if event == "call":
             print("New trace initialized at", frame.f_lineno)
             self.new_frame(frame)
         curr_local_tracer = self.local_tracers_stack[-1]
-        # print(self.local_tracers_stack)
-        local_changes= curr_local_tracer.trace(frame, event, arg)  # changes processed from the local tracer
+
+        print(self.local_tracers_stack)
+        local_changes,globals_found= curr_local_tracer.trace(frame, event, arg)  # changes processed from the local tracer
         self.changes.extend(local_changes)
+
+        for var in globals_found:
+            self.global_tracer.add(var)
+            print(var,"global found")
+        print(self.global_tracer.toadd, "toadd", self.global_tracer)
+        print("Tracing globals")
+        global_changes,globals_found = self.global_tracer.trace(frame,event,arg) #Checking global changes
+        print("Done with global tracing")
+        self.changes.extend(global_changes)
         # TODO send params for tracing globally
         self.prev_line = frame.f_lineno
         # TODO Check for possible changes in return statement(shift this line after check?):
@@ -99,20 +169,17 @@ class Tracer:
         input("Press Enter to continue")
 
 
-def get_val(name, attr, f_locals):
-    obj = f_locals[name]
-    if attr:
-        return getattr(obj, attr)
-    else:
-        return obj
-
-
 class LocalsTracer:
-    __slots__ = ['func', 'vals', 'names', 'attrs', 'comments', 'lines_comments', 'toadd', 'prev_line', 'deepcopy_vals']
+    __slots__ = ['func', 'vals', 'names', 'attrs', 'variables', 'comments', 'lines_comments', 'toadd', 'prev_line',
+                 'deepcopy_vals']
 
     def __init__(self, frame, prev_line):
         # Tuple storing location of function
-        self.func = (frame.f_lineno, frame.f_code.co_name)
+        if frame is None:
+            #GlobalTracer
+            self.func = (0, "Global Frame")
+        else:
+            self.func = (frame.f_lineno, frame.f_code.co_name)
         self.vals = []  # Values attached by reference : used for is check while passing variables
         self.names = []
         self.attrs = []
@@ -120,28 +187,41 @@ class LocalsTracer:
         self.comments = []
         self.lines_comments = {}
         self.toadd = []  # variables parsed from last line comments
+        self.variables = []
         # self.val=self.getval(frame.f_locals)
         self.prev_line = prev_line
         # self.prev_event="line"
 
-    def add(self, name, val, attr=None):
-        self.vals.append(val)
-        self.deepcopy_vals.append(copy.deepcopy(val))
-        self.names.append(name)
-        self.attrs.append(attr)
+    # def add(self, name, val, attr=None, is_global=False):
+    #     self.vals.append(val)
+    #     self.deepcopy_vals.append(copy.deepcopy(val))
+    #     self.names.append(name)
+    #     self.attrs.append(attr)
+    #     new_var = Variable(name, copy.deepcopy(val), attr)
+    #     new_var.is_global = is_global
+    #     self.variables.append(new_var)
 
-    def check(self, f_locals):
+    def add(self, var):
+        self.variables.append(var)
+
+    def check(self, frame):
+        f_locals = frame.f_locals
         changes = []
-        for idx in range(len(self.vals)):
-            obj = self.names[idx]
-            attr = self.attrs[idx]
-            new = get_val(obj, attr, f_locals)
-            if new != self.deepcopy_vals[idx]:
-                print(self.names[idx], "changed on line ", self.prev_line, " from value ", self.vals[idx], "to value",
-                      new)
-                process_change(new, self.deepcopy_vals[idx], self.names[idx], self.prev_line,changes)
-            self.vals[idx] = new
-            self.deepcopy_vals[idx] = copy.deepcopy(new)  # Deepcopying to avoid mutability errors
+        # for idx in range(len(self.vals)):
+        #     obj = self.names[idx]
+        #     attr = self.attrs[idx]
+        #     new = get_val(obj, attr, f_locals)
+        #     if new != self.deepcopy_vals[idx]:
+        #         print(self.names[idx], "changed on line ", self.prev_line, " from value ", self.vals[idx], "to value",
+        #               new)
+        #         process_change(new, self.deepcopy_vals[idx], self.names[idx], self.prev_line, changes)
+        #     self.vals[idx] = new
+        #     self.deepcopy_vals[idx] = copy.deepcopy(new)  # Deepcopying to avoid mutability errors
+        for var in self.variables:
+            print(var.name, '####')
+            change = var.check(frame,self.prev_line)
+            if change:
+                changes.append(change)
         return changes
 
     def get_comments(self, frame):
@@ -165,18 +245,32 @@ class LocalsTracer:
         # Adding variables defined on last line's  comments
         # print(self.toadd,frame.f_lineno,"TOADD")
         # print(self.names,"ADDED")
+        is_tracer_global = (0, "Global Frame") == self.func
+        if is_tracer_global:
+            self.check(frame)
+            self.prev_line = frame.f_lineno
+            return [],[]
         changes = []
+        globals_found = []
         while self.toadd:
             name, attr = self.toadd.pop()
-            print("adding Variable", name)
+            is_global = False
             try:
                 val = get_val(name, attr, frame.f_locals)
             except KeyError:
-                val = get_val(name, attr,frame.f_globals)
-            self.add(name, val, attr)
+                val = get_val(name, attr, frame.f_globals)
+                is_global = True
+            new_var = Variable(name, val, attr)
+            new_var.is_global = is_global
+            if is_global:
+                globals_found.append(new_var)
+            else:
+                print("adding Variable", name,self)
+                self.add(new_var)
+
+        changes = self.check(frame)
         if event == "line" or event == "return":
             # print(frame.f_locals)
-            changes  = self.check(frame.f_locals)
             comment = self.get_comments(frame)
             if comment:
                 comment = comment.strip()
@@ -187,7 +281,7 @@ class LocalsTracer:
                 else:
                     self.toadd.append((parts[0], parts[1]))
             self.prev_line = frame.f_lineno
-        return changes
+        return changes, globals_found
         # self.prev_event=event
         # return self.trace
 
@@ -245,15 +339,16 @@ def go():
     print("ended")
     # sys.settrace(None)
 
+
 def go_file():
-    file="/Users/vishweshdkumar/Desktop/gsoc/tests/baka2.py"
+    file = "/Users/vishweshdkumar/Desktop/gsoc/tests/baka2.py"
     mod_name = Path(file).stem
-    spec = importlib.util.spec_from_file_location(mod_name,file)
+    spec = importlib.util.spec_from_file_location(mod_name, file)
     mod = importlib.util.module_from_spec(spec)
     # If debugging , set back the original debugger later
     sys.path.append('/Users/vishweshdkumar/Desktop/gsoc/tests/')
     spec.loader.exec_module(mod)
-    func = getattr(mod,'go', None)
+    func = getattr(mod, 'go', None)
 
     # import traceback
     # TODO: remove tracing of stdlib functions
@@ -273,6 +368,8 @@ def go_file():
 
 
 if __name__ == "__main__":
+    v = Variable('a', 1, None)
+    print(v.name)
     # go()
     go_file()
     # print(w.changers)
