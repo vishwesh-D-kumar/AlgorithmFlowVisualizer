@@ -104,6 +104,7 @@ class StackVisualizer:
         if event == "return":
             if self.stack:
                 return_condition = self.calls_tracer.lines_conditional_map[frame.f_lineno]
+                self.render(arg, return_condition)
                 print(self.stack.pop(), "popped with return", arg)
                 print("return condition used ", return_condition)
         self.prev_line = frame.f_lineno
@@ -133,9 +134,10 @@ class StackVisualizer:
             pass
         return output_dir
 
-    def render(self):
+    def render(self,ret_val=None,ret_condition=None):
+        # TODO: Fix pdf output size
         # For vertical orientation use rankdir, {} for flipping orientation
-        graph = gv.Digraph('Call Stack', filename='call_stack', node_attr={'shape': 'record'})
+        graph = gv.Digraph('Call Stack', filename='call_stack', node_attr={'shape': 'record'},format='pdf')
         call_stack = "{"
         i = 0
         for call in self.stack:
@@ -154,7 +156,10 @@ class StackVisualizer:
             i += 1
         call_stack = call_stack[:-1]
         call_stack += "}"
-
+        if ret_condition and ret_val:
+            graph.node('return_node', f'Condition used : {ret_condition}\n Return Value : {ret_val}',
+                       _attributes={'shape': 'ellipse'})
+            graph.edge(f"call_stack:f{i - 1}", 'return_node')
         print(call_stack)
         graph.node('call_stack', call_stack)
         graph.render(filename=f'output/call_stack{self.step}',view=False)
