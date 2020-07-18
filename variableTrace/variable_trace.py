@@ -41,7 +41,7 @@ class Variable:
         self.deepcopy_val = copy.deepcopy(new)
         self.val = new
         if changed:
-            return old, new, self.name
+            return old, new, self.name, prev_line
 
     def __repr__(self):
         return f"{self.name} ,{self.attr}, {self.val}"
