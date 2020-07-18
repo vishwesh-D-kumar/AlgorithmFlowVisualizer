@@ -9,7 +9,7 @@ from staticfg.builder import invert
 import copy
 import os
 import graphviz as gv
-
+# from memory_profiler import profile
 
 # Making a Nodevisitor to save calls
 def merge_conditionals(prev, new):
@@ -134,6 +134,7 @@ class StackVisualizer:
             pass
         return output_dir
 
+    # @profile
     def render(self,ret_val=None,ret_condition=None):
         # TODO: Fix pdf output size
         # For vertical orientation use rankdir, {} for flipping orientation
@@ -209,15 +210,16 @@ class StackVisualizer:
 #     prev_line = frame.f_lineno
 #     return trace_callback
 
-
+# @profile
 def go():
+    folder = '/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/flowchart_gen/recursion_visualize/'
     filepath = "recursiontest.py"
     filepath = "dptests.py"
     jsonout = 'f.json'
     defaultfunc = "main"
     # print(generate_flow(filepath, defaultfunc))
     # print(flow)
-    s = StackVisualizer(filepath, defaultfunc)
+    s = StackVisualizer(folder+filepath, defaultfunc)
     s.generate_flow()
 
 
