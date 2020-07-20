@@ -22,6 +22,12 @@ class DeepCopyNode:
         self.left = None
         self.right = None
         self.val = None
+class DeepCopyNodeFull:
+    __slots__ = ['child', 'val']
+
+    def __init__(self):
+        self.child = []
+        self.val = None
 
 
 class VisualTree:
@@ -118,14 +124,105 @@ class VisualTree:
         return self.check_node(left1, left2) and self.check_node(right1, right2)
 
 
+class FullVisualTree:
+    def __init__(self, **kwargs):
+        self.root_name = kwargs.pop('name')
+        self.root_node = get_obj(kwargs.pop('frame'), self.root_name)  ##Setting self.root_node
+        self.kwargs = kwargs
+        self.graph = None
+        self.node_count = 1
+        self.references = []  # Referers for rendering
+        self.val = kwargs.pop('val')
+        self.child = kwargs.pop('child')
+        print(self.kwargs)
+        self.deepcopy_head = self.copy_tree(self.root_node)
+
+    def copy_tree(self, root):
+        if root is None:
+            return None
+        print(root.val, end=" ")
+
+        copy_node = DeepCopyNodeFull()
+        try:
+            copy_node.val = copy.deepcopy(getattr(root, self.val))  # Allowing for deepcopying of values
+        except:
+            # TODO : lessen except clause
+            copy_node.val = getattr(root, self.val)
+
+        # getattr(root,self.val),getattr(root,self.left),getattr(root,self.right))
+        for v in getattr(root,self.child):
+            copy_node.child.append(self.copy_tree(v))
+        return copy_node
+
+    def check_node(self, root1, root2):
+        if root1 is None and root2 is None:
+            return True
+        if root1 is None or root2 is None:
+            print(f"Change detected from {root2} to {root1}")
+            return False
+        children1 = sorted(getattr(root1,self.child)) #Sorting to ensure order in checking
+        children2 = sorted(root2.child)
+
+        if getattr(root1, self.val) != root2.val:
+            print(f"Change detected from {root2.val} to {getattr(root1, self.val)}")
+            return False
+        i=0
+        ans = True
+        for v1,v2 in zip(children1,children2):
+            i += 1
+            if not self.check_node(v1,v2):
+                ans = False
+        if len(children1)>len(children2):
+            print(f"Nodes Added with parent node {root1}")
+            for v in children1:
+
+
+        # for i in range(max(len(children1),len(children2))):
+
+
+
+        return self.check_node(left1, left2) and self.check_node(right1, right2)
+
+    def render(self):
+        self.graph = Digraph(**self.kwargs)
+        self.traverseTree(self.root_node)
+        # print(self.graph.source)
+        self.graph.render('tree', view=True)
+
+
+    def traverseTree(self, root):
+
+        self.graph.node(str(self.node_count), str(getattr(root, self.val)))
+        # print(self.graph.source)
+        parentnum = self.node_count
+
+        for name, watcher in self.references:
+            if watcher is root:
+                self.node_count += 1
+                self.graph.node(str(self.node_count), name)
+                self.graph.edge(str(self.node_count), str(parentnum))
+
+        for v in getattr(root, self.child):
+            self.node_count += 1
+            child_num = self.node_count
+            self.traverseTree(v)
+            self.graph.edge(str(child_num), str(parentnum))
+
+
 class Node:
     def __init__(self, val):
         self.val = val
         self.right = None
         self.left = None
 
-if __name__ == "__main__":
 
+class FullNode:
+    def __init__(self, val):
+        self.data = val
+        self.children = []
+
+
+def check_binary_tree():
     root = Node(1)
     left = Node(2)
     right = Node(3)
@@ -146,4 +243,26 @@ if __name__ == "__main__":
     # newTree.add_referer('currNode', inspect.currentframe())
     root.left = None
     newTree.check()
-    # newTree.render()
+    newTree.render()
+
+
+def check_full_tree():
+    root = FullNode(1)
+    child1 = FullNode(2)
+    child2 = FullNode(3)
+    child3 = FullNode(4)
+    child4 = FullNode(5)
+    child5 = FullNode(6)
+    root.children.extend([child1, child2, child3, child4, child5])
+    child11 = FullNode(7)
+    child12 = FullNode(8)
+    child31 = FullNode(9)
+    child1.children.extend([child11, child12])
+    child3.children.append(child31)
+    newTree = FullVisualTree(name='root', comment='Tree B', frame=inspect.currentframe(), val='data', child='children',format='pdf')
+    newTree.render()
+
+
+if __name__ == "__main__":
+    # check_binary_tree()
+    check_full_tree()
