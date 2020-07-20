@@ -22,6 +22,8 @@ class DeepCopyNode:
         self.left = None
         self.right = None
         self.val = None
+
+
 class DeepCopyNodeFull:
     __slots__ = ['child', 'val']
 
@@ -33,8 +35,9 @@ class DeepCopyNodeFull:
 class VisualTree:
     def __init__(self, **kwargs):
 
-        self.root_name = kwargs.pop('name')
-        self.root_node = get_obj(kwargs.pop('frame'), self.root_name)  ##Setting self.root_node
+        self.name = kwargs.pop('name')
+        self.root_node = kwargs.pop('obj')
+        # self.root_node = get_obj(kwargs.pop('frame'), self.name)  ##Setting self.root_node
         self.kwargs = kwargs
         self.graph = None
         self.node_count = 1
@@ -43,6 +46,7 @@ class VisualTree:
         self.left = kwargs.pop('left')
         self.right = kwargs.pop('right')
         self.deepcopy_head = self.copy_tree(self.root_node)
+        self.is_global = False
         # self.graph.node('somehash',label="Link",_attributes={'URL': 'https://github.com/vishwesh-D-kumar/AlgorithmFlowVisualizer/blob/master/LEGEND.png','pos':'-1000,-1000!'})
         # node.attr
 
@@ -96,7 +100,7 @@ class VisualTree:
     def add_referer(self, var_name, var_frame):
         self.references.append([var_name, get_obj(var_frame, var_name)])
 
-    def check(self):
+    def check(self,frame,prev_line):
         self.check_node(self.root_node, self.deepcopy_head)
         self.copy_tree(self.root_node)
         self.render()
@@ -126,21 +130,23 @@ class VisualTree:
 
 class FullVisualTree:
     def __init__(self, **kwargs):
-        self.root_name = kwargs.pop('name')
-        self.root_node = get_obj(kwargs.pop('frame'), self.root_name)  ##Setting self.root_node
+        self.name = kwargs.pop('name')
+        # self.root_node = get_obj(kwargs.pop('frame'), self.name)  ##Setting self.root_node
+        self.root_node = kwargs.pop('obj')
         self.kwargs = kwargs
         self.graph = None
         self.node_count = 1
         self.references = []  # Referers for rendering
         self.val = kwargs.pop('val')
         self.child = kwargs.pop('child')
-        print(self.kwargs)
-        self.deepcopy_head = self.copy_tree(self.root_node)
-
+        # print(self.kwargs)
+        print(self.val,self.child,type(self.root_node),"$%$%")
+        # self.deepcopy_head = self.copy_tree(self.root_node)
+        self.is_global = False
     def copy_tree(self, root):
         if root is None:
             return None
-        print(root.val, end=" ")
+        print(getattr(root, self.val), end=" ")
 
         copy_node = DeepCopyNodeFull()
         try:
@@ -150,38 +156,42 @@ class FullVisualTree:
             copy_node.val = getattr(root, self.val)
 
         # getattr(root,self.val),getattr(root,self.left),getattr(root,self.right))
-        for v in getattr(root,self.child):
+        for v in getattr(root, self.child):
             copy_node.child.append(self.copy_tree(v))
         return copy_node
 
+    def check(self,frame,prev_line):
+        self.render()
+
     def check_node(self, root1, root2):
-        if root1 is None and root2 is None:
-            return True
-        if root1 is None or root2 is None:
-            print(f"Change detected from {root2} to {root1}")
-            return False
-        children1 = sorted(getattr(root1,self.child)) #Sorting to ensure order in checking
-        children2 = sorted(root2.child)
-
-        if getattr(root1, self.val) != root2.val:
-            print(f"Change detected from {root2.val} to {getattr(root1, self.val)}")
-            return False
-        i=0
-        ans = True
-        for v1,v2 in zip(children1,children2):
-            i += 1
-            if not self.check_node(v1,v2):
-                ans = False
-        if len(children1)>len(children2):
-            print(f"Nodes Added with parent node {root1}")
-            for v in children1:
-
-
-        # for i in range(max(len(children1),len(children2))):
-
-
-
-        return self.check_node(left1, left2) and self.check_node(right1, right2)
+        pass
+        # if root1 is None and root2 is None:
+        #     return True
+        # if root1 is None or root2 is None:
+        #     print(f"Change detected from {root2} to {root1}")
+        #     return False
+        # children1 = sorted(getattr(root1,self.child)) #Sorting to ensure order in checking
+        # children2 = sorted(root2.child)
+        #
+        # if getattr(root1, self.val) != root2.val:
+        #     print(f"Change detected from {root2.val} to {getattr(root1, self.val)}")
+        #     return False
+        # i=0
+        # ans = True
+        # for v1,v2 in zip(children1,children2):
+        #     i += 1
+        #     if not self.check_node(v1,v2):
+        #         ans = False
+        # if len(children1)>len(children2):
+        #     print(f"Nodes Added with parent node {root1}")
+        #     for v in children1:
+        #
+        #
+        # # for i in range(max(len(children1),len(children2))):
+        #
+        #
+        #
+        # # return self.check_node(left1, left2) and self.check_node(right1, right2)
 
     def render(self):
         self.graph = Digraph(**self.kwargs)
@@ -189,9 +199,8 @@ class FullVisualTree:
         # print(self.graph.source)
         self.graph.render('tree', view=True)
 
-
     def traverseTree(self, root):
-
+        print(type(self))
         self.graph.node(str(self.node_count), str(getattr(root, self.val)))
         # print(self.graph.source)
         parentnum = self.node_count
@@ -236,7 +245,7 @@ def check_binary_tree():
     root.right.right = righRight
     currNode = lefRight
 
-    newTree = VisualTree(name='root', comment='Tree A', frame=inspect.currentframe(), format='pdf', left='left',
+    newTree = VisualTree(name='root', comment='Tree A', obj=root, format='pdf', left='left',
                          right='right', val='val')
     newTree.render()
     input()
@@ -259,7 +268,7 @@ def check_full_tree():
     child31 = FullNode(9)
     child1.children.extend([child11, child12])
     child3.children.append(child31)
-    newTree = FullVisualTree(name='root', comment='Tree B', frame=inspect.currentframe(), val='data', child='children',format='pdf')
+    newTree = FullVisualTree(name='root', comment='Tree B', obj=root, val='data', child='children', format='pdf')
     newTree.render()
 
 

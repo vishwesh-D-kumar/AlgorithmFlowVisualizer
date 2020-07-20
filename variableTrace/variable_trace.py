@@ -6,10 +6,11 @@ import sys
 import re
 import inspect
 import copy
+from variableTrace.treevisualize import VisualTree, FullVisualTree
 
 
 class Variable:
-    __slots__ = ['name','deepcopy_val', 'val', 'attr', 'history', 'prev', 'is_global']
+    __slots__ = ['name', 'deepcopy_val', 'val', 'attr', 'history', 'prev', 'is_global']
 
     def __init__(self, name, val, attr):
         self.name = name
@@ -21,7 +22,7 @@ class Variable:
         self.is_global = False
 
     def check(self, frame, prev_line):
-        print(self,"&&&",self.is_global)
+        print(self, "&&&", self.is_global)
         if self.is_global:
             # print(self,"$$$$$",self.is_global)
             new = get_variable_val(self, frame.f_globals)
@@ -78,7 +79,6 @@ class Tracer:
         # IMP:Does not support case sensitive files right now
         self.changes = []
 
-
     def new_frame(self, frame):
         passed_locals = []
         new_tracer = LocalsTracer(frame, self.prev_line)
@@ -112,7 +112,7 @@ class Tracer:
         # Transfer Locals that are transferred with calls (Mutable only)
 
     def trace(self, frame, event, arg):
-        print("--------Line", frame.f_lineno,"--------")
+        print("--------Line", frame.f_lineno, "--------")
         if not self.check_in_path(frame):
             return self.trace
         if event == "call":
@@ -121,15 +121,16 @@ class Tracer:
         curr_local_tracer = self.local_tracers_stack[-1]
 
         print(self.local_tracers_stack)
-        local_changes,globals_found= curr_local_tracer.trace(frame, event, arg)  # changes processed from the local tracer
+        local_changes, globals_found = curr_local_tracer.trace(frame, event,
+                                                               arg)  # changes processed from the local tracer
         self.changes.extend(local_changes)
 
         for var in globals_found:
             self.global_tracer.add(var)
-            print(var,"global found")
+            print(var, "global found")
         print(self.global_tracer.toadd, "toadd", self.global_tracer)
         print("Tracing globals")
-        global_changes,globals_found = self.global_tracer.trace(frame,event,arg) #Checking global changes
+        global_changes, globals_found = self.global_tracer.trace(frame, event, arg)  # Checking global changes
         print("Done with global tracing")
         self.changes.extend(global_changes)
         # TODO send params for tracing globally
@@ -176,7 +177,7 @@ class LocalsTracer:
     def __init__(self, frame, prev_line):
         # Tuple storing location of function
         if frame is None:
-            #GlobalTracer
+            # GlobalTracer
             self.func = (0, "Global Frame")
         else:
             self.func = (frame.f_lineno, frame.f_code.co_name)
@@ -219,7 +220,7 @@ class LocalsTracer:
         #     self.deepcopy_vals[idx] = copy.deepcopy(new)  # Deepcopying to avoid mutability errors
         for var in self.variables:
             print(var.name, '####')
-            change = var.check(frame,self.prev_line)
+            change = var.check(frame, self.prev_line)
             if change:
                 changes.append(change)
         return changes
@@ -249,23 +250,35 @@ class LocalsTracer:
         if is_tracer_global:
             self.check(frame)
             self.prev_line = frame.f_lineno
-            return [],[]
+            return [], []
         changes = []
         globals_found = []
         while self.toadd:
-            name, attr = self.toadd.pop()
+            name, attr, var_type = self.toadd.pop()
             is_global = False
             try:
                 val = get_val(name, attr, frame.f_locals)
             except KeyError:
                 val = get_val(name, attr, frame.f_globals)
                 is_global = True
-            new_var = Variable(name, val, attr)
-            new_var.is_global = is_global
+            if var_type:
+                var_type = var_type.split(":")
+                if var_type[0] == "btree":
+                    left = var_type[1]
+                    right = var_type[2]
+                    val_attr = var_type[3]
+                    new_var = VisualTree(name=name, obj=val, left=left, right=right, val=val_attr)
+                if var_type[0] == "tree":
+                    child = var_type[1]
+                    val_attr = var_type[2]
+                    new_var = FullVisualTree(name=name, obj=val, child=child, val=val_attr)
+            else:
+                new_var = Variable(name, val, attr)
+                new_var.is_global = is_global
             if is_global:
                 globals_found.append(new_var)
             else:
-                print("adding Variable", name,self)
+                print("adding Variable", name, self)
                 self.add(new_var)
 
         changes = self.check(frame)
@@ -274,12 +287,31 @@ class LocalsTracer:
             comment = self.get_comments(frame)
             if comment:
                 comment = comment.strip()
+
                 # Getting lines to be called added on next step
-                parts = comment.split('.')
+                # print(comment)
+                parts = comment.split()
+                # print(parts)
+                parts = parts[-1].split('.')
+                # print(parts)
                 if len(parts) == 1:  # implies no attribute defined, a simple variable
-                    self.toadd.append((parts[0], None))
+                    part2 = comment.split()
+                    if len(part2) > 1:
+                        # print("YASSSSSS")
+                        # print(parts)
+                        # print(part2)
+                        self.toadd.append((parts[0], None, part2[0]))
+
+                    else:
+                        self.toadd.append((parts[0], None, None))
                 else:
-                    self.toadd.append((parts[0], parts[1]))
+                    # self.toadd.append((parts[0], parts[1]))
+                    part2 = comment.split()
+                    if len(part2) > 1:
+                        self.toadd.append((parts[0], parts[1], part2[0]))
+
+                    else:
+                        self.toadd.append((parts[0], parts[1], None))
             self.prev_line = frame.f_lineno
         return changes, globals_found
         # self.prev_event=event
@@ -341,14 +373,18 @@ def go():
 
 
 def go_file():
-    file = "/Users/vishweshdkumar/Desktop/gsoc/tests/baka2.py"
+    # file = "/Users/vishweshdkumar/Desktop/gsoc/tests/baka2.py"
+    # f = 'go'
+    file = '/Users/vishweshdkumar/Desktop/gsoc/tests/check_tree.py'
+    # f = 'check_full_tree'
+    f = 'check_binary_tree'
     mod_name = Path(file).stem
     spec = importlib.util.spec_from_file_location(mod_name, file)
     mod = importlib.util.module_from_spec(spec)
     # If debugging , set back the original debugger later
     sys.path.append('/Users/vishweshdkumar/Desktop/gsoc/tests/')
     spec.loader.exec_module(mod)
-    func = getattr(mod, 'go', None)
+    func = getattr(mod, f, None)
 
     # import traceback
     # TODO: remove tracing of stdlib functions
