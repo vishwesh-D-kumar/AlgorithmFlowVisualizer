@@ -6,8 +6,8 @@ import sys
 import re
 import inspect
 import copy
-from variableTrace.treevisualize import VisualTree, FullVisualTree
-
+# from variableTrace.treevisualize import VisualTree, FullVisualTree
+from treevisualize import VisualTree,FullVisualTree
 
 class Variable:
     __slots__ = ['name', 'deepcopy_val', 'val', 'attr', 'history', 'prev', 'is_global']
@@ -401,7 +401,7 @@ def go_file():
     sys.settrace(None)
     print("ended")
     # sys.settrace(None)
-
+    return w
 
 if __name__ == "__main__":
     v = Variable('a', 1, None)

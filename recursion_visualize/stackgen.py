@@ -138,7 +138,8 @@ class StackVisualizer:
     def render(self,ret_val=None,ret_condition=None):
         # TODO: Fix pdf output size
         # For vertical orientation use rankdir, {} for flipping orientation
-        graph = gv.Digraph('Call Stack', filename='call_stack', node_attr={'shape': 'record'},format='pdf')
+        graph = gv.Digraph('Call Stack', filename='call_stack', node_attr={'shape': 'record'},format='png')
+        # graph.graph_attr = {'size': '8.3,11.7!', 'ratio': 'fill','margin':'0'}
         call_stack = "{"
         i = 0
         for call in self.stack:
@@ -159,8 +160,8 @@ class StackVisualizer:
         call_stack += "}"
         if ret_condition and ret_val:
             graph.node('return_node', f'Condition used : {ret_condition}\n Return Value : {ret_val}',
-                       _attributes={'shape': 'ellipse'})
-            graph.edge(f"call_stack:f{i - 1}", 'return_node')
+                       _attributes={'shape': 'ellipse','color':'red'})
+            graph.edge(f"call_stack:f{i - 1}", 'return_node',_attributes={'color':'red'})
         print(call_stack)
         graph.node('call_stack', call_stack)
         graph.render(filename=f'output/call_stack{self.step}',view=False)
