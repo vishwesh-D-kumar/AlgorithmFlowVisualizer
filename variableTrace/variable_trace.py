@@ -3,34 +3,43 @@
 from pathlib import Path
 import importlib.util
 import sys
+import os
 import re
 import inspect
 import copy
-# from variableTrace.treevisualize import VisualTree, FullVisualTree
-from treevisualize import VisualTree,FullVisualTree
+import abc
+from variableTrace.treevisualize import VisualTree, FullVisualTree
+
+# from treevisualize import VisualTree, FullVisualTree
+ALLOWED_EVENTS = {"call", "line", "return"}
+DISALLOWED_FUNC_NAMES = {"<genexpr>", "<listcomp>", "<dictcomp>", "<setcomp>"}
+
+# Known stdlib module path
+STDLIB_DIR = Path(abc.__file__).parent
+
 
 class Variable:
-    __slots__ = ['name', 'deepcopy_val', 'val', 'attr', 'history', 'prev', 'is_global']
+    __slots__ = ['name', 'deepcopy_val', 'val', 'attr', 'history', 'prev', 'is_global', 'obj_val']
 
-    def __init__(self, name, val, attr):
+    def __init__(self, name, val, attr, obj):
         self.name = name
         self.deepcopy_val = copy.deepcopy(val)
         self.attr = attr
         self.val = val
+        self.obj_val = obj
         self.history = []
         self.prev = None  # Pointer to the previous Variable, if any
         self.is_global = False
 
     def check(self, frame, prev_line):
-        print(self, "&&&", self.is_global)
+
         if self.is_global:
-            # print(self,"$$$$$",self.is_global)
-            new = get_variable_val(self, frame.f_globals)
+            new,obj = get_variable_val(self, frame.f_globals)
         else:
             try:
-                new = get_variable_val(self, frame.f_locals)
+                new,obj = get_variable_val(self, frame.f_locals)
             except KeyError:
-                new = get_variable_val(self, frame.f_globals)
+                new,obj = get_variable_val(self, frame.f_globals)
                 print("global used with", self.name)
                 self.is_global = True
         old = self.deepcopy_val
@@ -41,6 +50,7 @@ class Variable:
             changed = True
         self.deepcopy_val = copy.deepcopy(new)
         self.val = new
+        self.obj_val = obj
         if changed:
             return old, new, self.name, prev_line
 
@@ -59,10 +69,12 @@ def process_change(new_val, old_val, var_name, line_no, changes):
 
 def get_val(name, attr, f_locals):
     obj = f_locals[name]
+    val = None
     if attr:
-        return getattr(obj, attr)
+        val = getattr(obj, attr)
     else:
-        return obj
+        val = obj
+    return val,obj
 
 
 def get_variable_val(var: Variable, f_locals):
@@ -102,8 +114,8 @@ class Tracer:
                 continue
             if is_mutable(var.val):
                 for name_new in frame.f_locals:
-                    if frame.f_locals[name_new] is var.val:
-                        new_var = Variable(name_new, var.val, var.attr)
+                    if frame.f_locals[name_new] is var.val or frame.f_locals[name_new] is var.obj_val:
+                        new_var = Variable(name_new, var.val, var.attr,var.obj_val)
                         new_var.history = var.history + [var.name]
                         new_tracer.add(new_var)
                         print(var.name, "->", name_new)
@@ -112,15 +124,15 @@ class Tracer:
         # Transfer Locals that are transferred with calls (Mutable only)
 
     def trace(self, frame, event, arg):
-        print("--------Line", frame.f_lineno, "--------")
+
         if not self.check_in_path(frame):
             return self.trace
+
         if event == "call":
             print("New trace initialized at", frame.f_lineno)
             self.new_frame(frame)
         curr_local_tracer = self.local_tracers_stack[-1]
 
-        print(self.local_tracers_stack)
         local_changes, globals_found = curr_local_tracer.trace(frame, event,
                                                                arg)  # changes processed from the local tracer
         self.changes.extend(local_changes)
@@ -128,22 +140,20 @@ class Tracer:
         for var in globals_found:
             self.global_tracer.add(var)
             print(var, "global found")
-        print(self.global_tracer.toadd, "toadd", self.global_tracer)
-        print("Tracing globals")
+        # print(self.global_tracer.toadd, "toadd", self.global_tracer)
+        # print("Tracing globals")
         global_changes, globals_found = self.global_tracer.trace(frame, event, arg)  # Checking global changes
-        print("Done with global tracing")
+        # print("Done with global tracing")
         self.changes.extend(global_changes)
-        # TODO send params for tracing globally
+
         self.prev_line = frame.f_lineno
-        # TODO Check for possible changes in return statement(shift this line after check?):
         if event == "return":
             # Remove current tracer from stack
-            # TODO check about mmu in this case, should I use del?
             self.local_tracers_stack.pop()
             # Return , as nothing else executed on this statement
             # return
-        # TODO : RENDER
-        self.render()
+        if local_changes or global_changes:
+            self.render(local_changes + global_changes)
         return self.trace
 
     def check_in_path(self, frame):
@@ -153,21 +163,22 @@ class Tracer:
         :param frame:current frame to be checked
         :return: true if match or no files given to include , else false.
         """
+        if frame.f_code.co_name in DISALLOWED_FUNC_NAMES:
+            return False
         if self.include_files:
-            curr_file = frame.f_code.co_filename.replace('\\', '/').lower()
-            # print(curr_file)
-            # print(self.include_files)
-            return True in [curr_file.startswith(included_file) for included_file in self.include_files]
+            curr_file = frame.f_code.co_filename.replace('\\', '/')
+            curr_file = os.path.abspath(curr_file).lower()
 
+            return all([curr_file.startswith(included_file.lower()) for included_file in self.include_files])
         return True
 
-    def render(self):
-        # TODO
+    def render(self, changes):
         for tracer in reversed(self.local_tracers_stack):
             print("----------------")
             print("|", tracer, "|")
             print("-----------------")
-        input("Press Enter to continue")
+        print("Changes seen are", *changes)
+        # input("Press Enter to continue")
 
 
 class LocalsTracer:
@@ -219,7 +230,6 @@ class LocalsTracer:
         #     self.vals[idx] = new
         #     self.deepcopy_vals[idx] = copy.deepcopy(new)  # Deepcopying to avoid mutability errors
         for var in self.variables:
-            print(var.name, '####')
             change = var.check(frame, self.prev_line)
             if change:
                 changes.append(change)
@@ -237,18 +247,20 @@ class LocalsTracer:
                 comment = None
                 if match:
                     comment = match.group(1) or match.group(2)  # Take whichever matches
-                    # print(comment)
                 self.lines_comments[currline] = comment
                 currline += 1
         return self.lines_comments[frame.f_lineno]
 
     def trace(self, frame, event, arg):
         # Adding variables defined on last line's  comments
-        # print(self.toadd,frame.f_lineno,"TOADD")
-        # print(self.names,"ADDED")
+        # print(self.toadd, frame.f_lineno, "TOADD")
         is_tracer_global = (0, "Global Frame") == self.func
         if is_tracer_global:
-            self.check(frame)
+            try:
+                changes = self.check(frame)
+                return changes, []
+            except KeyError:  # Variable not a global in this file
+                pass
             self.prev_line = frame.f_lineno
             return [], []
         changes = []
@@ -257,10 +269,12 @@ class LocalsTracer:
             name, attr, var_type = self.toadd.pop()
             is_global = False
             try:
-                val = get_val(name, attr, frame.f_locals)
+                val,obj = get_val(name, attr, frame.f_locals)
+
             except KeyError:
-                val = get_val(name, attr, frame.f_globals)
+                val,obj = get_val(name, attr, frame.f_globals)
                 is_global = True
+
             if var_type:
                 var_type = var_type.split(":")
                 if var_type[0] == "btree":
@@ -273,7 +287,7 @@ class LocalsTracer:
                     val_attr = var_type[2]
                     new_var = FullVisualTree(name=name, obj=val, child=child, val=val_attr)
             else:
-                new_var = Variable(name, val, attr)
+                new_var = Variable(name, val, attr,obj)
                 new_var.is_global = is_global
             if is_global:
                 globals_found.append(new_var)
@@ -372,17 +386,23 @@ def go():
     # sys.settrace(None)
 
 
-def go_file():
+def go_file(*args, **kwargs):
+    file = kwargs.pop('file')
+    f = kwargs.pop('func')
     # file = "/Users/vishweshdkumar/Desktop/gsoc/tests/baka2.py"
     # f = 'go'
-    file = '/Users/vishweshdkumar/Desktop/gsoc/tests/check_tree.py'
+    # file = '/Users/vishweshdkumar/Desktop/gsoc/tests/check_tree.py'
     # f = 'check_full_tree'
-    f = 'check_binary_tree'
+    # f = 'check_binary_tree'
     mod_name = Path(file).stem
     spec = importlib.util.spec_from_file_location(mod_name, file)
     mod = importlib.util.module_from_spec(spec)
+    file = os.path.abspath(file)  # In case of relative naming
+    file_dir = os.path.dirname(file)
+    sys.path.append(file_dir)
     # If debugging , set back the original debugger later
-    sys.path.append('/Users/vishweshdkumar/Desktop/gsoc/tests/')
+    # sys.path.append('/Users/vishweshdkumar/Desktop/gsoc/tests')
+
     spec.loader.exec_module(mod)
     func = getattr(mod, f, None)
 
@@ -391,22 +411,25 @@ def go_file():
     print('Started')
     i = 0
 
-    # w = Tracer()
-    w = Tracer(include_files=['/Users/vishweshdkumar/Desktop/gsoc/tests'])
+    w = Tracer(include_files=[file_dir])
+
+    # w = Tracer(include_files=['/Users/vishweshdkumar/Desktop/gsoc/tests'])
     # w = Tracer(include_files=['/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/flowchart_gen/variableTrace'])
     sys.settrace(w.trace)
     # check()
     # binSearch([1, 2, 3, 4], 4)
-    func()
+    func(*args, **kwargs)
     sys.settrace(None)
     print("ended")
     # sys.settrace(None)
+    print(w.changes)
     return w
 
+
 if __name__ == "__main__":
-    v = Variable('a', 1, None)
+    v = Variable('a', 1, None,None)
     print(v.name)
     # go()
-    go_file()
+    w = go_file(file='/Users/vishweshdkumar/Desktop/gsoc/tests/baka2.py', func='go')
     # print(w.changers)
     # sys.settrace(None)

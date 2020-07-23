@@ -9,6 +9,7 @@ from staticfg.builder import invert
 import copy
 import os
 import graphviz as gv
+from pprint import pprint
 # from memory_profiler import profile
 
 # Making a Nodevisitor to save calls
@@ -71,6 +72,8 @@ class StackVisualizer:
         self.graph = gv.Digraph('Call Stack', filename='call_stack.gv', node_attr={'shape': 'record'})
         self.prev_event = "line"
         self.step = 1
+        pprint(self.calls_tracer.lines_func_map)
+        pprint(self.calls_tracer.lines_conditional_map)
 
     def trace_callback(self, frame, event, arg):
         # print("#########")
@@ -158,7 +161,7 @@ class StackVisualizer:
             i += 1
         call_stack = call_stack[:-1]
         call_stack += "}"
-        if ret_condition and ret_val:
+        if ret_condition is not None:
             graph.node('return_node', f'Condition used : {ret_condition}\n Return Value : {ret_val}',
                        _attributes={'shape': 'ellipse','color':'red'})
             graph.edge(f"call_stack:f{i - 1}", 'return_node',_attributes={'color':'red'})

@@ -40,6 +40,7 @@ class VisualTree:
         # self.root_node = get_obj(kwargs.pop('frame'), self.name)  ##Setting self.root_node
         self.kwargs = kwargs
         self.graph = None
+        self.obj_val = None
         self.node_count = 1
         self.references = []  # Referers for rendering
         self.val = kwargs.pop('val')
@@ -139,6 +140,7 @@ class FullVisualTree:
         self.references = []  # Referers for rendering
         self.val = kwargs.pop('val')
         self.child = kwargs.pop('child')
+        self.obj_val = None
         # print(self.kwargs)
         print(self.val,self.child,type(self.root_node),"$%$%")
         # self.deepcopy_head = self.copy_tree(self.root_node)

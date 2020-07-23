@@ -22,6 +22,7 @@ def findPath(matrix):
     n, m = len(matrix), len(matrix[0])
     dp = [[0] * m for i in range(n)]
     dp[-1][-1] = 4
+
     def get_neighbours(i, j):
         neighbours = []
         for x, y in [i + 1, j], [i, j + 1], [i - 1, j], [i, j - 1]:
@@ -30,25 +31,29 @@ def findPath(matrix):
         return neighbours
 
     def hasPath(i, j):
-        print(i,j)
-        for __ in dp:
-            print(__)
+        # print(i, j)
+        # for __ in dp:
+        #     print(__)
+        if i >= n or i < 0 or j >= m or j < 0:  # Out of bounds
+            return False
         if matrix[i][j] == 0:
             dp[i][j] = 3
             return False
-        if dp[i][j] == 1: # Gray
+        if dp[i][j] == 1:  # Gray
             return False
         if dp[i][j] == 3:
             return False
         if dp[i][j] == 4:
             return True
-        neighbours = get_neighbours(i, j)
+        # neighbours = get_neighbours(i, j)
         # print(neighbours,'##')
         ans = False
         dp[i][j] = 1
-        for x, y in neighbours:
-            if hasPath(x, y):
-                ans = True
+        right = hasPath(i + 1, j)
+        left = hasPath(i-1, j)
+        up = hasPath(i, j+1)
+        down = hasPath(i, j-1)
+        ans = right or left or down or up
         dp[i][j] = 4 if ans else 3
         return ans
 
