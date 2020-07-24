@@ -11,7 +11,7 @@ import os
 import graphviz as gv
 from pprint import pprint
 # from memory_profiler import profile
-
+DISALLOWED_FUNC_NAMES = {"<genexpr>", "<listcomp>", "<dictcomp>", "<setcomp>"}
 # Making a Nodevisitor to save calls
 def merge_conditionals(prev, new):
     if not new:
@@ -27,6 +27,7 @@ class CallsVisitor(ast.NodeVisitor):
         self.lines_func_map = {}
         self.lines_conditional_map = {}
         self.curr_test = None
+        self.filepath = filepath
         with open(filepath, 'r') as src_file:
             src = src_file.read()
             tree = ast.parse(src)
@@ -66,11 +67,14 @@ class StackVisualizer:
         self.stack = []
         self.prev_line = 0
         self.filepath = filepath
-        self.calls_tracer = CallsVisitor(self.filepath)
+        self.calls_tracer_cache = {self.filepath: CallsVisitor(self.filepath)}
+        self.calls_tracer = self.calls_tracer_cache[self.filepath]
         self.func = func
         self.output_dir = self.create_output_dir()
-        self.graph = gv.Digraph('Call Stack', filename='call_stack.gv', node_attr={'shape': 'record'})
-        self.prev_event = "line"
+        print(self.output_dir,'$$$',self.filepath)
+        self.graph = None
+        self.prev_event = "line" #Avoiding tracing first function call, trivial
+        self.prev_file = filepath
         self.step = 1
         pprint(self.calls_tracer.lines_func_map)
         pprint(self.calls_tracer.lines_conditional_map)
@@ -89,6 +93,12 @@ class StackVisualizer:
         # input()
         # print(lines_to_leave)
         if event == "call" and self.prev_line != 0:
+            if frame.f_code.co_name in DISALLOWED_FUNC_NAMES:
+                return
+
+            if self.prev_file not in self.calls_tracer_cache:
+                self.calls_tracer_cache[self.prev_file] = CallsVisitor(self.prev_file)
+            self.calls_tracer = self.calls_tracer_cache[self.prev_file]
             args_passed, _, _, locals = inspect.getargvalues(frame)
             call_made = astor.to_source(self.calls_tracer.lines_func_map[self.prev_line])
             if 'self' in args_passed: args_passed.remove('self')
@@ -110,19 +120,24 @@ class StackVisualizer:
                 self.render(arg, return_condition)
                 print(self.stack.pop(), "popped with return", arg)
                 print("return condition used ", return_condition)
+        curr_file = frame.f_code.co_filename.replace('\\', '/')
+        curr_file = os.path.abspath(curr_file).lower()
         self.prev_line = frame.f_lineno
+        self.prev_file = curr_file
         self.prev_event = event
         return self.trace_callback
 
-    def generate_flow(self):
+    def generate_flow(self,*args,**kwargs):
         # global prev_line
         mod_name = Path(self.filepath).stem
         spec = importlib.util.spec_from_file_location(mod_name, self.filepath)
         mod = importlib.util.module_from_spec(spec)
+        file_dir = os.path.dirname(self.filepath)
+        sys.path.append(file_dir)
         spec.loader.exec_module(mod)
         func = getattr(mod, self.func, None)
         sys.settrace(self.trace_callback)
-        func()
+        func(*args,**kwargs)
         sys.settrace(None)
 
     def create_output_dir(self):
@@ -130,12 +145,12 @@ class StackVisualizer:
         Creates a output directory
         :return output directory path
         """
-        output_dir = os.path.dirname(f'./{self.filepath}')
+        output_dir = os.path.dirname(self.filepath)
         try:
             os.mkdir(f'./{output_dir}/output')
         except:
             pass
-        return output_dir
+        return os.path.abspath(f'{output_dir}/output')
 
     # @profile
     def render(self,ret_val=None,ret_condition=None):
@@ -167,7 +182,8 @@ class StackVisualizer:
             graph.edge(f"call_stack:f{i - 1}", 'return_node',_attributes={'color':'red'})
         print(call_stack)
         graph.node('call_stack', call_stack)
-        graph.render(filename=f'output/call_stack{self.step}',view=False)
+        print("rendered at",f'{self.output_dir}/call_stack{self.step}')
+        graph.render(filename=f'{self.output_dir}/call_stack{self.step}',view=False)
         self.step += 1
 
 
@@ -215,16 +231,19 @@ class StackVisualizer:
 #     return trace_callback
 
 # @profile
-def go():
-    folder = '/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/flowchart_gen/recursion_visualize/'
-    filepath = "recursiontest.py"
-    filepath = "dptests.py"
+def go(*args,**kwargs):
+    filepath = kwargs.pop('file')
+    func = kwargs.pop('func')
+    # folder = '/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/flowchart_gen/recursion_visualize/'
+    # filepath = "recursiontest.py"
+    # filepath = "dptests.py"
     jsonout = 'f.json'
     defaultfunc = "main"
+    filepath = os.path.abspath(filepath)
     # print(generate_flow(filepath, defaultfunc))
     # print(flow)
-    s = StackVisualizer(folder+filepath, defaultfunc)
-    s.generate_flow()
+    s = StackVisualizer(filepath, func)
+    s.generate_flow(*args,**kwargs)
 
 
 if __name__ == "__main__":

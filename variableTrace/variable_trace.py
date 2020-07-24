@@ -118,7 +118,7 @@ class Tracer:
                         new_var = Variable(name_new, var.val, var.attr,var.obj_val)
                         new_var.history = var.history + [var.name]
                         new_tracer.add(new_var)
-                        print(var.name, "->", name_new)
+                        print(var, "->", new_var)
         print("Variables transferred are", new_tracer.variables)
         self.local_tracers_stack.append(new_tracer)
         # Transfer Locals that are transferred with calls (Mutable only)
@@ -126,8 +126,7 @@ class Tracer:
     def trace(self, frame, event, arg):
 
         if not self.check_in_path(frame):
-            return self.trace
-
+            return
         if event == "call":
             print("New trace initialized at", frame.f_lineno)
             self.new_frame(frame)
