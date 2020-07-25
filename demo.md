@@ -63,9 +63,12 @@ sudo apt-get install graphviz
             self.children = []
    # Visualizing BinaryTrees:
       root = Node(2) # watchvar btree:left:right:val root
-   
+   # Adding a referrer to the binary tree
+       root_ref = root # watchvar ref:root:btree root_ref
    # Visualizing trees with N nodes:
      root = FullNode(1) # watchvar tree:children:data root
+   
+   
      
     ```
    Important parameters to note above
@@ -93,7 +96,12 @@ sudo apt-get install graphviz
    
    data: attribute to the data of the node
    
-    
+   * ```# watchvar ref:root:btree root_ref```
+   
+   ref : shows a reference being defined
+   root : variable tree to refer to 
+   btree : type of tree of variable
+   root_ref : name of watching element
    * include_files -> Files to include .To not initiate trace for all files, which may be quite a trace for 
    large projects. If a directory has been provided in paths , then it matches all files in the directories
         By default , the file provided is included by default. 
@@ -101,7 +109,7 @@ sudo apt-get install graphviz
 
 1. Attribute tracing through function calls :
     After a mutable object has been marked for tracing 
-    it will be traced through all incoming function calls (self.dp in module)
+    it will be traced through all incoming function calls (example, self.dp in demo2.py)
 
 2. Globals tracing :
     Supports tracing of global variables 
@@ -112,7 +120,7 @@ sudo apt-get install graphviz
 
 4. Tree Visualization on every step 
 
-5. Adding referrers for Tree Visualizations, to see pointers (WIP)
+5. Adding referrers for Tree Visualizations, to see pointers 
 
 
     
@@ -126,8 +134,9 @@ sudo apt-get install graphviz
     
     
    
-   ### A sample run has been added to as [demo.py](/demo.py)
+   ### 3 sample run has been added to as [demo.py](/demo.py) 
    
+
    * Run it using python3 demo.py
    
    * The source code being debugged is in demo_files , the function 'go' in [demo1.py](demo_files/demo1.py)
@@ -155,7 +164,12 @@ For every return :
 
 2. The return value
 
+## A sample output specifically for trees is added as [tree_demo.py](/demo_files/tree_demo.py)
 
+This code corresponds to multiple insertions in a binary search tree, and marks x as the pointer to follow to the leaf node on which to enter
+
+![demo_tree](/demo_files/tree_demo.gif)   
+   
 ## Features of Stack Visualization
 
 1. Multi File support

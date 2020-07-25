@@ -54,8 +54,8 @@ class Variable:
         if changed:
             str = self.name
             if self.attr:
-                str += "."+self.attr
-            return old, new, str,prev_line
+                str += "." + self.attr
+            return old, new, str, prev_line
 
     def __repr__(self):
         return f"{self.name} ,{self.attr}, {self.val}"
@@ -106,25 +106,27 @@ class Tracer:
             self.local_tracers_stack.append(new_tracer)
             return
         old_tracer = self.local_tracers_stack[-1]
-        # for var in old_tracer.variables:
-        #     var: Variable
-        #     if var.is_global:
-        #         new_tracer.add(var)
-        # for name, attr, val in zip(old_tracer.names, old_tracer.attrs, old_tracer.vals):
-        #     if is_mutable(val):
-        #         for name_new in frame.f_locals:
-        #             if frame.f_locals[name_new] is val:
-        #                 new_tracer.add(name_new, val, attr)
-        #                 print(name, "->", name_new)
+
         for var in old_tracer.variables:
             var: Variable
             if var.is_global:
                 continue
-            if is_mutable(var.val):
+
+            if is_mutable(var.val) or is_mutable(var.obj_val):
                 for name_new in frame.f_locals:
                     if frame.f_locals[name_new] is var.val or frame.f_locals[name_new] is var.obj_val:
-                        new_var = Variable(name_new, var.val, var.attr, var.obj_val)
-                        new_var.history = var.history + [var.name]
+                        if type(var) == Variable:
+                            new_var = Variable(name_new, var.val, var.attr, var.obj_val)
+                            new_var.history = var.history + [var.name]
+                        if type(var) == VisualTree:
+                            new_var = VisualTree(name=name_new, val=var.val, left=var.left, right=var.right,
+                                                 obj=var.obj_val)
+                            new_var.step_count = var.step_count
+                        if type(var) == FullVisualTree:
+                            new_var = FullVisualTree(name=name_new, val=var.val, child=var.child,
+                                                     obj=var.obj_val)
+                            new_var.step_count = var.step_count
+
                         new_tracer.add(new_var)
                         print(var, "->", new_var)
         print("Variables transferred are", new_tracer.variables)
@@ -145,7 +147,14 @@ class Tracer:
                                                                arg)  # changes processed from the local tracer
         self.changes.extend(local_changes)
 
-        for var in globals_found:
+        for var, type_var in globals_found:
+            if type_var:
+                s = type_var
+                type_var, referrer_name = s
+                for global_var in self.global_tracer.variables:
+                    if referrer_name == global_var.name and type_var == type(global_var):
+                        global_var.add_referrer(var)
+                        break
             self.global_tracer.add(var)
             print(var, "global found")
         # print(self.global_tracer.toadd, "toadd", self.global_tracer)
@@ -290,6 +299,7 @@ class LocalsTracer:
         globals_found = []
         while self.toadd:
             name, attr, var_type = self.toadd.pop()
+            new_var = None
             is_global = False
             try:
                 val, obj = get_val(name, attr, frame.f_locals)
@@ -300,6 +310,7 @@ class LocalsTracer:
 
             if var_type:
                 var_type = var_type.split(":")
+
                 if var_type[0] == "btree":
                     left = var_type[1]
                     right = var_type[2]
@@ -309,14 +320,36 @@ class LocalsTracer:
                     child = var_type[1]
                     val_attr = var_type[2]
                     new_var = FullVisualTree(name=name, obj=val, child=child, val=val_attr)
+                if var_type[0] == "ref":
+                    referrer_name = var_type[1]
+                    print("Yes found a ref", referrer_name, name)
+
+                    if var_type[2] == "btree":
+                        treetype = VisualTree
+                    if var_type[2] == "tree":
+                        treetype = FullVisualTree
+
+                    f = False
+                    for var_local in self.variables:
+                        print(var_local.name, referrer_name, type(var_local), treetype)
+                        if var_local.name == referrer_name and type(var_local) == treetype:
+                            new_var = Variable(name, val, attr, obj)
+                            var_local.add_referrer(new_var)
+                            print("attached referrer")
+                            f = True
+                            break
+                    if not f:
+                        globals_found.append((Variable(name, val, attr, obj), (var_type, referrer_name)))
+
             else:
                 new_var = Variable(name, val, attr, obj)
                 new_var.is_global = is_global
             if is_global:
-                globals_found.append(new_var)
+                globals_found.append((new_var, None))
             else:
-                print("adding Variable", name, self)
-                self.add(new_var)
+                if new_var is not None:
+                    print("adding Variable", name, self)
+                    self.add(new_var)
 
         changes = self.check(frame)
         if event == "line" or event == "return":
@@ -413,8 +446,8 @@ def go_file(*args, **kwargs):
     file = kwargs.pop('file')
     f = kwargs.pop('func')
     include_files = kwargs.pop('include_files')
-    w = Tracer(file=file, func=f,include_files=include_files)
-    w.run_func(*args,**kwargs)
+    w = Tracer(file=file, func=f, include_files=include_files)
+    w.run_func(*args, **kwargs)
     print(*w.changes)
     return w
     # file = "/Users/vishweshdkumar/Desktop/gsoc/tests/baka2.py"

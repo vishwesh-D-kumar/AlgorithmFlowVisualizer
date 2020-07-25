@@ -2,7 +2,7 @@ from graphviz import Digraph
 
 import inspect
 import copy
-
+step_count = 0  #tree steps, a static variable to prevent overlaps on
 
 def get_obj(frame, name):
     try:
@@ -40,7 +40,7 @@ class VisualTree:
         # self.root_node = get_obj(kwargs.pop('frame'), self.name)  ##Setting self.root_node
         self.kwargs = kwargs
         self.graph = None
-        self.obj_val = None
+        self.obj_val = self.root_node
         self.node_count = 1
         self.references = []  # Referers for rendering
         self.val = kwargs.pop('val')
@@ -48,13 +48,14 @@ class VisualTree:
         self.right = kwargs.pop('right')
         self.deepcopy_head = self.copy_tree(self.root_node)
         self.is_global = False
+        self.step_count = 0
         # self.graph.node('somehash',label="Link",_attributes={'URL': 'https://github.com/vishwesh-D-kumar/AlgorithmFlowVisualizer/blob/master/LEGEND.png','pos':'-1000,-1000!'})
         # node.attr
 
     def copy_tree(self, root):
         if root is None:
             return None
-        print(root.val, end=" ")
+        # print(root.val, end=" ")
 
         copy_node = DeepCopyNode()
         try:
@@ -71,10 +72,10 @@ class VisualTree:
     def traverseTree(self, curr_node):
         # Inorder traversal of tree
         parentnum = self.node_count
-        for label, referer in self.references:
-            if curr_node is referer:
+        for var in self.references:
+            if curr_node is var.val:
                 self.node_count += 1
-                self.graph.node(str(self.node_count), label=label, _attributes={'shape': 'plaintext'})
+                self.graph.node(str(self.node_count), label=var.name, _attributes={'shape': 'plaintext'})
                 self.graph.edge(str(self.node_count), str(parentnum), "Points To")
         if getattr(curr_node, self.left) is not None:
             self.graph.node(str(self.node_count + 1), str(getattr(getattr(curr_node, self.left), self.val)))
@@ -91,20 +92,24 @@ class VisualTree:
     #     return referer[1].f_locals.get(referer[0])
 
     def render(self):
-
+        global step_count
         self.graph = Digraph(**self.kwargs)
-        self.graph.node(str(self.node_count), str(self.root_node.val))
+        self.graph.node(str(self.node_count), str(getattr(self.root_node, self.val)))
         # print(self.graph.source)
         self.traverseTree(self.root_node)
-        self.graph.render('tree', view=True)
+        self.graph.render(f'output/{self.name}{step_count}',format='png')
+        step_count += 1
 
-    def add_referer(self, var_name, var_frame):
-        self.references.append([var_name, get_obj(var_frame, var_name)])
+    def add_referrer(self,var):
+        print("REFERRER ADDED", "$%")
+        self.references.append(var)
 
-    def check(self,frame,prev_line):
-        self.check_node(self.root_node, self.deepcopy_head)
-        self.copy_tree(self.root_node)
+    def check(self, frame, prev_line):
+        # self.check_node(self.root_node, self.deepcopy_head)
+        # self.copy_tree(self.root_node)
+
         self.render()
+        pass
 
     def check_node(self, root1, root2):
         if root1 is None and root2 is None:
@@ -142,9 +147,10 @@ class FullVisualTree:
         self.child = kwargs.pop('child')
         self.obj_val = None
         # print(self.kwargs)
-        print(self.val,self.child,type(self.root_node),"$%$%")
+        print(self.val, self.child, type(self.root_node), "$%$%")
         # self.deepcopy_head = self.copy_tree(self.root_node)
         self.is_global = False
+        self.step_count = 0
     def copy_tree(self, root):
         if root is None:
             return None
@@ -162,7 +168,7 @@ class FullVisualTree:
             copy_node.child.append(self.copy_tree(v))
         return copy_node
 
-    def check(self,frame,prev_line):
+    def check(self, frame, prev_line):
         self.render()
 
     def check_node(self, root1, root2):
@@ -196,10 +202,12 @@ class FullVisualTree:
         # # return self.check_node(left1, left2) and self.check_node(right1, right2)
 
     def render(self):
+        global step_count
         self.graph = Digraph(**self.kwargs)
         self.traverseTree(self.root_node)
         # print(self.graph.source)
-        self.graph.render('tree', view=True)
+        self.graph.render(f'output/{self.name}{step_count}',format='png')
+        step_count += 1
 
     def traverseTree(self, root):
         print(type(self))
