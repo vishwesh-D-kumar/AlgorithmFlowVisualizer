@@ -34,12 +34,12 @@ class Variable:
     def check(self, frame, prev_line):
 
         if self.is_global:
-            new,obj = get_variable_val(self, frame.f_globals)
+            new, obj = get_variable_val(self, frame.f_globals)
         else:
             try:
-                new,obj = get_variable_val(self, frame.f_locals)
+                new, obj = get_variable_val(self, frame.f_locals)
             except KeyError:
-                new,obj = get_variable_val(self, frame.f_globals)
+                new, obj = get_variable_val(self, frame.f_globals)
                 print("global used with", self.name)
                 self.is_global = True
         old = self.deepcopy_val
@@ -74,7 +74,7 @@ def get_val(name, attr, f_locals):
         val = getattr(obj, attr)
     else:
         val = obj
-    return val,obj
+    return val, obj
 
 
 def get_variable_val(var: Variable, f_locals):
@@ -82,14 +82,19 @@ def get_variable_val(var: Variable, f_locals):
 
 
 class Tracer:
-    def __init__(self, include_files=[]):
+    def __init__(self, file, func, include_files=[]):
         # Add a global tracer
         self.global_tracer = LocalsTracer(None, -1)
         self.local_tracers_stack = []  # Stack of local tracers , 1 per frame
         self.prev_line = 0
         self.include_files = [file.lower() for file in include_files]  # Files to include while tracing
+        file = os.path.abspath(file)  # In case of relative naming
+        file_dir = os.path.dirname(file)
+        self.include_files.append(file_dir)
         # IMP:Does not support case sensitive files right now
         self.changes = []
+        self.file = file
+        self.func = func
 
     def new_frame(self, frame):
         passed_locals = []
@@ -115,7 +120,7 @@ class Tracer:
             if is_mutable(var.val):
                 for name_new in frame.f_locals:
                     if frame.f_locals[name_new] is var.val or frame.f_locals[name_new] is var.obj_val:
-                        new_var = Variable(name_new, var.val, var.attr,var.obj_val)
+                        new_var = Variable(name_new, var.val, var.attr, var.obj_val)
                         new_var.history = var.history + [var.name]
                         new_tracer.add(new_var)
                         print(var, "->", new_var)
@@ -178,6 +183,21 @@ class Tracer:
             print("-----------------")
         print("Changes seen are", *changes)
         # input("Press Enter to continue")
+
+    def run_func(self, *args, **kwargs):
+        """runs function for tracing with given args"""
+
+        mod_name = Path(self.file).stem
+        spec = importlib.util.spec_from_file_location(mod_name, self.file)
+        mod = importlib.util.module_from_spec(spec)
+        file = os.path.abspath(self.file)  # In case of relative naming
+        file_dir = os.path.dirname(file)
+        sys.path.append(file_dir)
+        spec.loader.exec_module(mod)
+        func = getattr(mod, self.func, None)
+        sys.settrace(self.trace)
+        func(*args, **kwargs)
+        sys.settrace(None)
 
 
 class LocalsTracer:
@@ -268,10 +288,10 @@ class LocalsTracer:
             name, attr, var_type = self.toadd.pop()
             is_global = False
             try:
-                val,obj = get_val(name, attr, frame.f_locals)
+                val, obj = get_val(name, attr, frame.f_locals)
 
             except KeyError:
-                val,obj = get_val(name, attr, frame.f_globals)
+                val, obj = get_val(name, attr, frame.f_globals)
                 is_global = True
 
             if var_type:
@@ -286,7 +306,7 @@ class LocalsTracer:
                     val_attr = var_type[2]
                     new_var = FullVisualTree(name=name, obj=val, child=child, val=val_attr)
             else:
-                new_var = Variable(name, val, attr,obj)
+                new_var = Variable(name, val, attr, obj)
                 new_var.is_global = is_global
             if is_global:
                 globals_found.append(new_var)
@@ -388,6 +408,9 @@ def go():
 def go_file(*args, **kwargs):
     file = kwargs.pop('file')
     f = kwargs.pop('func')
+    w = Tracer(file=file, func=f)
+    w.run_func(*args,**kwargs)
+    return w
     # file = "/Users/vishweshdkumar/Desktop/gsoc/tests/baka2.py"
     # f = 'go'
     # file = '/Users/vishweshdkumar/Desktop/gsoc/tests/check_tree.py'
@@ -426,7 +449,7 @@ def go_file(*args, **kwargs):
 
 
 if __name__ == "__main__":
-    v = Variable('a', 1, None,None)
+    v = Variable('a', 1, None, None)
     print(v.name)
     # go()
     w = go_file(file='/Users/vishweshdkumar/Desktop/gsoc/tests/baka2.py', func='go')
