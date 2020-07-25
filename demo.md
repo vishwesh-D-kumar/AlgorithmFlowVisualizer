@@ -63,7 +63,7 @@ sudo apt-get install graphviz
             self.children = []
    # Visualizing BinaryTrees:
       root = Node(2) # watchvar btree:left:right:val root
-   # Adding a referrer to the binary tree
+   # Adding a referrer to the binary tree : only for binary trees
        root_ref = root # watchvar ref:root:btree root_ref
    # Visualizing trees with N nodes:
      root = FullNode(1) # watchvar tree:children:data root
