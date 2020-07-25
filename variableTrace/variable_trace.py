@@ -52,7 +52,10 @@ class Variable:
         self.val = new
         self.obj_val = obj
         if changed:
-            return old, new, self.name, prev_line
+            str = self.name
+            if self.attr:
+                str += "."+self.attr
+            return old, new, str,prev_line
 
     def __repr__(self):
         return f"{self.name} ,{self.attr}, {self.val}"
@@ -87,10 +90,10 @@ class Tracer:
         self.global_tracer = LocalsTracer(None, -1)
         self.local_tracers_stack = []  # Stack of local tracers , 1 per frame
         self.prev_line = 0
-        self.include_files = [file.lower() for file in include_files]  # Files to include while tracing
+        self.include_files = [os.path.abspath(file).lower() for file in include_files]  # Files to include while tracing
         file = os.path.abspath(file)  # In case of relative naming
         file_dir = os.path.dirname(file)
-        self.include_files.append(file_dir)
+        self.include_files.append(file)
         # IMP:Does not support case sensitive files right now
         self.changes = []
         self.file = file
@@ -132,6 +135,7 @@ class Tracer:
 
         if not self.check_in_path(frame):
             return
+        # print(frame.f_lineno,frame.f_code.co_filename,self.include_files)
         if event == "call":
             print("New trace initialized at", frame.f_lineno)
             self.new_frame(frame)
@@ -173,7 +177,7 @@ class Tracer:
             curr_file = frame.f_code.co_filename.replace('\\', '/')
             curr_file = os.path.abspath(curr_file).lower()
 
-            return all([curr_file.startswith(included_file.lower()) for included_file in self.include_files])
+            return True in [curr_file.startswith(included_file.lower()) for included_file in self.include_files]
         return True
 
     def render(self, changes):
@@ -408,8 +412,10 @@ def go():
 def go_file(*args, **kwargs):
     file = kwargs.pop('file')
     f = kwargs.pop('func')
-    w = Tracer(file=file, func=f)
+    include_files = kwargs.pop('include_files')
+    w = Tracer(file=file, func=f,include_files=include_files)
     w.run_func(*args,**kwargs)
+    print(*w.changes)
     return w
     # file = "/Users/vishweshdkumar/Desktop/gsoc/tests/baka2.py"
     # f = 'go'

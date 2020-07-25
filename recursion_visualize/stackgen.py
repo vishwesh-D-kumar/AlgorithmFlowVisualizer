@@ -110,7 +110,7 @@ class StackVisualizer:
             # addingframe for later testing
             # rebuild function
             # self.stack.append([frame, [astor.to_source(arg) for arg in c.lines_func_map[prev_line][0][1]]])
-            self.stack.append([call_made, arg_values, frame.f_lineno])
+            self.stack.append([call_made, arg_values, self.prev_line])
 
             # self.stack.append([])
 
@@ -164,7 +164,7 @@ class StackVisualizer:
             called_as, args, line_no = call
             call_stack += "{"
             call_stack += f'<f{i}> {called_as.strip()}'
-            call_stack += '| ' + 'line:' + str(i)
+            call_stack += '| ' + 'line:' + str(line_no)
             formatted_args = str(args).strip()
             formatted_args=formatted_args.replace('{','\{')
             formatted_args=formatted_args.replace('}','\}')

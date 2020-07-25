@@ -7,7 +7,7 @@ go_file([
     [0, 1, 1, 1, 0],
     [0, 0, 0, 1, 1]
 
-], file='demo_files/demo1.py', func='go')
+], file='demo_files/demo1.py', func='go',include_files = ['demo_files/demo2.py'])
 
 # go([
 #     [1, 0, 1, 1, 0],
