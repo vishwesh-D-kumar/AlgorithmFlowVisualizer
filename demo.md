@@ -134,17 +134,20 @@ sudo apt-get install graphviz
     
     
    
-   ### 3 sample run has been added to as [demo.py](/demo.py) 
+   ### 3 sample runs have been added to  [demo.py](/demo.py) 
+
    
 
-   * Run it using python3 demo.py
+   * Run it using ```python3 demo.py > log```
    
-   * The source code being debugged is in demo_files , the function 'go' in [demo1.py](demo_files/demo1.py)
+   * The source code being debugged is in [demo_files](/demo_files) , the function 'go' in [demo1.py](demo_files/demo1.py)
    
    * Solution.findPath finds if a path exists from 0,0 to the bottom right corner of the matrix , considering 0 to be an obstacle and 1 to be 
    a traversable block, using dfs
    
-
+   * The stack trace would be available as individual images in [demo_files/output](demo_files/output)
+   
+   * For tree demo , the go to [/output](/output). The file being debugged in it is [tree_demo.py](/demo_files/tree_demo.py) 
    
    ##DEMO
 A sample gif is attached below ,showing the stack trace visualized across files , created by the demo
