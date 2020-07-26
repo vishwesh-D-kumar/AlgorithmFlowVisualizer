@@ -51,7 +51,7 @@ sudo apt-get install graphviz
     
     # Attributes of classes 
     
-    node.neighbours = [node1,node2] #watchvar node.neighbours
+    node.neighbours = [node1,node2] # watchvar node.neighbours
    class Node:
         def __init__(self, val):
             self.val = val
