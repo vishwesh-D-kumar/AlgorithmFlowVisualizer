@@ -52,10 +52,12 @@ class Variable:
         self.val = new
         self.obj_val = obj
         if changed:
-            str = self.name
+            str1 = self.name
             if self.attr:
-                str += "." + self.attr
-            return old, new, str, prev_line
+                str1 += "." + self.attr
+            curr_file = frame.f_code.co_filename.replace('\\', '/')
+            curr_file = os.path.abspath(curr_file).lower()
+            return str1,old, self.deepcopy_val, prev_line,curr_file
 
     def __repr__(self):
         return f"{self.name} ,{self.attr}, {self.val}"
@@ -290,6 +292,7 @@ class LocalsTracer:
         if is_tracer_global:
             try:
                 changes = self.check(frame)
+                self.prev_line = frame.f_lineno
                 return changes, []
             except KeyError:  # Variable not a global in this file
                 pass

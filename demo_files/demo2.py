@@ -1,4 +1,4 @@
-# import helper
+import helper
 
 
 class Solution:
@@ -10,7 +10,7 @@ class Solution:
         self.dp = [[0] * m for i in range(n)]  # watchvar self.dp
         self.dp[-1][-1] = 4
         ans = self.hasPath(0, 0)
-        # helper.DEBUG = 0
+        helper.DEBUG = 0
         return ans
 
     def hasPath(self, i, j):

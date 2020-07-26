@@ -32,12 +32,13 @@ sudo apt-get install graphviz
 1. Navigate to the repo directory
 
 2. ```python
+   from pprint import pprint
    from variableTrace.variable_trace import Tracer
    filepath = 'your/filepath/here'
-   func = 'name of function you want visualize stack for'
+   func = 'name of function to start trace at'
    w = Tracer(file=filepath,func=func,include_files = ['Files to include'])
    w.run_func("Args here to pass to function")
-   print(w.changes) #Print all changes in format of (prev_val , new_val, name_of_variable,line_at which change is there)
+   pprint(w.changes) #Print all changes in format of (name_of_variable,prev_val , new_val,line_at ,file at which change is there)
 
    
    ```
