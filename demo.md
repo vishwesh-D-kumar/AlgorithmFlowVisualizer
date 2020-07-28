@@ -56,7 +56,13 @@ In [demo_files](demo_files) a sample recursive path finding algorithm dfs is use
 Important Limitations :
 
 * Multiline expressions are not supported  of the sort ```rec(i,j) = rec(i-1,j-1) + rec(i-2,j-2)```.
-One function call per line is supported. 
+One function call per line is supported. Calls of these sort can be broken down into
+
+``` 
+    s1 = rec(i-1,j-1) 
+    s2 = rec(i-1,j-1)
+    rec(i,j) = s1 + s2
+```
  
 
 
@@ -64,12 +70,12 @@ One function call per line is supported.
 
 The variable tracer was made to watch _selected_ variables by users. The intention is to
 watch how and where the variable is being changed in runtime , something which a lot of modern debuggers 
-require done manually. This can be quite tedious in specially a project environment.
+require done manually. This can be quite tedious in specially when multiple files are involved.
 
 The variable tracer covers the following
 1. Variables can be marked using interactive comments , and added to watching
 
-2. Attributes can be marked for tracing , allowing for classes to be traced.(See limitations for more)
+2. Attributes can be marked for tracing relative to classes also , when specified.(See limitations for more)
 
 3. Variables , once added to tracing , will be traced through subsequent function calls also , without being 
 required to be marked once again. 
@@ -80,7 +86,7 @@ visualizations , via interactive comments. They will be visualized at every step
 
 ## Features : 
 
-1. Attribute tracing through function calls :
+1. Tracing through function calls :
     After a mutable object has been marked for tracing 
     it will be traced through all incoming function calls (example, self.dp in demo2.py)
 
@@ -102,8 +108,8 @@ Can considerably save time.
 
 Important Limitations :
 
-* The attribute based tracing works only for 1 attribute of the referenced object :
- ie : it wont work for comments like ```watchvar self.x.y``` .
+* The attribute based tracing works cannot to be extended to multiple levels of attributes (as in , attributes of attributes cant be marked for tracing) of the referenced object :
+ ie : it wont work for comments like ```watchvar self.x.y```.
  
     
 ### Steps to run variable Tracer
