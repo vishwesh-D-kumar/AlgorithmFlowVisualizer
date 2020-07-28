@@ -121,7 +121,7 @@ class StackVisualizer:
                 print(self.stack.pop(), "popped with return", arg)
                 print("return condition used ", return_condition)
         curr_file = frame.f_code.co_filename.replace('\\', '/')
-        curr_file = os.path.abspath(curr_file).lower()
+        curr_file = os.path.abspath(curr_file)
         self.prev_line = frame.f_lineno
         self.prev_file = curr_file
         self.prev_event = event

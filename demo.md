@@ -7,6 +7,33 @@ pip3 install - r requirements.txt
 sudo apt-get install graphviz
 ```
 
+
+## The StackVisualizer :
+
+The stack visualizer is build with the idea to help others understand the 
+algorithm flow for recursive functions 
+
+It is implemented to show the following :
+
+1. How was the function called from the previous function?
+
+2. What are the argument values it was called with ?
+
+3. What condition was used as a return value (for example which base case in a recursion was used?)
+
+4. What was the return value?
+
+7. Functionality to pass arguments to function where trace is being initiated
+
+## Features of Stack Visualization
+
+1. Multi File support
+
+2. Since call stack saved at every instance , this makes the timeline of it extremely acessible , able to go back and forth between the steps
+
+
+In [demo_files](demo_files) a sample recursive path finding algorithm dfs is used .
+ 
 ### Steps to run the StackVisualizer 
 
 1. Navigate to the repo directory
@@ -26,7 +53,59 @@ sudo apt-get install graphviz
 
 4. All files will be created in the output dir in the same path as that of file
 
+Important Limitations :
 
+* Multiline expressions are not supported  of the sort ```rec(i,j) = rec(i-1,j-1) + rec(i-2,j-2)```.
+One function call per line is supported. 
+ 
+
+
+## Variable Tracer :
+
+The variable tracer was made to watch _selected_ variables by users. The intention is to
+watch how and where the variable is being changed in runtime , something which a lot of modern debuggers 
+require done manually. This can be quite tedious in specially a project environment.
+
+The variable tracer covers the following
+1. Variables can be marked using interactive comments , and added to watching
+
+2. Attributes can be marked for tracing , allowing for classes to be traced.(See limitations for more)
+
+3. Variables , once added to tracing , will be traced through subsequent function calls also , without being 
+required to be marked once again. 
+
+4. Support for visualization of trees. Special types of variables such as trees can be added for
+visualizations , via interactive comments. They will be visualized at every step.
+
+
+## Features : 
+
+1. Attribute tracing through function calls :
+    After a mutable object has been marked for tracing 
+    it will be traced through all incoming function calls (example, self.dp in demo2.py)
+
+2. Globals tracing :
+    Supports tracing of global variables 
+
+3. Variable tracing across modules : can trace attributes of modules 
+    (as shown in the demo with helper.DEBUG)
+
+
+4. Tree Visualization on every step 
+
+5. Adding referrers for Tree Visualizations, to see pointers 
+
+6. Functionality to add files to check for , instead of initiating a trace for all files, which the file calls upon .
+Can considerably save time. 
+
+7. Functionality to pass arguments to function where trace is being initiated
+
+Important Limitations :
+
+* The attribute based tracing works only for 1 attribute of the referenced object :
+ ie : it wont work for comments like ```watchvar self.x.y``` .
+ 
+    
 ### Steps to run variable Tracer
 
 1. Navigate to the repo directory
@@ -106,33 +185,14 @@ sudo apt-get install graphviz
    * include_files -> Files to include .To not initiate trace for all files, which may be quite a trace for 
    large projects. If a directory has been provided in paths , then it matches all files in the directories
         By default , the file provided is included by default. 
-## Features : 
-
-1. Attribute tracing through function calls :
-    After a mutable object has been marked for tracing 
-    it will be traced through all incoming function calls (example, self.dp in demo2.py)
-
-2. Globals tracing :
-    Supports tracing of global variables 
-
-3. Variable tracing across modules : can trace attributes of modules 
-    (as shown in the demo with helper.DEBUG)
-
-
-4. Tree Visualization on every step 
-
-5. Adding referrers for Tree Visualizations, to see pointers 
-
-
-    
-    
    
-   Important Limitations :
-   
-   * The attribute based tracing works only for 1 attribute of the referenced object :
-     ie : it wont work for comments like ```watchvar self.x.y```
-     
+   Include files checks the path via lowercase conversion of file path , so case matching is not supported as of now.
     
+4. All outputs produced in tree_visualizations will be saved in [output](/output). Do clear it before running once again.
+ 
+   
+
+ # For a demo:
     
    
    ### 3 sample runs have been added to  [demo.py](/demo.py) 
@@ -168,23 +228,16 @@ For every return :
 
 2. The return value
 
-## A sample output specifically for trees is added as [tree_demo.py](/demo_files/tree_demo.py)
+
+![Demo](demo_files/demo.gif) 
+   
+
+## A sample output gif for trees is added . It runs  [tree_demo.py](/demo_files/tree_demo.py) as a sample run
 
 This code corresponds to multiple insertions in a binary search tree, and marks x as the pointer to follow to the leaf node on which to enter
 
 ![demo_tree](/demo_files/tree_demo.gif)   
    
-## Features of Stack Visualization
-
-1. Multi File support
-
-2. Since call stack saved at every instance , this makes the timeline of it extremely acessible , able to go back and forth between the steps
 
 
-![Demo](demo_files/demo.gif) 
    
-   
-Important Limitations :
-
-1. Multiline expressions are not supported  of the sort ```rec(i,j) = rec(i-1,j-1) + rec(i-2,j-2)```
- 
