@@ -8,7 +8,7 @@ The flowchart visualizer attempts to do the following : Given a function to visu
 Then , it shows the control flow jumps being made with every step . This aims to give the programmer a great deal of help in 
 visualizing the flow of a algorithm , and how they actually behave given an input.
 
-###For Phase 2 work : Ie , the stack visualizer , the variable tracer : go to [demo.md](demo.md)
+### For Phase 2 work : Ie , the stack visualizer , the variable tracer : go to [demo.md](demo.md)
 
 #### For instructions on how to run , go to the bottom!.The file [connect.py](/connect.py) contains a sample run at the end of the file
 

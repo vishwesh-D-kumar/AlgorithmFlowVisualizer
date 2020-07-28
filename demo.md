@@ -150,7 +150,7 @@ sudo apt-get install graphviz
    
    * For tree demo , the go to [/output](/output). The file being debugged in it is [tree_demo.py](/demo_files/tree_demo.py) 
    
-   ##DEMO
+   ## DEMO
 A sample gif is attached below ,showing the stack trace visualized across files , created by the demo
 
 
