@@ -79,12 +79,12 @@ class VisualTree:
                 self.graph.edge(str(self.node_count), str(parentnum), "Points To")
         if getattr(curr_node, self.left) is not None:
             self.graph.node(str(self.node_count + 1), str(getattr(getattr(curr_node, self.left), self.val)))
-            self.graph.edge(str(self.node_count + 1), str(parentnum), label="Left")
+            self.graph.edge(str(parentnum),str(self.node_count + 1), label=self.left)
             self.node_count += 1
             self.traverseTree(getattr(curr_node, self.left))
         if getattr(curr_node, self.right) is not None:
             self.graph.node(str(self.node_count + 1), str(getattr(getattr(curr_node, self.right), self.val)))
-            self.graph.edge(str(self.node_count + 1), str(parentnum), label="Right")
+            self.graph.edge(str(parentnum),str(self.node_count + 1), label=self.right)
             self.node_count += 1
             self.traverseTree(getattr(curr_node, self.right))
 

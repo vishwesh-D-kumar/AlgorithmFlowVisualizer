@@ -9,7 +9,7 @@ import inspect
 import copy
 import abc
 from variableTrace.treevisualize import VisualTree, FullVisualTree
-
+from pprint import pprint
 # from treevisualize import VisualTree, FullVisualTree
 ALLOWED_EVENTS = {"call", "line", "return"}
 DISALLOWED_FUNC_NAMES = {"<genexpr>", "<listcomp>", "<dictcomp>", "<setcomp>"}
@@ -43,7 +43,6 @@ class Variable:
                 print("global used with", self.name)
                 self.is_global = True
         old = self.deepcopy_val
-        print(old, new, "$$$")
         changed = False
         if new != old:
             print("Variable changed from", old, "to", new, "on line", prev_line)
@@ -451,7 +450,7 @@ def go_file(*args, **kwargs):
     include_files = kwargs.pop('include_files')
     w = Tracer(file=file, func=f, include_files=include_files)
     w.run_func(*args, **kwargs)
-    print(*w.changes)
+    pprint(w.changes)
     return w
     # file = "/Users/vishweshdkumar/Desktop/gsoc/tests/baka2.py"
     # f = 'go'
