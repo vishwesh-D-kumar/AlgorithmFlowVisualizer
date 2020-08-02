@@ -1,9 +1,9 @@
 from pprint import pprint
 import os
 import ast
-from flowgenerator import generate_flow
-from staticfg import CFGBuilder, Block, Link
-from control_models import DecisionBlock,LoopBlock
+# from flowgenerator import generate_flow
+from flowgen.staticfg import CFGBuilder, Block, Link
+from flowgen.control_models import DecisionBlock,LoopBlock
 import importlib.util
 import sys
 from pathlib import Path
@@ -42,6 +42,7 @@ class FlowGen:
 
         pprint([(block.used, block.at()) for block in self.cfg.net_blocks])
         print(self.timeline)
+        self.final_dict= {}
 
     def create_output_dir(self):
         """

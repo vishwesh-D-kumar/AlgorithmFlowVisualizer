@@ -1,4 +1,4 @@
-from staticfg import Block
+from flowgen.staticfg import Block
 
 
 class DecisionBlock(Block):
