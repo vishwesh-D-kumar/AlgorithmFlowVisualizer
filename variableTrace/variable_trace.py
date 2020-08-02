@@ -99,6 +99,9 @@ class Tracer:
         self.changes = []
         self.file = file
         self.func = func
+        self.final_dict = {}
+        self.step = 1
+        self.prev_file =file
 
     def new_frame(self, frame):
         passed_locals = []
@@ -139,6 +142,7 @@ class Tracer:
         if not self.check_in_path(frame):
             return
         # print(frame.f_lineno,frame.f_code.co_filename,self.include_files)
+        self.final_dict[self.step] = {'line':self.prev_line,'changes':[],'images':[],'file':self.prev_file}
         if event == "call":
             print("New trace initialized at", frame.f_lineno)
             self.new_frame(frame)
@@ -146,6 +150,13 @@ class Tracer:
 
         local_changes, globals_found = curr_local_tracer.trace(frame, event,
                                                                arg)  # changes processed from the local tracer
+
+        for eve in local_changes:
+            if type(eve) == str:
+                self.final_dict[self.step]['images'].append(eve)
+            else:
+                self.final_dict[self.step]['changes'].append(eve)
+
         self.changes.extend(local_changes)
 
         for var, type_var in globals_found:
@@ -162,9 +173,16 @@ class Tracer:
         # print("Tracing globals")
         global_changes, globals_found = self.global_tracer.trace(frame, event, arg)  # Checking global changes
         # print("Done with global tracing")
+        for eve in global_changes:
+            if type(eve) == str:
+                self.final_dict[self.step]['images'].append(eve)
+            else:
+                self.final_dict[self.step]['changes'].append(eve)
+
         self.changes.extend(global_changes)
 
         self.prev_line = frame.f_lineno
+        self.prev_file = os.path.abspath(frame.f_code.co_filename)
         if event == "return":
             # Remove current tracer from stack
             self.local_tracers_stack.pop()
@@ -172,6 +190,7 @@ class Tracer:
             # return
         if local_changes or global_changes:
             self.render(local_changes + global_changes)
+        self.step +=1
         return self.trace
 
     def check_in_path(self, frame):
@@ -186,7 +205,7 @@ class Tracer:
         if self.include_files:
             curr_file = frame.f_code.co_filename.replace('\\', '/')
             curr_file = os.path.abspath(curr_file).lower()
-
+            print(curr_file,self.include_files)
             return True in [curr_file.startswith(included_file.lower()) for included_file in self.include_files]
         return True
 
@@ -212,6 +231,7 @@ class Tracer:
         sys.settrace(self.trace)
         func(*args, **kwargs)
         sys.settrace(None)
+        
 
 
 class LocalsTracer:
@@ -262,6 +282,8 @@ class LocalsTracer:
         #         process_change(new, self.deepcopy_vals[idx], self.names[idx], self.prev_line, changes)
         #     self.vals[idx] = new
         #     self.deepcopy_vals[idx] = copy.deepcopy(new)  # Deepcopying to avoid mutability errors
+        weights = {VisualTree:1,FullVisualTree:2}
+        self.variables.sort(key = lambda x:weights.get(type(x),0))
         for var in self.variables:
             change = var.check(frame, self.prev_line)
             if change:

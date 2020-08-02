@@ -10,8 +10,11 @@ import copy
 import os
 import graphviz as gv
 from pprint import pprint
+from pathlib import Path
+import abc
 # from memory_profiler import profile
 DISALLOWED_FUNC_NAMES = {"<genexpr>", "<listcomp>", "<dictcomp>", "<setcomp>"}
+STDLIB_DIR = Path(abc.__file__).parent
 # Making a Nodevisitor to save calls
 def merge_conditionals(prev, new):
     if not new:
@@ -76,15 +79,29 @@ class StackVisualizer:
         self.prev_event = "line" #Avoiding tracing first function call, trivial
         self.prev_file = filepath
         self.step = 1
+        self.final_dict = {}
+        self.stdlib_cache = {}
         pprint(self.calls_tracer.lines_func_map)
         pprint(self.calls_tracer.lines_conditional_map)
 
+    def is_stdlib(self, path):
+        """
+        helper function Taken from ccextractor/vardbg.
+        checks if function stdlib
+        """
+        if path in self.stdlib_cache:
+            return self.stdlib_cache[path]
+        else:
+            # Compare parents with known stdlib path
+            status = STDLIB_DIR in Path(path).parents
+            self.stdlib_cache[path] = status
+            return status
     def trace_callback(self, frame, event, arg):
         # print("#########")
         # pprint(self.stack)
         # print("##########")
-        if self.prev_event == "call" or self.prev_event == "return":
-            self.render()
+        # if self.prev_event == "call" or self.prev_event == "return":
+        #     self.render()
             # input("Enter To continue")
         # print('###')
         # print(frame)
@@ -95,7 +112,8 @@ class StackVisualizer:
         if event == "call" and self.prev_line != 0:
             if frame.f_code.co_name in DISALLOWED_FUNC_NAMES:
                 return
-
+            if self.is_stdlib(frame.f_code.co_filename):
+                return
             if self.prev_file not in self.calls_tracer_cache:
                 self.calls_tracer_cache[self.prev_file] = CallsVisitor(self.prev_file)
             self.calls_tracer = self.calls_tracer_cache[self.prev_file]
@@ -122,6 +140,8 @@ class StackVisualizer:
                 print("return condition used ", return_condition)
         curr_file = frame.f_code.co_filename.replace('\\', '/')
         curr_file = os.path.abspath(curr_file)
+        if event == "call":
+            self.render()
         self.prev_line = frame.f_lineno
         self.prev_file = curr_file
         self.prev_event = event
@@ -147,10 +167,11 @@ class StackVisualizer:
         """
         output_dir = os.path.dirname(self.filepath)
         try:
-            os.mkdir(f'./{output_dir}/output')
+            os.mkdir(f'./{output_dir}/stack')
+
         except:
             pass
-        return os.path.abspath(f'{output_dir}/output')
+        return os.path.abspath(f'{output_dir}/stack')
 
     # @profile
     def render(self,ret_val=None,ret_condition=None):
@@ -184,6 +205,7 @@ class StackVisualizer:
         graph.node('call_stack', call_stack)
         print("rendered at",f'{self.output_dir}/call_stack{self.step}')
         graph.render(filename=f'{self.output_dir}/call_stack{self.step}',view=False)
+        self.final_dict[self.step]= {'line':self.prev_line,'images':f'call_stack{self.step}','return':True if ret_condition is not None else False}
         self.step += 1
 
 
@@ -244,7 +266,7 @@ def go(*args,**kwargs):
     # print(flow)
     s = StackVisualizer(filepath, func)
     s.generate_flow(*args,**kwargs)
-
+    return s
 
 if __name__ == "__main__":
     go()

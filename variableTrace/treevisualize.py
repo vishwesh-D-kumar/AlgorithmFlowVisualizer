@@ -94,11 +94,14 @@ class VisualTree:
     def render(self):
         global step_count
         self.graph = Digraph(**self.kwargs)
+        self.graph.attr(label= "Graph of variable: "+self.name)
         self.graph.node(str(self.node_count), str(getattr(self.root_node, self.val)))
         # print(self.graph.source)
         self.traverseTree(self.root_node)
         self.graph.render(f'output/{self.name}{step_count}',format='png')
+        filename = f'{self.name}{step_count}.png'
         step_count += 1
+        return filename
 
     def add_referrer(self,var):
         print("REFERRER ADDED", "$%")
@@ -108,8 +111,9 @@ class VisualTree:
         # self.check_node(self.root_node, self.deepcopy_head)
         # self.copy_tree(self.root_node)
 
-        self.render()
-        pass
+        print(self.root_node,'Check this',prev_line)
+        return self.render()
+
 
     def check_node(self, root1, root2):
         if root1 is None and root2 is None:
@@ -169,7 +173,7 @@ class FullVisualTree:
         return copy_node
 
     def check(self, frame, prev_line):
-        self.render()
+        return self.render()
 
     def check_node(self, root1, root2):
         pass
@@ -204,13 +208,17 @@ class FullVisualTree:
     def render(self):
         global step_count
         self.graph = Digraph(**self.kwargs)
+        self.graph.attr(label= self.name)
         self.traverseTree(self.root_node)
         # print(self.graph.source)
         self.graph.render(f'output/{self.name}{step_count}',format='png')
+        
+        filename = f'{self.name}{step_count}.png'
         step_count += 1
+        return filename
 
     def traverseTree(self, root):
-        print(type(self))
+        # print(type(self))
         self.graph.node(str(self.node_count), str(getattr(root, self.val)))
         # print(self.graph.source)
         parentnum = self.node_count
@@ -225,7 +233,7 @@ class FullVisualTree:
             self.node_count += 1
             child_num = self.node_count
             self.traverseTree(v)
-            self.graph.edge(str(child_num), str(parentnum))
+            self.graph.edge(str(parentnum),str(child_num))
 
 
 class Node:
@@ -283,5 +291,5 @@ def check_full_tree():
 
 
 if __name__ == "__main__":
-    # check_binary_tree()
+    check_binary_tree()
     check_full_tree()
