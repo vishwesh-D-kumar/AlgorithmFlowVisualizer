@@ -1,0 +1,21 @@
+digraph "cluster/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/flowchart_gen/leetcode_tests/KthSsmallestElement/run.py" {
+	graph [bgcolor=transparent]
+	node [style=filled]
+	edge [color=white]
+	subgraph clusterkthSmallest {
+		graph [bgcolor=transparent]
+		node [style=filled]
+		edge [color=white]
+		31 [label="while root:
+" fillcolor=lightblue4 shape=oval]
+		34 [label="root = stack.pop()
+k -= 1
+" fillcolor=lightblue shape=rect]
+		"34_calls" [label="stack.pop" shape=box3d]
+		34 -> "34_calls" [label=calls style=dashed]
+		43 [label="if k == 0:
+" fillcolor=lightblue4 shape=diamond]
+		34 -> 43 [label="" color=black]
+		31 -> 34 [label="(not root)" color=red]
+	}
+}

@@ -1,0 +1,8 @@
+digraph "Call Stack" {
+	graph [size="8,5!"]
+	node [shape=record]
+	return_node [label="Condition used : No Test
+ Return Value : True" color=red shape=ellipse]
+	call_stack:f1 -> return_node [color=red]
+	call_stack [label="{{<f0> s.findPath()| line:51| args \{\}}|{<f1> self.hasPath(0, 0)| line:12| args \{'i': 0, 'j': 0\}}}"]
+}

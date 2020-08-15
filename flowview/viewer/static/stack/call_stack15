@@ -1,0 +1,5 @@
+digraph "Call Stack" {
+	graph [bgcolor=transparent]
+	node [shape=record style=filled]
+	call_stack [label="{{<f0> go(matr)| line:59| args \{'matrix': \[\[1, 0, 1\], \[1, 1, 0\], \[0, 1, 1\]\]\}}|{<f1> sol.findPath()| line:9| args \{\}}}" fillcolor=lightblue]
+}

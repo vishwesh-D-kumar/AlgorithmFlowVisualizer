@@ -1,0 +1,161 @@
+{% load static %}
+<head><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<!-- <style type="text/css">
+pre.code {  white-space: pre-wrap;}
+pre.code:before {  counter-reset: listing;}
+pre.code code {  counter-increment: listing;}
+pre.code code::before {  content: counter(listing) ". ";  display: inline-block;}  </style> -->
+	<style type="text/css">
+		html,body {
+  height: 100%;
+				}
+	.full-text {
+  height: 100%;
+}
+		.top-bar{
+  height:30%;
+  overflow: auto;
+			padding-left: 20px;
+}
+		.mid-bar{
+  height:50%;
+  overflow: auto;
+}
+		.bottom-row{
+		  height:20%;
+  overflow: auto;
+}
+		
+
+	</style>
+</head>
+<body class="bg-dark">
+<div class="text-secondary full-text">
+<div class="row top-bar">
+	<section class="w-50 pre-scrollable">
+		<div class="btn-group btn-group-toggle" data-toggle="buttons">
+			{% if show_all_vars == 2 %}
+		  <label class="btn btn-secondary active ">
+			  {% else %}
+			  <label class="btn btn-secondary">
+				  {% endif %}
+		    <a href="step?step={{curr_step}}&all_vars=0" class="text-warning"> All Variables
+		    </a>
+		  </label>
+			  {% if show_all_vars == 1 %}
+			  <label class="btn btn-secondary active ">
+				  {% else %}
+		  <label class="btn btn-secondary">
+			  {% endif %}
+		    <a href="step?step={{curr_step}}&all_vars=0" class="text-warning"> 
+		    	Variable Changes seen 
+		    </a>
+		  </label>
+		</div>
+	{% if  show_all_vars == 2 %}
+	<table class = "table  table-dark table-bordered pre-scrollable">
+	<thead>
+		<tr>
+			<th scope="col"> Name </th>
+			<th scope="col"> Current Val</th>
+		</tr>
+
+	</thead>
+	<tbody>
+	
+	{% for name,value  in all_vars %}
+	<tr>
+		<th scope="row">{{ name }}</th>
+		<td>{{ value }}</td> 
+	</tr>
+	{% endfor %}
+	</tbody>
+	</table>
+	{% else %}
+
+		<table class = "table  table-dark table-bordered ">
+	<thead>
+		<tr>
+			<th scope="col"> Name </th>
+			<th scope="col"> Previous Value</th>
+			<th scope="col"> New Value</th>
+		</tr>
+
+	</thead>
+	<tbody>
+	
+	{% for name,prev,new,line,file  in var_changes %}
+	<tr>
+		<th scope="row">{{ name }}</th>
+		<td>{{ prev }}</td> 
+		<td>{{ new }}</td>
+	</tr>
+	{% endfor %}
+	</tbody>
+	</table>
+	{% endif %}
+	</section>
+
+	{% for img in tree_images %}
+		<div class="pre-scrollable">
+
+			<img src="{% static ''|add:img %}"></img>
+		<!-- <img src="tree.png"></img> -->
+		</div>
+	{% endfor %}
+</div>
+<div class="d-flex justify-content-around mid-bar">
+	<div class="pre-scrollable">
+		<h5 class="card-title text-warning">Current Stack</h5>
+	<img src="{% static ''|add:stack_images %}"></img>
+	</div>
+	<div>
+		<h5 class="card-title text-warning">Source Code</h5>
+	<div class="pre-scrollable position-relative " id = "code_div">
+
+	<pre class="text-secondary">
+<!-- {% if forloop.counter == curr_line %}
+<a id = "curr_exec_line" style="color:red;">{{ line }}</a>
+{{ line }}
+{% else %}
+{{ line }}
+{% endif %} -->
+{% for line in source_code %}
+{% if forloop.counter == curr_line %}<a id = "curr_exec_line" style="color:red;">{{forloop.counter}}.{{ line }}</a>{% else %}{{forloop.counter}}.{{ line }}{% endif %}
+{% endfor %}
+	</pre>
+	</div>
+	</div>
+	<div class="pre-scrollable ml0 mr0" style="width: 35rem">
+	<!-- <img src="{{ stack_images }}"></img> -->
+	<img src="{% static ''|add:flowchart_images %}"></img>
+	<!-- <img src="stack.png"></img> -->
+	</div>
+
+
+</div>
+	<div class="d-flex h-25">
+<div class="card bg-dark text-warning w-50" >
+	<h5 class="card-title">Program Output</h5>
+	<div class="pre-scrollable h-30">
+	<pre class="text-white">{{ curr_output }}</pre>
+	</div>
+</div>
+		<div class="w-25">
+<a href="step?step={{curr_step|add:1}}&all_vars=0" class="btn btn-primary  btn-block btn-lg " >Next Step {{ curr_step|add:1 }}</a>
+			</div>
+		<div class="w-25">
+<a href="step?step={{curr_step|add:'-1'}}&all_vars=0" class="btn btn-primary  btn-block btn-lg " >Previous Step {{ curr_step|add:'-1' }}</a>
+	</div>
+		</div>
+	</div>
+</body>
+	<script>
+	  // alert( 'Hello, world!' );
+	  document.getElementById('code_div').scrollTop = 0;
+	  var myElement = document.getElementById('curr_exec_line');
+	  var topPos = myElement.offsetTop;
+	  // alert(document.getElementById('code_div').scrollTop)
+	  document.getElementById('code_div').scrollTop = topPos;
+	  // document.getElementById('curr_exec_line').scrollIntoView(true);
+	</script>

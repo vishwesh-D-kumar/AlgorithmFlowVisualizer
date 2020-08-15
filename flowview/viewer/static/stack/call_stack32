@@ -1,0 +1,8 @@
+digraph "Call Stack" {
+	graph [bgcolor=transparent]
+	node [shape=record style=filled]
+	return_node [label="Condition used : No Test
+ Return Value : None" color=lightblue4 shape=ellipse]
+	call_stack:f0 -> return_node
+	call_stack [label="{{<f0> Node(2)| line:39| args \{'data': 2\}}}" fillcolor=lightblue]
+}

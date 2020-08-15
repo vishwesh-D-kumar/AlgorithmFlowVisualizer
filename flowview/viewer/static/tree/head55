@@ -1,0 +1,14 @@
+digraph {
+	graph [bgcolor=transparent]
+	node [fillcolor=lightblue style=filled]
+	label="Graph of variable: head"
+	24 [label=3]
+	25 [label=1]
+	24 -> 25 [label=left]
+	26 [label=root fillcolor=lightblue4 shape=doublecircle]
+	26 -> 25 [label="Points To"]
+	27 [label=2]
+	25 -> 27 [label=right]
+	28 [label=4]
+	24 -> 28 [label=right]
+}

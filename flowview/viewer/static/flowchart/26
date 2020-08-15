@@ -1,0 +1,26 @@
+digraph "cluster/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/djangotrials/demo_files/demo1.py" {
+	graph [bgcolor=transparent]
+	node [style=filled]
+	edge [color=white]
+	subgraph clusterinorder {
+		graph [bgcolor=transparent]
+		node [style=filled]
+		edge [color=white]
+		17 [label="ans = self.__str__()
+" fillcolor=lightblue shape=rect]
+		"17_calls" [label="self.__str__" shape=box3d]
+		17 -> "17_calls" [label=calls style=dashed]
+		46 [label="if self.nextr is not None:
+" fillcolor=lightblue4 shape=diamond]
+		18 [label="ans += self.__str__()
+" fillcolor=lightblue shape=rect]
+		"18_calls" [label="self.__str__" shape=box3d]
+		18 -> "18_calls" [label=calls style=dashed]
+		19 [label="if self.nextl is not None:
+" fillcolor=lightblue4 shape=diamond]
+		18 -> 19 [label="" color=black]
+		46 -> 18 [label="self.nextr is not None" color=black]
+		46 -> 19 [label="(self.nextr is None)" color=black]
+		17 -> 46 [label="" color=black]
+	}
+}

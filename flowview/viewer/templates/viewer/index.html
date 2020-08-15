@@ -1,0 +1,7 @@
+<form action = '/viewer/run_tracer' method="post">
+	{% csrf_token %} 
+	<input type="text" name="file">
+	<input type="text" name="func"><br>
+	<input type="submit" value = "Submit file, func">
+
+</form>

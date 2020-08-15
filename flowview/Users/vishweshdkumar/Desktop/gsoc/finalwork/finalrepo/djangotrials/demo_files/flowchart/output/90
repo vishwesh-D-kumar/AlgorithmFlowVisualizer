@@ -1,0 +1,100 @@
+digraph "cluster/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/djangotrials/demo_files/demo2.py" {
+	graph [bgcolor=darkgray label="/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/djangotrials/demo_files/demo2.py"]
+	node [style=filled]
+	edge [color=white]
+	1 [label="def __init__(self, matrix):...
+def findPath(self):...
+def hasPath(self, i, j):...
+def main():...
+" fillcolor=lightblue shape=rect]
+	subgraph cluster__init__ {
+		graph [bgcolor=darkgray label=__init__]
+		node [style=filled]
+		edge [color=white]
+		3 [label="self.matrix = matrix
+self.dp = []
+" fillcolor=lightblue shape=rect]
+	}
+	subgraph clusterfindPath {
+		graph [bgcolor=darkgray label=findPath]
+		node [style=filled]
+		edge [color=white]
+		6 [label="n, m = len(self.matrix), len(self.matrix[0])
+self.dp = [([0] * m) for i in range(n)]
+self.dp[-1][-1] = 4
+ans = self.hasPath(0, 0)
+return ans
+" fillcolor=lightblue shape=rect]
+		"6_calls" [label="len
+len
+range
+self.hasPath" shape=box3d]
+		6 -> "6_calls" [label=calls style=dashed]
+	}
+	subgraph clusterhasPath {
+		graph [bgcolor=darkgray label=hasPath]
+		node [style=filled]
+		edge [color=white]
+		10 [label="n, m = len(self.matrix), len(self.matrix[0])
+" fillcolor=lightblue shape=rect]
+		"10_calls" [label="len
+len" shape=box3d]
+		10 -> "10_calls" [label=calls style=dashed]
+		31 [label="if i >= n or i < 0 or j >= m or j < 0:
+" fillcolor=lightblue4 shape=diamond]
+		11 [label="return False
+" fillcolor=lightblue shape=rect]
+		31 -> 11 [label="i >= n or i < 0 or j >= m or j < 0" color=black]
+		12 [label="if self.matrix[i][j] == 0:
+" fillcolor=lightblue4 shape=diamond]
+		14 [label="self.dp[i][j] = 3
+return False
+" fillcolor=lightblue shape=rect]
+		12 -> 14 [label="self.matrix[i][j] == 0" color=black]
+		15 [label="if self.dp[i][j] == 1:
+" fillcolor=lightblue4 shape=diamond]
+		17 [label="return False
+" fillcolor=lightblue shape=rect]
+		15 -> 17 [label="self.dp[i][j] == 1" color=red]
+		18 [label="if self.dp[i][j] == 3:
+" fillcolor=lightblue4 shape=diamond]
+		21 [label="if self.dp[i][j] == 4:
+" fillcolor=lightblue4 shape=diamond]
+		23 [label="return True
+" fillcolor=lightblue shape=rect]
+		21 -> 23 [label="self.dp[i][j] == 4" color=black]
+		24 [label="ans = False
+self.dp[i][j] = 1
+right = self.hasPath(i + 1, j)
+left = self.hasPath(i - 1, j)
+up = self.hasPath(i, j + 1)
+down = self.hasPath(i, j - 1)
+ans = right or left or down or up
+self.dp[i][j] = 4 if ans else 3
+return ans
+" fillcolor=lightblue shape=rect]
+		"24_calls" [label="self.hasPath
+self.hasPath
+self.hasPath
+self.hasPath" shape=box3d]
+		24 -> "24_calls" [label=calls style=dashed]
+		21 -> 24 [label="(self.dp[i][j] != 4)" color=black]
+		18 -> 21 [label="(self.dp[i][j] != 3)" color=black]
+		15 -> 18 [label="(self.dp[i][j] != 1)" color=black]
+		12 -> 15 [label="(self.matrix[i][j] != 0)" color=black]
+		31 -> 12 [label="(not (i >= n or i < 0 or j >= m or j < 0))" color=black]
+		10 -> 31 [label="" color=black]
+	}
+	subgraph clustermain {
+		graph [bgcolor=darkgray label=main]
+		node [style=filled]
+		edge [color=white]
+		29 [label="matr = [[1, 0, 1], [1, 1, 0], [0, 1, 1]]
+s = Solution(matr)
+s.findPath()
+" fillcolor=lightblue shape=rect]
+		"29_calls" [label="Solution
+s.findPath" shape=box3d]
+		29 -> "29_calls" [label=calls style=dashed]
+	}
+}

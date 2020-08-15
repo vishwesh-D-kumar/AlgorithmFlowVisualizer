@@ -1,0 +1,5 @@
+digraph "Call Stack" {
+	graph [bgcolor=transparent]
+	node [shape=record style=filled]
+	call_stack [label="{{<f0> s.findPath()| line:61| args \{\}}}" fillcolor=lightblue]
+}

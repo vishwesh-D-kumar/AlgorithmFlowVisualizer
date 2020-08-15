@@ -1,0 +1,8 @@
+digraph "Call Stack" {
+	graph [bgcolor=transparent]
+	node [shape=record style=filled]
+	return_node [label="Condition used : No Test
+ Return Value : True" color=lightblue4 shape=ellipse]
+	call_stack:f2 -> return_node
+	call_stack [label="{{<f0> go(matr)| line:59| args \{'matrix': \[\[1, 0, 1\], \[1, 1, 0\], \[0, 1, 1\]\]\}}|{<f1> sol.findPath()| line:9| args \{\}}|{<f2> self.hasPath(0, 0)| line:12| args \{'i': 0, 'j': 0\}}}" fillcolor=lightblue]
+}

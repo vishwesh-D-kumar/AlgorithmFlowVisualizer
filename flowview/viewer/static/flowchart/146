@@ -1,0 +1,78 @@
+digraph "cluster/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/djangotrials/demo_files/demo1.py" {
+	graph [bgcolor=darkgray label="/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/djangotrials/demo_files/demo1.py"]
+	node [style=filled]
+	edge [color=white]
+	subgraph clustergo {
+		graph [bgcolor=darkgray label=go]
+		node [style=filled]
+		edge [color=white]
+		3 [label="helper.DEBUG = 1
+sol = demo2.Solution(matrix)
+ans = sol.findPath()
+" fillcolor=lightblue shape=rect]
+		"3_calls" [label="demo2.Solution
+sol.findPath" shape=box3d]
+		3 -> "3_calls" [label=calls style=dashed]
+	}
+	subgraph cluster__init__ {
+		graph [bgcolor=darkgray label=__init__]
+		node [style=filled]
+		edge [color=white]
+		6 [label="self.data = data
+self.nextr = None
+self.nextl = None
+" fillcolor=lightblue shape=rect]
+	}
+	subgraph clustergo2 {
+		graph [bgcolor=darkgray label=go2]
+		node [style=filled]
+		edge [color=white]
+		9 [label="root = Node(1)
+root.nextr = Node(2)
+root.nextl = Node(0)
+root.nextl.nextl = Node(-2)
+root.nextr.nextr = Node(2)
+binarySearch(root, -2)
+" fillcolor=lightblue shape=rect]
+		"9_calls" [label="Node
+Node
+Node
+Node
+Node
+binarySearch" shape=box3d]
+		9 -> "9_calls" [label=calls style=dashed]
+	}
+	subgraph clusterbinarySearch {
+		graph [bgcolor=darkgray label=binarySearch]
+		node [style=filled]
+		edge [color=white]
+		12 [label="x = root
+" fillcolor=lightblue shape=rect]
+		13 [label="while x is not None:
+" fillcolor=lightblue4 shape=oval]
+		14 [label="if x.data == target:
+" fillcolor=lightblue4 shape=diamond]
+		16 [label="return x
+" fillcolor=lightblue shape=rect]
+		14 -> 16 [label="x.data == target" color=black]
+		17 [label="if x.data < target:
+" fillcolor=lightblue4 shape=diamond]
+		19 [label="x = x.nextr
+" fillcolor=lightblue shape=rect]
+		19 -> 13 [label="" color=black]
+		17 -> 19 [label="x.data < target" color=red]
+		14 -> 17 [label="(x.data != target)" color=black]
+		13 -> 14 [label="x is not None" color=black]
+		12 -> 13 [label="" color=black]
+	}
+	subgraph clustermain {
+		graph [bgcolor=darkgray label=main]
+		node [style=filled]
+		edge [color=white]
+		25 [label="matr = [[1, 0, 1], [1, 1, 0], [0, 1, 1]]
+go(matr)
+" fillcolor=lightblue shape=rect]
+		"25_calls" [label=go shape=box3d]
+		25 -> "25_calls" [label=calls style=dashed]
+	}
+}

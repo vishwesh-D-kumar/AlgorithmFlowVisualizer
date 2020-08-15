@@ -1,0 +1,34 @@
+digraph "clustertest_files/searches.py" {
+	graph [bgcolor=darkgray label="test_files/searches.py"]
+	node [style=filled]
+	edge [color=white]
+	subgraph clusterbinarySearch {
+		graph [bgcolor=darkgray label=binarySearch]
+		node [style=filled]
+		edge [color=white]
+		3 [label="l = 0
+r = len(arr) - 1
+" fillcolor=lightblue shape=rect]
+		"3_calls" [label=len shape=box3d]
+		3 -> "3_calls" [label=calls style=dashed]
+		4 [label="while l <= r:
+" fillcolor=lightblue4 shape=oval]
+		5 [label="mid = l + (r - l) // 2
+" fillcolor=lightblue shape=rect]
+		15 [label="if arr[mid] == t:
+" fillcolor=lightblue4 shape=diamond]
+		7 [label="return mid
+" fillcolor=lightblue shape=rect]
+		15 -> 7 [label="arr[mid] == t" color=black]
+		8 [label="if arr[mid] > t:
+" fillcolor=lightblue4 shape=diamond]
+		12 [label="l = mid + 1
+" fillcolor=lightblue shape=rect]
+		12 -> 4 [label="" color=black]
+		8 -> 12 [label="(arr[mid] <= t)" color=red]
+		15 -> 8 [label="(arr[mid] != t)" color=black]
+		5 -> 15 [label="" color=black]
+		4 -> 5 [label="l <= r" color=black]
+		3 -> 4 [label="" color=black]
+	}
+}

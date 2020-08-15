@@ -1,0 +1,4 @@
+digraph "Call Stack" {
+	node [shape=record]
+	call_stack [label="{{<f0> findPath(matrix)| line:0| args \{'matrix': \[\[1, 0, 1, 1, 0\], \[1, 1, 0, 0, 1\], \[0, 1, 1, 1, 0\], \[0, 0, 0, 1, 1\]\]\}}|{<f1> hasPath(0, 0)| line:1| args \{'i': 0, 'j': 0\}}|{<f2> hasPath(i + 1, j)| line:2| args \{'i': 1, 'j': 0\}}|{<f3> hasPath(i, j + 1)| line:3| args \{'i': 1, 'j': 1\}}|{<f4> hasPath(i + 1, j)| line:4| args \{'i': 2, 'j': 1\}}|{<f5> hasPath(i, j + 1)| line:5| args \{'i': 2, 'j': 2\}}|{<f6> hasPath(i, j + 1)| line:6| args \{'i': 2, 'j': 3\}}|{<f7> hasPath(i + 1, j)| line:7| args \{'i': 3, 'j': 3\}}|{<f8> hasPath(i, j + 1)| line:8| args \{'i': 3, 'j': 4\}}}"]
+}

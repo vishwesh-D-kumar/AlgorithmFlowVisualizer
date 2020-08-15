@@ -1,0 +1,25 @@
+digraph "cluster/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/flowchart_gen/leetcode_tests/KthSsmallestElement/run.py" {
+	graph [bgcolor=transparent]
+	node [style=filled]
+	edge [color=white]
+	subgraph clustergo {
+		graph [bgcolor=transparent]
+		node [style=filled]
+		edge [color=white]
+		40 [label="a = TreeNode(3)
+b = TreeNode(1)
+c = TreeNode(4)
+d = TreeNode(2)
+a.left = b
+b.right = d
+a.right = c
+kthSmallest(a, 1)
+" fillcolor=lightblue shape=rect]
+		"40_calls" [label="TreeNode
+TreeNode
+TreeNode
+TreeNode
+kthSmallest" shape=box3d]
+		40 -> "40_calls" [label=calls style=dashed]
+	}
+}
