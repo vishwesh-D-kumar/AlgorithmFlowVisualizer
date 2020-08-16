@@ -20,7 +20,7 @@
 <text text-anchor="middle" x="73.69" y="-446.8" font-family="Times,serif" font-size="14.00">def go():...</text>
 </g>
 <!-- 3 -->
-<g id="curr_block" class="node">
+<g id="node2" class="node">
 <title>3</title>
 <polygon fill="lightblue" stroke="black" points="502.06,-483 387.33,-483 387.33,-433 502.06,-433 502.06,-483"/>
 <text text-anchor="middle" x="444.69" y="-467.8" font-family="Times,serif" font-size="14.00">i = 0</text>
@@ -96,7 +96,7 @@
 <text text-anchor="middle" x="337.3" y="-231.8" font-family="Times,serif" font-size="14.00">height[i] &lt;= height[j]</text>
 </g>
 <!-- 9 -->
-<g id="node9" class="node">
+<g id="curr_block" class="node">
 <title>9</title>
 <polygon fill="lightblue" stroke="black" points="516.66,-211 356.73,-211 356.73,-175 516.66,-175 516.66,-211"/>
 <text text-anchor="middle" x="436.69" y="-195.8" font-family="Times,serif" font-size="14.00">overall_height = height[j]</text>
@@ -105,8 +105,8 @@
 <!-- 5&#45;&gt;9 -->
 <g id="edge7" class="edge">
 <title>5&#45;&gt;9</title>
-<path fill="none" stroke="black" d="M345.87,-267.19C363.2,-261.77 382.33,-253.95 397.69,-243 406.59,-236.66 414.51,-227.74 420.86,-219.25"/>
-<polygon fill="black" stroke="black" points="423.76,-221.21 426.65,-211.02 418.03,-217.18 423.76,-221.21"/>
+<path fill="none" stroke="red" d="M345.87,-267.19C363.2,-261.77 382.33,-253.95 397.69,-243 406.59,-236.66 414.51,-227.74 420.86,-219.25"/>
+<polygon fill="red" stroke="red" points="423.76,-221.21 426.65,-211.02 418.03,-217.18 423.76,-221.21"/>
 <text text-anchor="middle" x="473.01" y="-231.8" font-family="Times,serif" font-size="14.00">(height[i] &gt; height[j])</text>
 </g>
 <!-- 8 -->

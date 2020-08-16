@@ -8,9 +8,17 @@ The flowchart visualizer attempts to do the following : Given a function to visu
 Then , it shows the control flow jumps being made with every step . This aims to give the programmer a great deal of help in 
 visualizing the flow of a algorithm , and how they actually behave given an input.
 
+### Current Runtime instructions of the webapp:
+    ```python3 flowview/manage.py runserver````
+    Enter path to file and function to run
+
+
+
+
+
 ### For Phase 2 work : Ie , the stack visualizer , the variable tracer : go to [demo.md](demo.md)
 
-#### For instructions on how to run , go to the bottom!.The file [connect.py](/connect.py) contains a sample run at the end of the file
+#### For instructions on how to run flowchart visualizer , go to the bottom!.The file [connect.py](/connect.py) contains a sample run at the end of the file
 
 ## Features :
 

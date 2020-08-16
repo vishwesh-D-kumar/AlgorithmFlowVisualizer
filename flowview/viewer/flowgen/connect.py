@@ -11,7 +11,7 @@ import abc
 ALLOWED_EVENTS = {"call", "line", "return"}
 DISALLOWED_FUNC_NAMES = {"<genexpr>", "<listcomp>", "<dictcomp>", "<setcomp>"}
 STDLIB_DIR = Path(abc.__file__).parent
-
+COMPLETE_FLOW  = True
 
 class FlowGen:
     def __init__(self, file, func, *args):
@@ -44,7 +44,8 @@ class FlowGen:
         pprint(self.linesmap)
         # print(self.timeline)
         # marking visited blocks and cfgs
-        # self.mark_used_blocks()
+        if COMPLETE_FLOW:
+            self.mark_used_blocks()
         # self.mark_used_cfg()
         
         pprint([(block.used, block.at()) for block in self.cfg.net_blocks])
@@ -265,6 +266,7 @@ class FlowGen:
                     self.final_dict[i]['images'] = f'{output_dir}/flowchart/{i}.svg'
                     self.final_dict[i]['line'] = line
                     curr_block = self.linesmap[line]
+                    print(curr_block.at(),line,self.cfg.used,i,line,"#$#")
                     if curr_block not in self.blocks_to_cfg:
                         self.final_dict[i]['images'] = main_file
                     elif (curr_block,link_used_last) in self.block_image_cache:
@@ -272,10 +274,14 @@ class FlowGen:
                     else:
                         curr_cfg = self.blocks_to_cfg[curr_block]
                         curr_cfg.used = True
-                        self.activate_current_blocks(curr_block,True)
+                        curr_block.is_curr = True
+                        if not COMPLETE_FLOW:
+                            self.activate_current_blocks(curr_block,True)
                         self.cfg.build_visual(f'{output_dir}/flowchart/{i}', format='svg', show=False)
                         curr_cfg.used = False
-                        self.activate_current_blocks(curr_block,False)
+                        if not COMPLETE_FLOW:
+                            self.activate_current_blocks(curr_block,False)
+                        curr_block.is_curr = False
                         self.block_image_cache[(curr_block,link_used_last)] = f'{output_dir}/flowchart/{i}.svg'
                         # curr_block.used = False
                     last_file = self.final_dict[i]['images']

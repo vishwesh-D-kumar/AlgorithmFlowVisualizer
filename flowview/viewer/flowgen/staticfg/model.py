@@ -16,7 +16,7 @@ class Block(object):
     a list of Links that represent control timeline jumps.
     """
 
-    __slots__ = ["id", "statements", "func_calls", "predecessors", "exits","shape",'used','color']
+    __slots__ = ["id", "statements", "func_calls", "predecessors", "exits","shape",'used','color','is_curr']
 
     def __init__(self, id):
         # Id of the block.
@@ -37,6 +37,7 @@ class Block(object):
         #Shows whether block is used in runtime
         self.used = False
         self.color = "lightblue"
+        self.is_curr = False
 
 
     def __str__(self):
@@ -189,8 +190,8 @@ class CFG(object):
 
     def _visit_blocks(self, graph, block, visited=[], calls=True):
         #If block unused in runtime , continue
-        if not block.used:
-            return
+        # if not block.used:
+        #     return
         # Don't visit blocks twice.
         if block.id in visited:
             return
@@ -198,11 +199,15 @@ class CFG(object):
         nodelabel = block.get_source()
 
         #Using shape paramater to change shape of block
-        graph.node(str(block.id), label=nodelabel,shape=block.shape,fillcolor=block.color)
+        if block.used:
+            if block.is_curr:
+                graph.node(str(block.id), label=nodelabel, shape=block.shape, fillcolor=block.color,_attributes={'id':'curr_block'})
+            else:
+                graph.node(str(block.id), label=nodelabel,shape=block.shape,fillcolor=block.color)
         visited.append(block.id)
 
         # Show the block's function calls in a node.
-        if calls and block.func_calls:
+        if calls and block.func_calls and block.used:
             calls_node = str(block.id) + "_calls"
             calls_label = block.get_calls().strip()
             graph.node(calls_node, label=calls_label,
@@ -215,12 +220,12 @@ class CFG(object):
             self._visit_blocks(graph, exit.target, visited, calls=calls)
             edgelabel = exit.get_exitcase().strip()
             #Only draw links if the corresponding exits are being utilsed
-            if exit.target.used:
+            if exit.target.used and block.used:
                 graph.edge(str(block.id), str(exit.target.id), label=edgelabel, color="red" if exit.used else "black")
 
     def _build_visual(self, format='pdf', calls=True):
         graph = gv.Digraph(name='cluster' + self.name, format=format,
-                           graph_attr={'label': self.name,'bgcolor':'darkgray'},
+                           graph_attr={'bgcolor':'transparent'},
                            node_attr={ 'style': 'filled'},
                            edge_attr={'color':'white'}
                            )
@@ -233,7 +238,7 @@ class CFG(object):
         # them to the graph.
         for subcfg in self.functioncfgs:
             if self.functioncfgs[subcfg].used:
-                print("Yes",subcfg)
+                # print("Yes",subcfg)
                 subgraph = self.functioncfgs[subcfg]._build_visual(format=format,
                                                                calls=calls)
                 graph.subgraph(subgraph)

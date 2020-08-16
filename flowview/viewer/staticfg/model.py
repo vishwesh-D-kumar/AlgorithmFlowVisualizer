@@ -16,7 +16,7 @@ class Block(object):
     a list of Links that represent control timeline jumps.
     """
 
-    __slots__ = ["id", "statements", "func_calls", "predecessors", "exits","shape",'used','color']
+    __slots__ = ["id", "statements", "func_calls", "predecessors", "exits","shape",'used','color','is_curr']
 
     def __init__(self, id):
         # Id of the block.
@@ -37,6 +37,7 @@ class Block(object):
         #Shows whether block is used in runtime
         self.used = False
         self.color = "lightblue"
+        self.is_curr = False
 
 
     def __str__(self):
@@ -199,7 +200,10 @@ class CFG(object):
 
         #Using shape paramater to change shape of block
         if block.used:
-            graph.node(str(block.id), label=nodelabel,shape=block.shape,fillcolor=block.color)
+            if block.is_curr:
+                graph.node(str(block.id), label=nodelabel, shape=block.shape, fillcolor=block.color,_attributes={'id':'curr_block'})
+            else:
+                graph.node(str(block.id), label=nodelabel,shape=block.shape,fillcolor=block.color)
         visited.append(block.id)
 
         # Show the block's function calls in a node.

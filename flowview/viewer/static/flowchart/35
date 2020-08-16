@@ -1,23 +1,15 @@
-digraph "cluster/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/flowchart_gen/leetcode_tests/KthSsmallestElement/run.py" {
+digraph "cluster/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/djangotrials/demo_files/demo1.py" {
 	graph [bgcolor=transparent]
 	node [style=filled]
 	edge [color=white]
-	subgraph clusterkthSmallest {
+	subgraph clusterbinarySearch {
 		graph [bgcolor=transparent]
 		node [style=filled]
 		edge [color=white]
-		29 [label="head = root
-root
-stack = []
+		28 [label="x = root
 " fillcolor=lightblue shape=rect]
-		30 [label="while root or stack:
+		29 [label="while x is not None:
 " fillcolor=lightblue4 shape=oval]
-		31 [label="while root:
-" fillcolor=lightblue4 shape=oval]
-		36 [label="root = root.right
-" fillcolor=lightblue shape=rect]
-		36 -> 30 [label="" color=black]
-		30 -> 31 [label="root or stack" color=black]
-		29 -> 30 [label="" color=red]
+		28 -> 29 [label="" color=black]
 	}
 }

@@ -1,7 +1,24 @@
-<form action = '/viewer/run_tracer' method="post">
+<head><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<!-- <form action = '/viewer/run_tracer' method="post">
 	{% csrf_token %} 
 	<input type="text" name="file">
 	<input type="text" name="func"><br>
 	<input type="submit" value = "Submit file, func">
 
+</form> -->
+<body class="bg-dark text-secondary">
+<form action = '/viewer/run_tracer' method="post">
+	{% csrf_token %} 
+  <div class="form-group ">
+    <label for="exampleInputEmail1">File</label>
+    <input  class="form-control" id="exampleInputEmail1"  name="file">
+  </div>
+  <div class="form-group">
+    <label for="exampleInputPassword1">Function Name</label>
+    <input  class="form-control" id="exampleInputPassword1" placeholder="Function name" name="func">
+  </div>
+
+  <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+</body>

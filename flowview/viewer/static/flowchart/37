@@ -2,14 +2,27 @@ digraph "cluster/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/flowchart
 	graph [bgcolor=transparent]
 	node [style=filled]
 	edge [color=white]
+	1 [label="def __init__(self, val=0, left=None, right=None):...
+def __str__(self):...
+def rec(self):...
+def __repr__(self):...
+def __eq__(self, other):...
+def kthSmallest(root, k):...
+def go():...
+" fillcolor=lightblue shape=rect]
 	subgraph clusterkthSmallest {
 		graph [bgcolor=transparent]
 		node [style=filled]
 		edge [color=white]
+		29 [label="head = root
+root
+stack = []
+k
+" fillcolor=lightblue shape=rect]
 		30 [label="while root or stack:
 " fillcolor=lightblue4 shape=oval]
 		31 [label="while root:
-" fillcolor=lightblue4 shape=oval]
+" fillcolor=lightblue4 shape=oval id=curr_block]
 		33 [label="stack.append(root)
 root = root.left
 " fillcolor=lightblue shape=rect]
@@ -22,7 +35,14 @@ k -= 1
 " fillcolor=lightblue shape=rect]
 		"34_calls" [label="stack.pop" shape=box3d]
 		34 -> "34_calls" [label=calls style=dashed]
+		43 [label="if k == 0:
+" fillcolor=lightblue4 shape=diamond]
+		35 [label="return root.val
+" fillcolor=lightblue shape=rect]
+		43 -> 35 [label="k == 0" color=black]
+		34 -> 43 [label="" color=black]
 		31 -> 34 [label="(not root)" color=black]
 		30 -> 31 [label="root or stack" color=red]
+		29 -> 30 [label="" color=black]
 	}
 }

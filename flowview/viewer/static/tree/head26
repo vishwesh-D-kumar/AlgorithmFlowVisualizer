@@ -2,11 +2,11 @@ digraph {
 	graph [bgcolor=transparent]
 	node [fillcolor=lightblue style=filled]
 	label="Graph of variable: head"
-	43 [label=3]
-	44 [label=1]
-	43 -> 44 [label=left]
-	45 [label=2]
-	44 -> 45 [label=right]
-	46 [label=4]
-	43 -> 46 [label=right]
+	40 [label=3]
+	41 [label=1]
+	40 -> 41 [label=left]
+	42 [label=2]
+	41 -> 42 [label=right]
+	43 [label=4]
+	40 -> 43 [label=right]
 }

@@ -9,28 +9,30 @@ pre.code code::before {  content: counter(listing) ". ";  display: inline-block;
 		html,body {
   height: 100%;
 				}
-	.full-text {
-  height: 100%;
-}
+
 		.top-bar{
   height:30%;
-  overflow: auto;
+  overflow-y: hidden;
 			padding-left: 20px;
 }
 		.mid-bar{
   height:50%;
-  overflow: auto;
+  overflow-y: hidden;
 }
 		.bottom-row{
 		  height:20%;
-  overflow: auto;
+  overflow-y: hidden;
 }
-		
+		.scrollable{
+			overflow-y: scroll;
+		}
+
 
 	</style>
 </head>
-<body class="bg-dark">
-<div class="text-secondary full-text">
+<html>
+<body class="bg-dark text-secondary">
+<!--<div class="text-secondary">-->
 <div class="row top-bar">
 	<section class="w-50 pre-scrollable">
 		<div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -39,7 +41,7 @@ pre.code code::before {  content: counter(listing) ". ";  display: inline-block;
 			  {% else %}
 			  <label class="btn btn-secondary">
 				  {% endif %}
-		    <a href="step?step={{curr_step}}&all_vars=0" class="text-warning"> All Variables
+		    <a href="step?step={{curr_step}}&all_vars=2" class="text-warning"> All Variables
 		    </a>
 		  </label>
 			  {% if show_all_vars == 1 %}
@@ -47,7 +49,7 @@ pre.code code::before {  content: counter(listing) ". ";  display: inline-block;
 				  {% else %}
 		  <label class="btn btn-secondary">
 			  {% endif %}
-		    <a href="step?step={{curr_step}}&all_vars=0" class="text-warning"> 
+		    <a href="step?step={{curr_step}}&all_vars=1" class="text-warning"> 
 		    	Variable Changes seen 
 		    </a>
 		  </label>
@@ -97,10 +99,11 @@ pre.code code::before {  content: counter(listing) ". ";  display: inline-block;
 	</section>
 
 	{% for img in tree_images %}
-		<div class="pre-scrollable">
-
+		<div class="pre-scrollable h-100">
+			<div>
 			<img src="{% static ''|add:img %}"></img>
 		<!-- <img src="tree.png"></img> -->
+			</div>
 		</div>
 	{% endfor %}
 </div>
@@ -126,9 +129,9 @@ pre.code code::before {  content: counter(listing) ". ";  display: inline-block;
 	</pre>
 	</div>
 	</div>
-	<div class="pre-scrollable ml0 mr0" style="width: 35rem">
+	<div class="pre-scrollable ml0 mr0 position-relative" id = "flowchart_div" style="width: 35rem">
 	<!-- <img src="{{ stack_images }}"></img> -->
-	<img src="{% static ''|add:flowchart_images %}"></img>
+	<object  type = "image/svg+xml" id = 'flowchart_image' data="{% static ''|add:flowchart_images %}"></object>
 	<!-- <img src="stack.png"></img> -->
 	</div>
 
@@ -148,8 +151,9 @@ pre.code code::before {  content: counter(listing) ". ";  display: inline-block;
 <a href="step?step={{curr_step|add:'-1'}}&all_vars=0" class="btn btn-primary  btn-block btn-lg " >Previous Step {{ curr_step|add:'-1' }}</a>
 	</div>
 		</div>
-	</div>
+<!--	</div>-->
 </body>
+<html>
 	<script>
 	  // alert( 'Hello, world!' );
 	  document.getElementById('code_div').scrollTop = 0;
@@ -158,4 +162,32 @@ pre.code code::before {  content: counter(listing) ". ";  display: inline-block;
 	  // alert(document.getElementById('code_div').scrollTop)
 	  document.getElementById('code_div').scrollTop = topPos;
 	  // document.getElementById('curr_exec_line').scrollIntoView(true);
+
+      var a = document.getElementById("flowchart_image");
+
+      // It's important to add an load event listener to the object,
+      // as it will load the svg doc asynchronously
+      a.addEventListener("load",function(){
+      		// alert('ran')
+          // get the inner DOM of alpha.svg
+          var svgDoc = a.contentDocument;
+          // get the inner element by id
+          var myElement = svgDoc.getElementById("curr_block");
+          myElement.scrollIntoView({behavior: "auto", block: "start", inline: "start"})
+          window.scrollTo(0,0)
+          return
+          // var myElement = document.getElementById('curr_exec_line');
+          var box = myElement.getBBox();
+          // alert(box)
+          x = box.x
+          y = -box.y
+          var top = box.y + box.y2
+          top = 50 * Math.floor(top/50)
+          // alert(x,y)
+
+          document.getElementById('flowchart_div').scrollTop = -top;
+          // add behaviour
+ 		
+      }, false);
+
 	</script>

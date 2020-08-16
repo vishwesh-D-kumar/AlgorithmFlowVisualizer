@@ -1,56 +1,43 @@
-digraph "cluster/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/djangotrials/demo_files/demo1.py" {
-	graph [bgcolor=darkgray label="/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/djangotrials/demo_files/demo1.py"]
+digraph "cluster/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/flowchart_gen/leetcode_tests/Container with most water/run.py" {
+	graph [bgcolor=transparent]
 	node [style=filled]
 	edge [color=white]
-	subgraph cluster__init__ {
-		graph [bgcolor=darkgray label=__init__]
+	1 [label="def maxArea(height):...
+def go():...
+" fillcolor=lightblue shape=rect]
+	subgraph clustermaxArea {
+		graph [bgcolor=transparent]
 		node [style=filled]
 		edge [color=white]
-		6 [label="self.data = data
-self.nextr = None
-self.nextl = None
+		3 [label="i = 0
+j = len(height) - 1
+maxi = 0
 " fillcolor=lightblue shape=rect]
-	}
-	subgraph clustergo2 {
-		graph [bgcolor=darkgray label=go2]
-		node [style=filled]
-		edge [color=white]
-		9 [label="root = Node(1)
-root.nextr = Node(2)
-root.nextl = Node(0)
-root.nextl.nextl = Node(-2)
-root.nextr.nextr = Node(2)
-binarySearch(root, -2)
-" fillcolor=lightblue shape=rect]
-		"9_calls" [label="Node
-Node
-Node
-Node
-Node
-binarySearch" shape=box3d]
-		9 -> "9_calls" [label=calls style=dashed]
-	}
-	subgraph clusterbinarySearch {
-		graph [bgcolor=darkgray label=binarySearch]
-		node [style=filled]
-		edge [color=white]
-		12 [label="x = root
-" fillcolor=lightblue shape=rect]
-		13 [label="while x is not None:
+		"3_calls" [label=len shape=box3d]
+		3 -> "3_calls" [label=calls style=dashed]
+		4 [label="while i < j:
 " fillcolor=lightblue4 shape=oval]
-		14 [label="if x.data == target:
-" fillcolor=lightblue4 shape=diamond]
-		16 [label="return x
+		5 [label="if height[i] <= height[j]:
+" fillcolor=lightblue4 shape=diamond id=curr_block]
+		7 [label="overall_height = height[i]
+i += 1
 " fillcolor=lightblue shape=rect]
-		14 -> 16 [label="x.data == target" color=black]
-		17 [label="if x.data < target:
-" fillcolor=lightblue4 shape=diamond]
-		21 [label="x = x.nextl
+		8 [label="maxi = max(maxi, (j - i + 1) * overall_height)
 " fillcolor=lightblue shape=rect]
-		21 -> 13 [label="" color=black]
-		17 -> 21 [label="(x.data >= target)" color=black]
-		14 -> 17 [label="(x.data != target)" color=black]
-		13 -> 14 [label="x is not None" color=black]
-		12 -> 13 [label="" color=black]
+		"8_calls" [label=max shape=box3d]
+		8 -> "8_calls" [label=calls style=dashed]
+		8 -> 4 [label="" color=black]
+		7 -> 8 [label="" color=black]
+		5 -> 7 [label="height[i] <= height[j]" color=black]
+		9 [label="overall_height = height[j]
+j -= 1
+" fillcolor=lightblue shape=rect]
+		9 -> 8 [label="" color=black]
+		5 -> 9 [label="(height[i] > height[j])" color=black]
+		4 -> 5 [label="i < j" color=red]
+		6 [label="return maxi
+" fillcolor=lightblue shape=rect]
+		4 -> 6 [label="(i >= j)" color=black]
+		3 -> 4 [label="" color=black]
 	}
 }

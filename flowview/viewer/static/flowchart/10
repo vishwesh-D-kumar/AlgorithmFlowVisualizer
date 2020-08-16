@@ -16,19 +16,19 @@ maxi = 0
 		"3_calls" [label=len shape=box3d]
 		3 -> "3_calls" [label=calls style=dashed]
 		4 [label="while i < j:
-" fillcolor=lightblue4 shape=oval id=curr_block]
+" fillcolor=lightblue4 shape=oval]
 		5 [label="if height[i] <= height[j]:
 " fillcolor=lightblue4 shape=diamond]
 		7 [label="overall_height = height[i]
 i += 1
-" fillcolor=lightblue shape=rect]
+" fillcolor=lightblue shape=rect id=curr_block]
 		8 [label="maxi = max(maxi, (j - i + 1) * overall_height)
 " fillcolor=lightblue shape=rect]
 		"8_calls" [label=max shape=box3d]
 		8 -> "8_calls" [label=calls style=dashed]
 		8 -> 4 [label="" color=black]
 		7 -> 8 [label="" color=black]
-		5 -> 7 [label="height[i] <= height[j]" color=black]
+		5 -> 7 [label="height[i] <= height[j]" color=red]
 		9 [label="overall_height = height[j]
 j -= 1
 " fillcolor=lightblue shape=rect]
@@ -38,6 +38,6 @@ j -= 1
 		6 [label="return maxi
 " fillcolor=lightblue shape=rect]
 		4 -> 6 [label="(i >= j)" color=black]
-		3 -> 4 [label="" color=red]
+		3 -> 4 [label="" color=black]
 	}
 }
