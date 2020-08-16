@@ -9,10 +9,13 @@ Then , it shows the control flow jumps being made with every step . This aims to
 visualizing the flow of a algorithm , and how they actually behave given an input.
 
 ### Current Runtime instructions of the webapp:
-    ```python3 flowview/manage.py runserver````
-    Enter path to file and function to run
 
-
+``` 
+python3 flowview/manage.py runserver
+```
+    
+    
+Enter path to file and function to run
 
 
 
