@@ -26,7 +26,7 @@ python3 flowview/manage.py runserver >log
     
 * Enter path to file and function to run
 
-
+* To see how to mark variables for tracing: [look here](https://github.com/vishwesh-D-kumar/AlgorithmFlowVisualizer/blob/master/demo.md#steps-to-run-variable-tracer) post step 3.
 
 ### For Phase 2 work : Ie , the stack visualizer , the variable tracer : go to [demo.md](demo.md)
 
