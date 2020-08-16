@@ -8,6 +8,14 @@ The flowchart visualizer attempts to do the following : Given a function to visu
 Then , it shows the control flow jumps being made with every step . This aims to give the programmer a great deal of help in 
 visualizing the flow of a algorithm , and how they actually behave given an input.
 
+
+### Current Installation instructions
+
+```
+pip3 install - r requirements.txt
+sudo apt-get install graphviz
+```
+
 ### Current Runtime instructions of the webapp:
 
 ``` 
