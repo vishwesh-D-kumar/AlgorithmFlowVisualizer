@@ -11,11 +11,12 @@ visualizing the flow of a algorithm , and how they actually behave given an inpu
 ### Current Runtime instructions of the webapp:
 
 ``` 
-python3 flowview/manage.py runserver
+python3 flowview/manage.py runserver >log
 ```
+
+* Go to http://127.0.0.1:8000/viewer
     
-    
-Enter path to file and function to run
+* Enter path to file and function to run
 
 
 
