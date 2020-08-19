@@ -32,33 +32,33 @@ python3 flowview/manage.py runserver >log
 
 Steps to mark variables for variable tracing 
     
-    ```python
-   # Normal Variables :
-    
-    x = 0 # watchvar x
-    
-    # Attributes of classes 
-    
-    node.neighbours = [node1,node2] # watchvar node.neighbours
-   class Node:
-        def __init__(self, val):
-            self.val = val
-            self.right = None
-            self.left = None
-   class FullNode:
-        def __init__(self, val):
-            self.data = val
-            self.children = []
-   # Visualizing BinaryTrees:
-      root = Node(2) # watchvar btree:left:right:val root
-   # Adding a referrer to the binary tree : only for binary trees
-       root_ref = root # watchvar ref:root:btree root_ref
-   # Visualizing trees with N nodes:
-     root = FullNode(1) # watchvar tree:children:data root
+```python
+# Normal Variables :
+
+x = 0 # watchvar x
+
+# Attributes of classes 
+
+node.neighbours = [node1,node2] # watchvar node.neighbours
+class Node:
+    def __init__(self, val):
+        self.val = val
+        self.right = None
+        self.left = None
+class FullNode:
+    def __init__(self, val):
+        self.data = val
+        self.children = []
+# Visualizing BinaryTrees:
+  root = Node(2) # watchvar btree:left:right:val root
+# Adding a referrer to the binary tree : only for binary trees
+   root_ref = root # watchvar ref:root:btree root_ref
+# Visualizing trees with N nodes:
+ root = FullNode(1) # watchvar tree:children:data root
    
    
      
-    ```
+```
    Important parameters to note above
    
    * ```# watchvar btree:left:right:val root```
