@@ -12,6 +12,8 @@ visualizing the flow of a program.
 
 ### Current Installation instructions
 
+Requires python 3.6 or higher, due to use of f-strings
+
 ```
 pip3 install - r requirements.txt
 sudo apt-get install graphviz
