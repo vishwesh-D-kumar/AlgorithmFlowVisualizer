@@ -107,4 +107,7 @@ One function call per line is supported. Calls of these sort can be broken down 
     rec(i,j) = s1 + s2
 ```
 
+For control flow graph visualizations: 
+
+I am currently using the [my public fork of StatiCfg](https://github.com/vishwesh-D-kumar/staticfg).
  
