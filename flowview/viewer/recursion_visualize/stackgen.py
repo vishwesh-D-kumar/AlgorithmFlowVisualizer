@@ -23,7 +23,13 @@ def merge_conditionals(prev, new):
         return new
     return ast.BoolOp(ast.And(), values=[prev, new])
 
-
+def mark_escapes(s):
+    s = str(s).strip()
+    s=s.replace('{','\{')
+    s=s.replace('}','\}')
+    s=s.replace('[','\[')
+    s=s.replace(']','\]')
+    return s
 class CallsVisitor(ast.NodeVisitor):
     def __init__(self, filepath):
         super().__init__()
@@ -180,7 +186,6 @@ class StackVisualizer:
 
     # @profile
     def render(self,ret_val=None,ret_condition=None):
-        # TODO: Fix pdf output size
         # For vertical orientation use rankdir, {} for flipping orientation
         graph = gv.Digraph('Call Stack', filename='call_stack', node_attr={'shape': 'record','style': 'filled'},format='png',
              graph_attr={'bgcolor':'transparent'})
@@ -190,14 +195,10 @@ class StackVisualizer:
         for call in self.stack:
             called_as, args, line_no = call
             call_stack += "{"
-            call_stack += f'<f{i}> {called_as.strip()}'
+            call_stack += f'<f{i}> {mark_escapes(called_as)}'
             call_stack += '| ' + 'line:' + str(line_no)
-            formatted_args = str(args).strip()
-            formatted_args=formatted_args.replace('{','\{')
-            formatted_args=formatted_args.replace('}','\}')
-            formatted_args=formatted_args.replace('[','\[')
-            formatted_args=formatted_args.replace(']','\]')
-            print(formatted_args,"###")
+            formatted_args = mark_escapes(str(args))
+            
             call_stack +=  '| ' + 'args ' + formatted_args
             call_stack += "}|"
             i += 1
