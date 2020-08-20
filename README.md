@@ -9,6 +9,8 @@ It adds visualizations for stack trace ,and visualizations of data structures li
 It alse shows the control flow jumps being made with every step . This aims to give the programmer a great deal of help in 
 visualizing the flow of a program.
 
+![Demo](demo_web_player.gif) 
+
 
 ### Current Installation instructions
 
