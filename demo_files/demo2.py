@@ -14,8 +14,10 @@ class Solution:
         return ans
 
     def hasPath(self, i, j):
+        i # watchvar i
+        j # watchvar j
         n, m = len(self.matrix), len(self.matrix[0])
-        # helper.dbg(self.dp + [i, j])  # Function call to debug
+        helper.dbg(self.dp + [i, j])  # Function call to debug
         if i >= n or i < 0 or j >= m or j < 0:  # Out of bounds
             return False
         if self.matrix[i][j] == 0:

@@ -1,0 +1,7 @@
+{
+	"file":"demo_files/demo1.py",
+	"func":"main",
+	"include_files":[
+		"demo_files/demo2.py"
+	]
+}

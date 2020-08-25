@@ -9,10 +9,6 @@ It adds visualizations for stack trace ,and visualizations of data structures li
 It alse shows the control flow jumps being made with every step . This aims to give the programmer a great deal of help in 
 visualizing the flow of a program.
 
-Heres the [file used](demo_kth_smallest.py) on which the below gif is generated
-
-![Demo](demo_web_player.gif) 
-
 
 ### Current Installation instructions
 
@@ -35,6 +31,67 @@ python3 flowview/manage.py runserver >log
 * Go to http://127.0.0.1:8000/viewer
     
 * Enter path to file and function to run
+
+* You can also keep a config json file handy , which would avoid the hassle of reentering the same 
+
+Configuration of the json file :
+
+Fields :
+```json
+  {
+  "file": "path/to/file",
+  "function":"name of function",
+  "included_files": ["paths","to","be","included"]
+}
+```
+included files is a list of all files you want to include. This is to avoid the debugger going into all files that the program visits , potentially saving the programmer a lot of time , and the debugger a lot of computations.
+
+If included files is left empty : It will not ignore any files.
+
+A sample [config](config1.json) is provided.
+
+A look at how to use all options of the debugger, listed at the rightmost part of the page. Just hover over the option to see what clicking the icon leads to !
+
+A look at how each mode looks 
+
+* Flowchart Visualization
+
+![demo_flow](flowchart_demo.png)
+
+
+The current block being visited is highlighted with a red block
+ , and the last control flow jump made is also highlighted in red
+
+* Stack Trace Visualization:
+
+![demo_stack](stack_demo.png)
+
+The Stack trace is visualized in the following manner :
+```
+Function Called As|line called at | Values of arguments called
+```
+
+lets take this function call as an example 
+```python
+ 72. l(i+1,j-1)
+
+ #and the functiondef of l is 
+ def l(x,y)
+```
+assuming the value of i+1 is 20 , j-1 is 32 , lets say , the corresponding stack entry would be in this format :
+
+```
+l(i+1,j-1)|line 72| args {'x':20,'y':32}
+```
+
+* Variable Tracing :
+
+[demo_vars](variable_demo.png)
+
+
+* Tree Visualizations : 
+
+[demo_trees](tree_demo.png)
 
 Steps to mark variables for variable tracing 
     
@@ -101,8 +158,13 @@ Important Limitations :
 
 * The attribute based tracing works cannot to be extended to multiple levels of attributes (as in , attributes of attributes cant be marked for tracing) of the referenced object :
  ie : it wont work for comments like ```watchvar self.x.y```.
-
-* Multiline expressions are not supported  of the sort ```rec(i,j) = rec(i-1,j-1) + rec(i-2,j-2)```.
+* Do not use multiline expressions while making function calls
+``` go([[1,2,3],
+          [1,2,3]])
+          # will raise an error
+    go([[1,2,3],[1,2,3]]) # wont raise an error
+```
+* Multiexpression Lines are not supported  of the sort ```rec(i,j) = rec(i-1,j-1) + rec(i-2,j-2)```.
 One function call per line is supported. Calls of these sort can be broken down into
 
 ``` 

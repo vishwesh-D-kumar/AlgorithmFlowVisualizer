@@ -15,7 +15,7 @@ COMPLETE_FLOW  = True
 
 
 class FlowGen:
-    def __init__(self, file, func, *args):
+    def __init__(self, file, func,include_files, *args):
         """
 
         :param file:path to file
@@ -30,6 +30,8 @@ class FlowGen:
         self.block_image_cache= {}
         self.blocks_to_cfg = {}
         self.cfg_file_cache = {}
+        self.linesmap = {}
+        self.include_files = [os.path.abspath(file).lower() for file in include_files] 
         # Cfg generation
         self.timeline = []
 
@@ -79,15 +81,29 @@ class FlowGen:
         except:
             pass
         return output_dir
-
+    def check_in_path(self, frame):
+        """
+        Returns whether file in current included files
+        If no included file given , return true for all
+        :param frame:current frame to be checked
+        :return: true if match or no files given to include , else false.
+        """
+        if frame.f_code.co_name in DISALLOWED_FUNC_NAMES:
+            return False
+        if self.is_stdlib(frame.f_code.co_filename):
+            return False
+        if self.include_files:
+            curr_file = frame.f_code.co_filename.replace('\\', '/')
+            curr_file = os.path.abspath(curr_file).lower()
+            # print(curr_file,self.include_files)
+            return True in [curr_file.startswith(included_file.lower()) for included_file in self.include_files]
+        return True
     def trace_callback(self, frame, event, arg):
         """
         callback function
         """
         # print(frame.f_code,frame.f_lineno)
-        if frame.f_code.co_name in DISALLOWED_FUNC_NAMES:
-            return 
-        if self.is_stdlib(frame.f_code.co_filename):
+        if not self.check_in_path(frame):
             return
         self.timeline.append((frame.f_lineno,os.path.abspath(frame.f_code.co_filename)))
         return self.trace_callback
@@ -115,20 +131,24 @@ class FlowGen:
         :return builder ,cfg built
         """
         if filename in self.cfg_file_cache:
+            self.file = filename
+            builder,cfg = self.cfg_file_cache[filename]
+            self.cfg = cfg
+            self.builder = builder
             return self.cfg_file_cache[filename]
-        self.file = filename
         builder = CFGBuilder()
         cfg = builder.build_from_file(filename,filename)
         # cfg.build_visual('test1', 'pdf')
         # return cfg
         # cfg.build_visual('test2', 'pdf')
+        self.file = filename
         self.cfg_file_cache[filename] = builder,cfg
         self.cfg = cfg
         self.builder = builder
         # Alter blocks to corresponding blocks
         self.alter_blocks()
         # Map lines to the blocks they belong to
-        self.linesmap = self.map_lines()
+        self.linesmap.update(self.map_lines())
         self.mark_used_blocks()
         self.map_blocks_cfg()
         return builder, cfg
@@ -261,11 +281,11 @@ class FlowGen:
             # time.sleep(5)
             # If previous block is not the same ,means the block has been changed
             # Only build block if and only the block has changed.
-            self.final_dict[i] = {'images':last_file,'line':-1,'file':file}
+            self.final_dict[i] = {'images':last_file,'line':line,'file':file}
             if (line,file) not in self.linesmap:
                 
                 self.final_dict[i]['images']=last_file
-                self.final_dict[i]['line'] = -1
+                self.final_dict[i]['line'] = line
                 continue
             if prev_block != self.linesmap[line,file]: #line,file
                 # If link used is None ,implies a function call has happened, and hence no highlight needed
@@ -387,9 +407,10 @@ class FlowGen:
 from io import StringIO
 class OutputRecorder:
 
-    def __init__(self,filename,func):
+    def __init__(self,filename,func,include_files):
         self.final_dict = {}
         self.step = 1
+        self.include_files = [os.path.abspath(file).lower() for file in include_files] 
         self.record = StringIO()
         self.stdlib_cache = {}
         self.file = filename
@@ -420,10 +441,26 @@ class OutputRecorder:
             status = STDLIB_DIR in Path(path).parents
             self.stdlib_cache[path] = status
             return status
-    def trace_callback(self,frame,event,arg):
+    def check_in_path(self, frame):
+        """
+        Returns whether file in current included files
+        If no included file given , return true for all
+        :param frame:current frame to be checked
+        :return: true if match or no files given to include , else false.
+        """
         if frame.f_code.co_name in DISALLOWED_FUNC_NAMES:
-            return 
+            return False
         if self.is_stdlib(frame.f_code.co_filename):
+            return False
+        if self.include_files:
+            curr_file = frame.f_code.co_filename.replace('\\', '/')
+            curr_file = os.path.abspath(curr_file).lower()
+            # print(curr_file,self.include_files)
+            return True in [curr_file.startswith(included_file.lower()) for included_file in self.include_files]
+        return True
+    def trace_callback(self,frame,event,arg):
+
+        if not self.check_in_path(frame):
             return
         self.final_dict[self.step] = self.record.getvalue()
         self.step+=1

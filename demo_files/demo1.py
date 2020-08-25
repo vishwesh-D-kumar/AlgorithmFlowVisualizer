@@ -13,10 +13,9 @@ def go(matrix):
     # Check for global variables existence
 
 def main():
-    go([[1, 0, 1, 1, 0],
-        [1, 1, 0, 0, 1],
-        [0, 1, 1, 1, 0],
-        [0, 0, 0, 1, 1]])
+    matr = [[1, 0, 1, 1, 0],
+            [1, 1, 1, 1, 1]]
+    go(matr)
 
 if __name__ == "__main__":
     main()

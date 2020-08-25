@@ -8,14 +8,24 @@
 		<style type="text/css">
 					html { height: 100%; overflow:auto; }
 					body { height: 100%; }
+
 		.left-sec{
 			/*height: 100%;*/
 			height: 80vh;
 			overflow-y: auto;
+
+		}
+		.left-sec::-webkit-scrollbar {
+		  display: none;
 		}
 		.right-sec{
 			height: 90vh;
 			overflow-y: auto;
+			-ms-overflow-style: none;
+			scrollbar-width: none; 
+		}
+		.right-sec::-webkit-scrollbar {
+		  display: none;
 		}
 		.bottom-right{
 			height: 10vh;
@@ -28,7 +38,7 @@
 	<div class="d-flex justify-content-between">
 		<div>
 		<h5 class="card-title text-warning">Source Code :  {{ file }}</h5>
-		<div id="code_div">
+		<div id="code_div w-50">
 <pre class = 'left-sec' data-line="{{curr_line}}" id="play">{% for line in source_code %}{% if forloop.counter == curr_line %}<code class ="language-python" id='curr_exec_line'>{{ line }}</code>{% else %}<code class ="language-python" id='curr_exec_line'>{{ line }}</code>{% endif %}
 {% endfor %}
 </pre>
@@ -103,17 +113,17 @@
 		</div>
 
 	<div class="float-right">
-		<a href="step?step={{curr_step}}&all_vars=0;mode=1#play.{{next_line}}" class="btn btn-primary btn-block" data-toggle='tooltip' title="Flowchart" >
+		<a href="step?step={{curr_step}}&all_vars=0;mode=1#play.{{curr_line}}" class="btn btn-primary btn-block" data-toggle='tooltip' title="Flowchart" >
 			<i class="fa fa-arrows-v fa-lg"></i>
 		</a>
-		<a href="step?step={{curr_step}}&all_vars=0;mode=2#play.{{next_line}}" class="btn btn-primary btn-block" data-toggle='tooltip' title="Call Stack"  >
+		<a href="step?step={{curr_step}}&all_vars=0;mode=2#play.{{curr_line}}" class="btn btn-primary btn-block" data-toggle='tooltip' title="Call Stack"  >
 			<i class="fa fa-bars fa-lg"></i>
 		</a>
 		
-		<a href="step?step={{curr_step}}&all_vars=0;mode=3#play.{{next_line}}" class="btn btn-primary btn-block " data-toggle='tooltip' title="Variables"  >
+		<a href="step?step={{curr_step}}&all_vars=0;mode=3#play.{{curr_line}}" class="btn btn-primary btn-block " data-toggle='tooltip' title="Variables"  >
 			<i class="fa fa-table fa-lg"></i>
 		</a>
-		<a href="step?step={{curr_step}}&all_vars=0;mode=4#play.{{next_line}}" class="btn btn-primary btn-block" data-toggle='tooltip' title="Tree Images"  >
+		<a href="step?step={{curr_step}}&all_vars=0;mode=4#play.{{curr_line}}" class="btn btn-primary btn-block" data-toggle='tooltip' title="Tree Images"  >
 			<i class="fa fa-tree fa-lg"></i>
 		</a>
 
@@ -141,15 +151,9 @@
       		// alert('ran')
           // get the inner DOM of alpha.svg
           var svgDoc = a.contentDocument;
+          myElement = svgDoc.getElementById("curr_block");
+          myElement.scrollIntoView({behavior: "auto", block: "center", inline: "center"})
           // get the inner element by id
-          var myElement = svgDoc.getElementById("curr_link");
-          if (myElement) {
-          	myElement.scrollIntoView({behavior: "auto", block: "center", inline: "start"})
-          }
-          else{
-          	myElement = svgDoc.getElementById("curr_block");
-          	myElement.scrollIntoView({behavior: "auto", block: "start", inline: "start"})
-          }
           window.scrollTo(0,0)
           return
 

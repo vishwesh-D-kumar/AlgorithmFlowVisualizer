@@ -5,7 +5,8 @@ from django.http import HttpResponse,HttpResponseRedirect
 from .recursion_visualize.stackgen import go
 from .variableTrace.variable_trace import go_file
 from .flowgen.connect import FlowGen,OutputRecorder
-from pprint import pformat
+from pprint import pformat,pprint
+import json
 # w = go([
 #     [1,0],
 #     [1,1]
@@ -30,7 +31,7 @@ def dbg(s):
 def index(request):
 	return render(request,'viewer/index.html')
 	# pass dict context to pass whatver you want to 
-    # return HttpResponse("###\n".join(str(stack_Tracer.final_dict),str(var_Tracer.final_dict),str(flowchart_generator.final_dict)))
+    # return HttpResponse(<pre>"###\n".join(pformat(stack_Tracer.final_dict),pformat(var_Tracer.final_dict),pformat(flowchart_generator.final_dict))</pre>)
 def run_tracer(request):
 	global step 
 	global var_Tracer
@@ -44,21 +45,32 @@ def run_tracer(request):
 	step = 1
 	file = request.POST['file']
 	func = request.POST['func']
-
+	config_json = request.POST['config']
+	include_files = []
+	if config_json:
+		with open(config_json,'r+') as f:
+			config = json.loads(f.read())
+			file = config['file']
+			func = config['func']
+			include_files = config['include_files']
 		# print(source_code)
 	# return HttpResponse(source_code)
 	# return HttpResponseRedirect('step?step=2')
 	file_dir = os.path.dirname(file)
 	sys.path.append(file_dir)
-	var_Tracer =  go_file(file= file,func = func,include_files = [])
-	stack_Tracer = go(file=file,func = func)
-	flowchart_generator = FlowGen(file,func)
+	if include_files:
+		include_files.append(os.path.abspath(file))
+	flowchart_generator = FlowGen(file,func,include_files)
 	flowchart_generator.generate_flowchart()
-	output_recorder  = OutputRecorder(file,func)
+	# return HttpResponse(f'<pre>{pformat(flowchart_generator.final_dict)}</pre>')
+	var_Tracer =  go_file(file= file,func = func,include_files = include_files)
+	stack_Tracer = go(file=file,func = func,include_files=include_files)
+
+	output_recorder  = OutputRecorder(file,func,include_files)
 	output_recorder.record_output()
 	# return HttpResponse("###<br>".join([str(stack_Tracer.final_dict),str(var_Tracer.final_dict),str(flowchart_generator.final_dict)]))
-	curr_line = flowchart_generator.final_dict[2]["line"]
-	max_step = max(flowchart_generator.final_dict.keys())
+	curr_line = var_Tracer.final_dict[2]["line"]
+	max_step = max(var_Tracer.final_dict.keys())
 	return HttpResponseRedirect(f'step?step=2&all_vars=1;mode=1#play.{curr_line}')
 	for step in var_Tracer.final_dict:
 		var_changes = var_Tracer.final_dict[step]['changes']

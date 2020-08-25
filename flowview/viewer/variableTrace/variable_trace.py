@@ -94,7 +94,6 @@ class Tracer:
         self.include_files = [os.path.abspath(file).lower() for file in include_files]  # Files to include while tracing
         file = os.path.abspath(file)  # In case of relative naming
         file_dir = os.path.dirname(file)
-        self.include_files.append(file)
         # IMP:Does not support case sensitive files right now
         self.changes = []
         self.file = file
@@ -222,7 +221,6 @@ class Tracer:
             return False
         if self.is_stdlib(frame.f_code.co_filename):
             return False
-        return True
         if self.include_files:
             curr_file = frame.f_code.co_filename.replace('\\', '/')
             curr_file = os.path.abspath(curr_file).lower()

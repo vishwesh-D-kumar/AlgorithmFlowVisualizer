@@ -10,15 +10,20 @@
 <body class="bg-dark text-secondary">
 <form action = '/viewer/run_tracer' method="post">
 	{% csrf_token %} 
-  <div class="form-group ">
+  <div class="form-group  ">
     <label for="exampleInputEmail1">File</label>
-    <input  class="form-control" id="exampleInputEmail1"  name="file">
+    <input  class="form-control" id="exampleInputEmail1"  name="file" placeholder="File Name">
   </div>
   <div class="form-group">
     <label for="exampleInputPassword1">Function Name</label>
     <input  class="form-control" id="exampleInputPassword1" placeholder="Function name" name="func">
   </div>
-
+  <h5 class="text-primary" style="text-align: center;"> OR </h5>
+  <div class="form-group">
+    <label for="configJSON"> Config JSON File Path</label>
+    <input  class="form-control" id="sampleJSON" placeholder="Config file path" name="config">
+  </div>
   <button type="submit" class="btn btn-primary">Submit</button>
+
 </form>
 </body>

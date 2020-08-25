@@ -72,13 +72,14 @@ class CallsVisitor(ast.NodeVisitor):
 
 
 class StackVisualizer:
-    def __init__(self, filepath, func):
+    def __init__(self, filepath, func,include_files):
         self.stack = []
         self.prev_line = 0
         self.filepath = filepath
         self.calls_tracer_cache = {self.filepath: CallsVisitor(self.filepath)}
         self.calls_tracer = self.calls_tracer_cache[self.filepath]
         self.func = func
+        self.include_files = [os.path.abspath(file).lower() for file in include_files]
         self.output_dir = self.create_output_dir()
         print(self.output_dir,'$$$',self.filepath)
         self.graph = None
@@ -102,6 +103,24 @@ class StackVisualizer:
             status = STDLIB_DIR in Path(path).parents
             self.stdlib_cache[path] = status
             return status
+    def check_in_path(self, frame):
+        """
+        Returns whether file in current included files
+        If no included file given , return true for all
+        :param frame:current frame to be checked
+        :return: true if match or no files given to include , else false.
+        """
+        if frame.f_code.co_name in DISALLOWED_FUNC_NAMES:
+            return False
+        if self.is_stdlib(frame.f_code.co_filename):
+            return False
+        if self.include_files:
+            curr_file = frame.f_code.co_filename.replace('\\', '/')
+            curr_file = os.path.abspath(curr_file).lower()
+            print(curr_file,self.include_files)
+            return True in [curr_file.startswith(included_file.lower()) for included_file in self.include_files]
+        return True
+
     def trace_callback(self, frame, event, arg):
         # print("#########")
         # pprint(self.stack)
@@ -115,9 +134,7 @@ class StackVisualizer:
         # print("###")
         # input()
         # print(lines_to_leave)
-        if frame.f_code.co_name in DISALLOWED_FUNC_NAMES:
-            return
-        if self.is_stdlib(frame.f_code.co_filename):
+        if not self.check_in_path(frame):
             return
         if event == "call" and self.prev_line != 0:
             if self.prev_file not in self.calls_tracer_cache:
@@ -264,6 +281,7 @@ class StackVisualizer:
 def go(*args,**kwargs):
     filepath = kwargs.pop('file')
     func = kwargs.pop('func')
+    include_files = kwargs.pop('include_files')
     # folder = '/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/flowchart_gen/recursion_visualize/'
     # filepath = "recursiontest.py"
     # filepath = "dptests.py"
@@ -272,7 +290,7 @@ def go(*args,**kwargs):
     filepath = os.path.abspath(filepath)
     # print(generate_flow(filepath, defaultfunc))
     # print(flow)
-    s = StackVisualizer(filepath, func)
+    s = StackVisualizer(filepath, func,include_files)
     s.generate_flow(*args,**kwargs)
     return s
 
