@@ -17,7 +17,7 @@ down = self.hasPath(i, j - 1)
 ans = right or left or down or up
 self.dp[i][j] = 4 if ans else 3
 return ans
-" fillcolor=lightblue shape=rect]
+" fillcolor=lightblue shape=rect id=curr_block]
 		"27_calls" [label="self.hasPath
 self.hasPath
 self.hasPath

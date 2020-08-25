@@ -1,21 +1,51 @@
-digraph "cluster/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/flowchart_gen/leetcode_tests/KthSsmallestElement/run.py" {
+digraph "cluster/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/flowchart_gen/leetcode_tests/inorder_Traversal/run.py" {
 	graph [bgcolor=transparent]
 	node [style=filled]
 	edge [color=white]
-	subgraph clusterkthSmallest {
+	1 [label="def __init__(self, val=0, left=None, right=None):...
+def __str__(self):...
+def __repr__(self):...
+def __eq__(self, other):...
+def inorderTraversal(root):...
+def go():...
+" fillcolor=lightblue shape=rect]
+	subgraph clusterinorderTraversal {
 		graph [bgcolor=transparent]
 		node [style=filled]
 		edge [color=white]
+		22 [label="head = root
+res = []
+stack = []
+stack
+node = None
+" fillcolor=lightblue shape=rect]
+		23 [label="while True:
+" fillcolor=lightblue4 shape=oval]
 		24 [label="while root:
 " fillcolor=lightblue4 shape=oval]
-		27 [label="root = stack.pop()
-k -= 1
+		26 [label="stack.append(root)
+root = root.left
 " fillcolor=lightblue shape=rect]
-		"27_calls" [label="stack.pop" shape=box3d]
-		27 -> "27_calls" [label=calls style=dashed]
-		36 [label="if k == 0:
-" fillcolor=lightblue4 shape=diamond]
-		27 -> 36 [label="" color=black]
-		24 -> 27 [label="(not root)" color=red]
+		"26_calls" [label="stack.append" shape=box3d]
+		26 -> "26_calls" [label=calls style=dashed]
+		26 -> 24 [label="" color=black]
+		24 -> 26 [label=root color=black]
+		27 [label="if not stack:
+" fillcolor=lightblue4 shape=diamond id=curr_block]
+		28 [label="return res
+" fillcolor=lightblue shape=rect]
+		27 -> 28 [label="not stack" color=black]
+		29 [label="node = stack.pop()
+res.append(node.val)
+root = node.right
+" fillcolor=lightblue shape=rect]
+		"29_calls" [label="stack.pop
+res.append" shape=box3d]
+		29 -> "29_calls" [label=calls style=dashed]
+		29 -> 23 [label="" color=black]
+		27 -> 29 [label="(not not stack)" color=black]
+		24 -> 27 [label="(not root)" color=red id=curr_link]
+		23 -> 24 [label=True color=black]
+		22 -> 23 [label="" color=black]
 	}
 }

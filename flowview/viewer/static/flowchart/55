@@ -10,7 +10,7 @@ digraph "cluster/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/djangotri
 " fillcolor=lightblue4 shape=diamond]
 		20 [label="print(f'i:{i},j:{j} in current visit cycle')
 return False
-" fillcolor=lightblue shape=rect]
+" fillcolor=lightblue shape=rect id=curr_block]
 		"20_calls" [label=print shape=box3d]
 		20 -> "20_calls" [label=calls style=dashed]
 		18 -> 20 [label="self.dp[i][j] == 1" color=red]

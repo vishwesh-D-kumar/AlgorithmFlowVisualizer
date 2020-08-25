@@ -1,17 +1,13 @@
 digraph "cluster/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/djangotrials/demo_files/demo2.py" {
-	graph [bgcolor=darkgray label="/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/djangotrials/demo_files/demo2.py"]
+	graph [bgcolor=transparent]
 	node [style=filled]
 	edge [color=white]
-	subgraph clustermain {
-		graph [bgcolor=darkgray label=main]
+	subgraph cluster__init__ {
+		graph [bgcolor=transparent]
 		node [style=filled]
 		edge [color=white]
-		29 [label="matr = [[1, 0, 1], [1, 1, 0], [0, 1, 1]]
-s = Solution(matr)
-s.findPath()
-" fillcolor=lightblue shape=rect]
-		"29_calls" [label="Solution
-s.findPath" shape=box3d]
-		29 -> "29_calls" [label=calls style=dashed]
+		3 [label="self.matrix = matrix
+self.dp = []
+" color=red fillcolor=lightblue shape=rect id=curr_block penwidth=3]
 	}
 }

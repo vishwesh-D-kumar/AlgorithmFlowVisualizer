@@ -11,7 +11,7 @@ digraph "cluster/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/djangotri
 		"7_calls" [label=print shape=box3d]
 		7 -> "7_calls" [label=calls style=dashed]
 		8 [label="return ans
-" fillcolor=lightblue shape=rect]
+" fillcolor=lightblue shape=rect id=curr_block]
 		7 -> 8 [label="" color=red]
 		9 [label="print('Path doesnt exist')
 " fillcolor=lightblue shape=rect]

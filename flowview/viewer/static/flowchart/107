@@ -10,7 +10,7 @@ digraph "cluster/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/djangotri
 " fillcolor=lightblue4 shape=diamond]
 		26 [label="print(f'i:{i},j:{j} path exists , already recorded')
 return True
-" fillcolor=lightblue shape=rect]
+" fillcolor=lightblue shape=rect id=curr_block]
 		"26_calls" [label=print shape=box3d]
 		26 -> "26_calls" [label=calls style=dashed]
 		24 -> 26 [label="self.dp[i][j] == 4" color=red]

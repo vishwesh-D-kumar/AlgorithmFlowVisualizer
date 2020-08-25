@@ -221,7 +221,8 @@ class Tracer:
         if frame.f_code.co_name in DISALLOWED_FUNC_NAMES:
             return False
         if self.is_stdlib(frame.f_code.co_filename):
-            return
+            return False
+        return True
         if self.include_files:
             curr_file = frame.f_code.co_filename.replace('\\', '/')
             curr_file = os.path.abspath(curr_file).lower()

@@ -1,18 +1,51 @@
-digraph "cluster/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/djangotrials/demo_files/demo1.py" {
+digraph "cluster/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/flowchart_gen/leetcode_tests/inorder_Traversal/run.py" {
 	graph [bgcolor=transparent]
 	node [style=filled]
 	edge [color=white]
-	subgraph clusterbinarySearch {
+	1 [label="def __init__(self, val=0, left=None, right=None):...
+def __str__(self):...
+def __repr__(self):...
+def __eq__(self, other):...
+def inorderTraversal(root):...
+def go():...
+" fillcolor=lightblue shape=rect]
+	subgraph clusterinorderTraversal {
 		graph [bgcolor=transparent]
 		node [style=filled]
 		edge [color=white]
-		29 [label="while x is not None:
-" fillcolor=lightblue4 shape=oval]
-		33 [label="if x.data < target:
-" fillcolor=lightblue4 shape=diamond]
-		37 [label="x = x.nextl
+		22 [label="head = root
+res = []
+stack = []
+stack
+node = None
 " fillcolor=lightblue shape=rect]
-		37 -> 29 [label="" color=black]
-		33 -> 37 [label="(x.data >= target)" color=red]
+		23 [label="while True:
+" fillcolor=lightblue4 shape=oval]
+		24 [label="while root:
+" fillcolor=lightblue4 shape=oval]
+		26 [label="stack.append(root)
+root = root.left
+" fillcolor=lightblue shape=rect id=curr_block]
+		"26_calls" [label="stack.append" shape=box3d]
+		26 -> "26_calls" [label=calls style=dashed]
+		26 -> 24 [label="" color=black]
+		24 -> 26 [label=root color=red id=curr_link]
+		27 [label="if not stack:
+" fillcolor=lightblue4 shape=diamond]
+		28 [label="return res
+" fillcolor=lightblue shape=rect]
+		27 -> 28 [label="not stack" color=black]
+		29 [label="node = stack.pop()
+res.append(node.val)
+root = node.right
+" fillcolor=lightblue shape=rect]
+		"29_calls" [label="stack.pop
+res.append" shape=box3d]
+		29 -> "29_calls" [label=calls style=dashed]
+		29 -> 23 [label="" color=black]
+		27 -> 29 [label="(not not stack)" color=black]
+		24 -> 27 [label="(not root)" color=black]
+		23 -> 24 [label=True color=black]
+		22 -> 23 [label="" color=black]
 	}
 }

@@ -32,16 +32,19 @@ root = root.left
 		31 -> 33 [label=root color=black]
 		34 [label="root = stack.pop()
 k -= 1
-" fillcolor=lightblue shape=rect id=curr_block]
+" color=red fillcolor=lightblue shape=rect id=curr_block penwidth=3]
 		"34_calls" [label="stack.pop" shape=box3d]
 		34 -> "34_calls" [label=calls style=dashed]
 		43 [label="if k == 0:
 " fillcolor=lightblue4 shape=diamond]
-		35 [label="return root.val
+		35 [label="print(f'Found Root at stack : {stack} , root: {root.val}')
+return root.val
 " fillcolor=lightblue shape=rect]
+		"35_calls" [label=print shape=box3d]
+		35 -> "35_calls" [label=calls style=dashed]
 		43 -> 35 [label="k == 0" color=black]
 		34 -> 43 [label="" color=black]
-		31 -> 34 [label="(not root)" color=red]
+		31 -> 34 [label="(not root)" color=red id=curr_link]
 		30 -> 31 [label="root or stack" color=black]
 		29 -> 30 [label="" color=black]
 	}

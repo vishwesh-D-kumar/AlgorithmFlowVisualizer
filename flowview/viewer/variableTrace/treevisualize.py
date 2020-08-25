@@ -49,7 +49,7 @@ class VisualTree:
         self.deepcopy_head = self.copy_tree(self.root_node)
         self.is_global = False
         self.step_count = 0
-        # self.graph.node('somehash',label="Link",_attributes={'URL': 'https://github.com/vishwesh-D-kumar/AlgorithmFlowVisualizer/blob/master/LEGEND.png','pos':'-1000,-1000!'})
+        # self.graph.node('somehash',label="Link",_attributes={'URL': 'https://github.com/vishwesh-D-kumar/AlgorithmFlowVisualizer/blob/master/LEGEND.svg','pos':'-1000,-1000!'})
         # node.attr
 
     def copy_tree(self, root):
@@ -101,10 +101,10 @@ class VisualTree:
         # print(self.graph.source)
         self.traverseTree(self.root_node)
         output_dir = 'flowview/viewer/static'
-        self.graph.render(f'{output_dir}/tree/{self.name}{step_count}',format='png')
+        self.graph.render(f'{output_dir}/tree/{self.name}{step_count}',format='svg')
 
-        # self.graph.render(f'viewer/static/tree/{self.name}{step_count}',format='png')
-        filename = f'{output_dir}/tree/{self.name}{step_count}.png'
+        # self.graph.render(f'viewer/static/tree/{self.name}{step_count}',format='svg')
+        filename = f'{output_dir}/tree/{self.name}{step_count}.svg'
         step_count += 1
         return filename
 
@@ -222,9 +222,9 @@ class FullVisualTree:
         self.traverseTree(self.root_node)
         # print(self.graph.source)
         output_dir = 'flowview/viewer/static'
-        self.graph.render(f'{output_dir}/tree/{self.name}{step_count}',format='png')
-        # filename = f'{self.name}{step_count}.png'
-        filename = f'{output_dir}/tree/{self.name}{step_count}.png'
+        self.graph.render(f'{output_dir}/tree/{self.name}{step_count}',format='svg')
+        # filename = f'{self.name}{step_count}.svg'
+        filename = f'{output_dir}/tree/{self.name}{step_count}.svg'
         step_count += 1
         return filename
 

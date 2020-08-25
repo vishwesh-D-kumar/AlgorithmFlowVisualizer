@@ -9,7 +9,7 @@ digraph "cluster/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/djangotri
 		15 [label="if self.matrix[i][j] == 0:
 " fillcolor=lightblue4 shape=diamond]
 		18 [label="if self.dp[i][j] == 1:
-" fillcolor=lightblue4 shape=diamond]
+" fillcolor=lightblue4 shape=diamond id=curr_block]
 		20 [label="print(f'i:{i},j:{j} in current visit cycle')
 return False
 " fillcolor=lightblue shape=rect]

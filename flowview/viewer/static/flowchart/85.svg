@@ -19,7 +19,7 @@
 <text text-anchor="middle" x="204" y="-201.8" font-family="Times,serif" font-size="14.00">if i &gt;= n or i &lt; 0 or j &gt;= m or j &lt; 0:</text>
 </g>
 <!-- 14 -->
-<g id="node2" class="node">
+<g id="curr_block" class="node">
 <title>14</title>
 <polygon fill="lightblue" stroke="black" points="301.69,-138 106.31,-138 106.31,-102 301.69,-102 301.69,-138"/>
 <text text-anchor="middle" x="204" y="-122.8" font-family="Times,serif" font-size="14.00">print(f&#39;i:{i},j:{j} out of bounds&#39;)</text>

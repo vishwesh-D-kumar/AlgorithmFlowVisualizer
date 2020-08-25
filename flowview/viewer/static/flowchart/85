@@ -10,7 +10,7 @@ digraph "cluster/Users/vishweshdkumar/Desktop/gsoc/finalwork/finalrepo/djangotri
 " fillcolor=lightblue4 shape=diamond]
 		14 [label="print(f'i:{i},j:{j} out of bounds')
 return False
-" fillcolor=lightblue shape=rect]
+" fillcolor=lightblue shape=rect id=curr_block]
 		"14_calls" [label=print shape=box3d]
 		14 -> "14_calls" [label=calls style=dashed]
 		35 -> 14 [label="i >= n or i < 0 or j >= m or j < 0" color=red]

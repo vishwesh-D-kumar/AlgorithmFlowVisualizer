@@ -13,7 +13,7 @@
 <polygon fill="transparent" stroke="black" points="8,-8 8,-146 472,-146 472,-8 8,-8"/>
 </g>
 <!-- 13 -->
-<g id="node1" class="node">
+<g id="curr_block" class="node">
 <title>13</title>
 <polygon fill="lightblue" stroke="black" points="254.3,-138 109.7,-138 109.7,-102 254.3,-102 254.3,-138"/>
 <text text-anchor="middle" x="182" y="-122.8" font-family="Times,serif" font-size="14.00">n = len(self.matrix)</text>

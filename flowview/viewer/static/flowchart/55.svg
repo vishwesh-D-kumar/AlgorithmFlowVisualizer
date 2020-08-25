@@ -19,7 +19,7 @@
 <text text-anchor="middle" x="133" y="-201.8" font-family="Times,serif" font-size="14.00">if self.dp[i][j] == 1:</text>
 </g>
 <!-- 20 -->
-<g id="node2" class="node">
+<g id="curr_block" class="node">
 <title>20</title>
 <polygon fill="lightblue" stroke="black" points="249.87,-138 16.13,-138 16.13,-102 249.87,-102 249.87,-138"/>
 <text text-anchor="middle" x="133" y="-122.8" font-family="Times,serif" font-size="14.00">print(f&#39;i:{i},j:{j} in current visit cycle&#39;)</text>

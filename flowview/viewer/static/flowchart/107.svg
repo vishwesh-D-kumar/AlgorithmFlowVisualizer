@@ -19,7 +19,7 @@
 <text text-anchor="middle" x="157" y="-201.8" font-family="Times,serif" font-size="14.00">if self.dp[i][j] == 4:</text>
 </g>
 <!-- 26 -->
-<g id="node2" class="node">
+<g id="curr_block" class="node">
 <title>26</title>
 <polygon fill="lightblue" stroke="black" points="298.34,-138 15.66,-138 15.66,-102 298.34,-102 298.34,-138"/>
 <text text-anchor="middle" x="157" y="-122.8" font-family="Times,serif" font-size="14.00">print(f&#39;i:{i},j:{j} path exists , already recorded&#39;)</text>

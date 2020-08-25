@@ -19,7 +19,7 @@
 <text text-anchor="middle" x="128" y="-327.8" font-family="Times,serif" font-size="14.00">if self.dp[i][j] == 4:</text>
 </g>
 <!-- 27 -->
-<g id="node2" class="node">
+<g id="curr_block" class="node">
 <title>27</title>
 <polygon fill="lightblue" stroke="black" points="225.75,-264 30.25,-264 30.25,-130 225.75,-130 225.75,-264"/>
 <text text-anchor="middle" x="128" y="-248.8" font-family="Times,serif" font-size="14.00">ans = False</text>

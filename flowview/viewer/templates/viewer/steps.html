@@ -12,8 +12,18 @@ pre.code code::before {  content: counter(listing) ". ";  display: inline-block;
 
 		.top-bar{
   height:30%;
-  overflow-y: hidden;
+  overflow-y: visible;
 			padding-left: 20px;
+}
+
+.my-custom-scrollbar {
+position: relative;
+height: 170px;
+overflow: auto;
+}
+
+.table-wrapper-scroll-y {
+display: block;
 }
 		.mid-bar{
   height:50%;
@@ -26,7 +36,12 @@ pre.code code::before {  content: counter(listing) ". ";  display: inline-block;
 		.scrollable{
 			overflow-y: scroll;
 		}
-
+		.expandable{
+			overflow-y: hidden;
+		}
+		.expandable:hover{
+			overflow-y: visible;
+		}
 
 	</style>
 </head>
@@ -34,7 +49,7 @@ pre.code code::before {  content: counter(listing) ". ";  display: inline-block;
 <body class="bg-dark text-secondary">
 <!--<div class="text-secondary">-->
 <div class="row top-bar">
-	<section class="w-50 pre-scrollable">
+	<section class="w-50 pre-scrollable ">
 		<div class="btn-group btn-group-toggle" data-toggle="buttons">
 			{% if show_all_vars == 2 %}
 		  <label class="btn btn-secondary active ">
@@ -54,8 +69,10 @@ pre.code code::before {  content: counter(listing) ". ";  display: inline-block;
 		    </a>
 		  </label>
 		</div>
+	<div class="table-wrapper-scroll-y my-custom-scrollbar">
 	{% if  show_all_vars == 2 %}
-	<table class = "table  table-dark table-bordered pre-scrollable">
+
+	<table class = "table  table-dark table-bordered">
 	<thead>
 		<tr>
 			<th scope="col"> Name </th>
@@ -96,10 +113,11 @@ pre.code code::before {  content: counter(listing) ". ";  display: inline-block;
 	</tbody>
 	</table>
 	{% endif %}
+</div>
 	</section>
 
 	{% for img in tree_images %}
-		<div class="pre-scrollable h-100">
+		<div class="h-100 expandable">
 			<div>
 			<img src="{% static ''|add:img %}"></img>
 		<!-- <img src="tree.png"></img> -->
@@ -153,7 +171,7 @@ pre.code code::before {  content: counter(listing) ". ";  display: inline-block;
 		</div>
 <!--	</div>-->
 </body>
-<html>
+</html>
 	<script>
 	  // alert( 'Hello, world!' );
 	  document.getElementById('code_div').scrollTop = 0;
@@ -172,8 +190,14 @@ pre.code code::before {  content: counter(listing) ". ";  display: inline-block;
           // get the inner DOM of alpha.svg
           var svgDoc = a.contentDocument;
           // get the inner element by id
-          var myElement = svgDoc.getElementById("curr_block");
-          myElement.scrollIntoView({behavior: "auto", block: "start", inline: "start"})
+          var myElement = svgDoc.getElementById("curr_link");
+          if (myElement) {
+          	myElement.scrollIntoView({behavior: "auto", block: "center", inline: "start"})
+          }
+          else{
+          	myElement = svgDoc.getElementById("curr_block");
+          	myElement.scrollIntoView({behavior: "auto", block: "start", inline: "start"})
+          }
           window.scrollTo(0,0)
           return
           // var myElement = document.getElementById('curr_exec_line');

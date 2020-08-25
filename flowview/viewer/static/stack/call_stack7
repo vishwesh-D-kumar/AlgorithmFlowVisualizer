@@ -1,5 +1,5 @@
 digraph "Call Stack" {
 	graph [bgcolor=transparent]
 	node [shape=record style=filled]
-	call_stack [label="{{<f0> Solution(matr)| line:60| args \{'matrix': \[\[1, 0, 1\], \[1, 1, 0\], \[0, 1, 1\]\]\}}}" fillcolor=lightblue]
+	call_stack [label="{{<f0> go(matr)| line:59| args \{'matrix': \[\[1, 0, 1\], \[1, 1, 0\], \[0, 1, 1\]\]\}}}" fillcolor=lightblue]
 }

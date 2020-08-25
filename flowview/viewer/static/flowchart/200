@@ -17,7 +17,7 @@ range
 self.hasPath" shape=box3d]
 		6 -> "6_calls" [label=calls style=dashed]
 		34 [label="if ans:
-" fillcolor=lightblue4 shape=diamond]
+" fillcolor=lightblue4 shape=diamond id=curr_block]
 		7 [label="print('Path exists')
 " fillcolor=lightblue shape=rect]
 		"7_calls" [label=print shape=box3d]

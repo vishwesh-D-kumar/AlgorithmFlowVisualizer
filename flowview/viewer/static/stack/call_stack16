@@ -1,5 +1,5 @@
 digraph "Call Stack" {
 	graph [bgcolor=transparent]
 	node [shape=record style=filled]
-	call_stack [label="{{<f0> TreeNode(4)| line:41| args \{'val': 4, 'left': None, 'right': None\}}}" fillcolor=lightblue]
+	call_stack [label="{{<f0> TreeNode(4)| line:42| args \{'val': 4, 'left': None, 'right': None\}}}" fillcolor=lightblue]
 }

@@ -201,7 +201,7 @@ class CFG(object):
         #Using shape paramater to change shape of block
         if block.used:
             if block.is_curr:
-                graph.node(str(block.id), label=nodelabel, shape=block.shape, fillcolor=block.color,_attributes={'id':'curr_block'})
+                graph.node(str(block.id), label=nodelabel, shape=block.shape, fillcolor=block.color,color='red',_attributes={'id':'curr_block','penwidth':'3'})
             else:
                 graph.node(str(block.id), label=nodelabel,shape=block.shape,fillcolor=block.color)
         visited.append(block.id)
@@ -221,8 +221,10 @@ class CFG(object):
             edgelabel = exit.get_exitcase().strip()
             #Only draw links if the corresponding exits are being utilsed
             if exit.target.used and block.used:
-                graph.edge(str(block.id), str(exit.target.id), label=edgelabel, color="red" if exit.used else "black")
-
+                if exit.used:
+                    graph.edge(str(block.id), str(exit.target.id), label=edgelabel, color="red",_attributes={'id':'curr_link'})
+                else:
+                    graph.edge(str(block.id), str(exit.target.id), label=edgelabel, color="black")
     def _build_visual(self, format='pdf', calls=True):
         graph = gv.Digraph(name='cluster' + self.name, format=format,
                            graph_attr={'bgcolor':'transparent'},

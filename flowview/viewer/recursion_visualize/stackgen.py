@@ -187,7 +187,7 @@ class StackVisualizer:
     # @profile
     def render(self,ret_val=None,ret_condition=None):
         # For vertical orientation use rankdir, {} for flipping orientation
-        graph = gv.Digraph('Call Stack', filename='call_stack', node_attr={'shape': 'record','style': 'filled'},format='png',
+        graph = gv.Digraph('Call Stack', filename='call_stack', node_attr={'shape': 'record','style': 'filled'},format='svg',
              graph_attr={'bgcolor':'transparent'})
         # graph.graph_attr = {'size': '8.3,11.7!', 'ratio': 'fill','margin':'0'}
         call_stack = "{"
@@ -212,8 +212,8 @@ class StackVisualizer:
         graph.node('call_stack', call_stack,_attributes ={'fillcolor':'lightblue'})
         print("rendered at",f'{self.output_dir}/call_stack{self.step}')
         graph.render(filename=f'{self.output_dir}/call_stack{self.step}',view=False)
-        self.final_dict[self.step]= {'line':self.prev_line,'images':f'{self.output_dir}/call_stack{self.step}.png','return':True if ret_condition is not None else False}
-        self.prev_image = f'{self.output_dir}/call_stack{self.step}.png'
+        self.final_dict[self.step]= {'line':self.prev_line,'images':f'{self.output_dir}/call_stack{self.step}.svg','return':True if ret_condition is not None else False}
+        self.prev_image = f'{self.output_dir}/call_stack{self.step}.svg'
         self.step += 1
 
 

@@ -13,7 +13,7 @@ m = len(self.matrix[0])
 len" shape=box3d]
 		13 -> "13_calls" [label=calls style=dashed]
 		35 [label="if i >= n or i < 0 or j >= m or j < 0:
-" fillcolor=lightblue4 shape=diamond]
+" fillcolor=lightblue4 shape=diamond id=curr_block]
 		14 [label="print(f'i:{i},j:{j} out of bounds')
 return False
 " fillcolor=lightblue shape=rect]

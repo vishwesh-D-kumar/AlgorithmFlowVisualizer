@@ -13,6 +13,7 @@ DISALLOWED_FUNC_NAMES = {"<genexpr>", "<listcomp>", "<dictcomp>", "<setcomp>"}
 STDLIB_DIR = Path(abc.__file__).parent
 COMPLETE_FLOW  = True
 
+
 class FlowGen:
     def __init__(self, file, func, *args):
         """
@@ -27,25 +28,22 @@ class FlowGen:
         self.args = args
         self.stdlib_cache = {}
         self.block_image_cache= {}
+        self.blocks_to_cfg = {}
+        self.cfg_file_cache = {}
         # Cfg generation
-        self.builder, self.cfg = self.get_cfg()
+        self.timeline = []
+
+        self.get_timeline()
+        self.builder, self.cfg = self.get_cfg(self.file)
         # Timeline generating parameters
         # List of lines executed on every step
-        self.timeline = []
+
         # Here the main timeline generating function occurs
-        self.get_timeline()
-        # Alter blocks to corresponding blocks
-        self.alter_blocks()
-        # Map lines to the blocks they belong to
-        self.linesmap = self.map_lines()
+        
         # alter timeline to show used blocks only
         # self.timeline = self.alter_timeline()
-        self.blocks_to_cfg = self.map_blocks_cfg()
-        pprint(self.linesmap)
         # print(self.timeline)
         # marking visited blocks and cfgs
-        if COMPLETE_FLOW:
-            self.mark_used_blocks()
         # self.mark_used_cfg()
         
         pprint([(block.used, block.at()) for block in self.cfg.net_blocks])
@@ -91,7 +89,7 @@ class FlowGen:
             return 
         if self.is_stdlib(frame.f_code.co_filename):
             return
-        self.timeline.append(frame.f_lineno)
+        self.timeline.append((frame.f_lineno,os.path.abspath(frame.f_code.co_filename)))
         return self.trace_callback
 
     def get_timeline(self):
@@ -110,17 +108,29 @@ class FlowGen:
         func(*self.args)
         sys.settrace(curr_tracer)
 
-    def get_cfg(self):
+    def get_cfg(self,filename):
         """
 
         Gets cfg built by staticfg, for post processing
         :return builder ,cfg built
         """
+        if filename in self.cfg_file_cache:
+            return self.cfg_file_cache[filename]
+        self.file = filename
         builder = CFGBuilder()
-        cfg = builder.build_from_file(self.file,self.file)
+        cfg = builder.build_from_file(filename,filename)
         # cfg.build_visual('test1', 'pdf')
         # return cfg
         # cfg.build_visual('test2', 'pdf')
+        self.cfg_file_cache[filename] = builder,cfg
+        self.cfg = cfg
+        self.builder = builder
+        # Alter blocks to corresponding blocks
+        self.alter_blocks()
+        # Map lines to the blocks they belong to
+        self.linesmap = self.map_lines()
+        self.mark_used_blocks()
+        self.map_blocks_cfg()
         return builder, cfg
 
     # Flowchart generating functions
@@ -245,27 +255,28 @@ class FlowGen:
         main_file = last_file
         # for cfg in self.cfg.functioncfgs:
         #     cfg.used = False
-        for line in timeline:
+        for line,file in timeline:
             i+=1
+            self.get_cfg(os.path.abspath(file))
             # time.sleep(5)
             # If previous block is not the same ,means the block has been changed
             # Only build block if and only the block has changed.
-            self.final_dict[i] = {}
-            if line not in self.linesmap:
+            self.final_dict[i] = {'images':last_file,'line':-1,'file':file}
+            if (line,file) not in self.linesmap:
                 
                 self.final_dict[i]['images']=last_file
                 self.final_dict[i]['line'] = -1
                 continue
-            if prev_block != self.linesmap[line]:
+            if prev_block != self.linesmap[line,file]: #line,file
                 # If link used is None ,implies a function call has happened, and hence no highlight needed
                 if link_used_last is not None:
                     link_used_last.used = False
-                link_used_last = self.highlight_link_between(prev_block, self.linesmap[line])
+                link_used_last = self.highlight_link_between(prev_block, self.linesmap[line,file])
                 # Build output if visual specified
                 if visual:
                     self.final_dict[i]['images'] = f'{output_dir}/flowchart/{i}.svg'
                     self.final_dict[i]['line'] = line
-                    curr_block = self.linesmap[line]
+                    curr_block = self.linesmap[line,file] #line,file
                     print(curr_block.at(),line,self.cfg.used,i,line,"#$#")
                     if curr_block not in self.blocks_to_cfg:
                         self.final_dict[i]['images'] = main_file
@@ -277,7 +288,7 @@ class FlowGen:
                         curr_block.is_curr = True
                         if not COMPLETE_FLOW:
                             self.activate_current_blocks(curr_block,True)
-                        self.cfg.build_visual(f'{output_dir}/flowchart/{i}', format='svg', show=False)
+                        self.cfg.build_visual(f'{output_dir}/flowchart/{i}', format='svg', show=False) # cfgmap
                         curr_cfg.used = False
                         if not COMPLETE_FLOW:
                             self.activate_current_blocks(curr_block,False)
@@ -285,11 +296,11 @@ class FlowGen:
                         self.block_image_cache[(curr_block,link_used_last)] = f'{output_dir}/flowchart/{i}.svg'
                         # curr_block.used = False
                     last_file = self.final_dict[i]['images']
-                blocks_timeline.append(self.linesmap[line])
+                blocks_timeline.append(self.linesmap[line,file])
             else:
                 self.final_dict[i]['images'] = last_file
                 self.final_dict[i]['line'] = line
-            prev_block = self.linesmap[line]
+            prev_block = self.linesmap[line,file]
         # pprint(blocks_timeline)
         dbg = []
         for block in blocks_timeline:
@@ -308,13 +319,12 @@ class FlowGen:
 
 
     def map_blocks_cfg(self):
-        blocks_to_cfg = {block:self.cfg for block in self.cfg}
+        self.blocks_to_cfg.update({block:self.cfg for block in self.cfg})
         # blocks_to_cfg = {}
         for funccfg in self.cfg.functioncfgs:
             for block in self.cfg.functioncfgs[funccfg]:
-                blocks_to_cfg[block] = self.cfg.functioncfgs[funccfg]
+                self.blocks_to_cfg[block] = self.cfg.functioncfgs[funccfg]
         
-        return blocks_to_cfg
     def map_lines(self):
         """
 
@@ -332,7 +342,7 @@ class FlowGen:
             if not end_statement and not start_statement:
                 continue
             for i in range(start_statement, end_statement + 1):
-                linesmap[i] = block
+                linesmap[i,self.file] = block
 
         return linesmap
 
@@ -340,9 +350,9 @@ class FlowGen:
         """
         function marks which all blocks are visited , and cfgs are visited by algorithm in runtime
         """
-        for line in self.timeline:
-            if line in self.linesmap:
-                block = self.linesmap[line]
+        for line,file in self.timeline:
+            if (line,file) in self.linesmap:
+                block = self.linesmap[line,file]
                 block.used = True
 
     def mark_used_cfg(self):

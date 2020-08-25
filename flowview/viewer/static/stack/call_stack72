@@ -1,0 +1,9 @@
+digraph "Call Stack" {
+	graph [bgcolor=transparent]
+	node [shape=record style=filled]
+	return_node [label="Condition used : (not stack)
+
+ Return Value : [1, 3, 2, 4]" color=lightblue4 shape=ellipse]
+	call_stack:f0 -> return_node
+	call_stack [label="{{<f0> inorderTraversal(a)| line:43| args \{'root': 1 3 2 4\}}}" fillcolor=lightblue]
+}

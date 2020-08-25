@@ -1,4 +1,8 @@
 digraph "Call Stack" {
-	node [shape=record]
-	call_stack [label="{{<f0> s.findPath()| line:51| args \{\}}|{<f1> self.hasPath(0, 0)| line:12| args \{'i': 0, 'j': 0\}}|{<f2> self.hasPath(i + 1, j)| line:33| args \{'i': 1, 'j': 0\}}|{<f3> self.hasPath(i, j + 1)| line:35| args \{'i': 1, 'j': 1\}}}"]
+	graph [bgcolor=transparent]
+	node [shape=record style=filled]
+	return_node [label="Condition used : No Test
+ Return Value : 3" color=lightblue4 shape=ellipse]
+	call_stack:f1 -> return_node
+	call_stack [label="{{<f0> kthSmallest(a, 1)| line:47| args \{'root': 3, 'k': 1\}}|{<f1> print(f'Found Root at stack : \{stack\} , root: \{root.val\}')| line:35| args \{\}}}" fillcolor=lightblue]
 }
