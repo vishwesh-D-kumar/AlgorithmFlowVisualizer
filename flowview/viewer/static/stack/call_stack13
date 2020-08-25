@@ -1,8 +1,0 @@
-digraph "Call Stack" {
-	graph [bgcolor=transparent]
-	node [shape=record style=filled]
-	return_node [label="Condition used : No Test
- Return Value : None" color=lightblue4 shape=ellipse]
-	call_stack:f1 -> return_node
-	call_stack [label="{{<f0> go(matr)| line:59| args \{'matrix': \[\[1, 0, 1\], \[1, 1, 0\], \[0, 1, 1\]\]\}}|{<f1> demo2.Solution(matrix)| line:8| args \{'matrix': \[\[1, 0, 1\], \[1, 1, 0\], \[0, 1, 1\]\]\}}}" fillcolor=lightblue]
-}

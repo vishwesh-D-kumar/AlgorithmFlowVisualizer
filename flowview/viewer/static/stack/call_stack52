@@ -1,8 +1,0 @@
-digraph "Call Stack" {
-	graph [bgcolor=transparent]
-	node [shape=record style=filled]
-	return_node [label="Condition used : No Test
- Return Value : 3" color=lightblue4 shape=ellipse]
-	call_stack:f2 -> return_node
-	call_stack [label="{{<f0> kthSmallest(a, 1)| line:47| args \{'root': 3, 'k': 1\}}|{<f1> print(f'Found Root at stack : \{stack\} , root: \{root.val\}')| line:35| args \{\}}|{<f2> self.__str__()| line:16| args \{\}}}" fillcolor=lightblue]
-}

@@ -1,5 +1,0 @@
-digraph "Call Stack" {
-	graph [bgcolor=transparent]
-	node [shape=record style=filled]
-	call_stack [label="{{<f0> binarySearch(root, -2)| line:40| args \{'root': <demo1.Node object at 0x10ef291d0>, 'target': -2\}}}" fillcolor=lightblue]
-}

@@ -1,6 +1,0 @@
-digraph {
-	graph [bgcolor=transparent]
-	node [fillcolor=lightblue style=filled]
-	label="Graph of variable: root"
-	1 [label=1]
-}

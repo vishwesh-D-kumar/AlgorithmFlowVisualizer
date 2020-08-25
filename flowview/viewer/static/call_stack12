@@ -1,5 +1,0 @@
-digraph "Call Stack" {
-	graph [size="8,5!"]
-	node [shape=record]
-	call_stack [label="{{<f0> s.findPath()| line:51| args \{\}}}"]
-}

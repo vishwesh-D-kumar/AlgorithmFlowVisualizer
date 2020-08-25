@@ -1,5 +1,0 @@
-digraph "Call Stack" {
-	graph [bgcolor=transparent]
-	node [shape=record style=filled]
-	call_stack [label="}" fillcolor=lightblue]
-}

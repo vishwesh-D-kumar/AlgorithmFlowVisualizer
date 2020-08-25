@@ -1,5 +1,0 @@
-digraph "Call Stack" {
-	graph [bgcolor=transparent]
-	node [shape=record style=filled]
-	call_stack [label="{{<f0> TreeNode(2)| line:43| args \{'val': 2, 'left': None, 'right': None\}}}" fillcolor=lightblue]
-}
