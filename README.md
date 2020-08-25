@@ -86,12 +86,12 @@ l(i+1,j-1)|line 72| args {'x':20,'y':32}
 
 * Variable Tracing :
 
-[demo_vars](variable_demo.png)
+![demo_vars](variable_demo.png)
 
 
 * Tree Visualizations : 
 
-[demo_trees](tree_demo.png)
+![demo_trees](tree_demo.png)
 
 Steps to mark variables for variable tracing 
     
@@ -162,7 +162,7 @@ Important Limitations :
 ``` go([[1,2,3],
           [1,2,3]])
           # will raise an error
-    go([[1,2,3],[1,2,3]]) # wont raise an error
+    go([[1,2,3],[1,2,3]]) # won't raise an error
 ```
 * Multiexpression Lines are not supported  of the sort ```rec(i,j) = rec(i-1,j-1) + rec(i-2,j-2)```.
 One function call per line is supported. Calls of these sort can be broken down into
@@ -176,4 +176,9 @@ One function call per line is supported. Calls of these sort can be broken down 
 For control flow graph visualizations: 
 
 I am currently using the [my public fork of StatiCfg](https://github.com/vishwesh-D-kumar/staticfg).
+
+This [PR](https://github.com/coetaur0/staticfg/pull/13) has been sent also , containing general purpose improvements.
+
+[UPDATE] The above PR has been merged into master of StatiCfg !
+
  
