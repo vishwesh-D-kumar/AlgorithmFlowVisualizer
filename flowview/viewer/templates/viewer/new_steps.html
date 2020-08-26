@@ -109,12 +109,13 @@
 					<img src="{% static ''|add:img %}"></img>
 				</div>
 				{% endif %}
+				{% if not tree_images|length|divisibleby:"2" %}
+					</div>
+				{% endif %}
 			<!-- </div> -->
 		{% endfor %}
 			{% endif %}
-			{% if not tree_images|length|divisibleby:"2" %}
-				</div>
-			{% endif %}
+
 		
 		</div>
 
