@@ -133,8 +133,11 @@
 		<a href="step?step={{curr_step}}&all_vars=0;mode=4#play.{{curr_line}}" class="btn btn-primary btn-block" data-toggle='tooltip' title="Tree Images"  >
 			<i class="fa fa-tree fa-lg"></i>
 		</a>
-
+		{% if curr_step == max_step %}
+			<a href="step?step={{curr_step}}&all_vars=0;mode={{curr_mode}}#play.{{curr_line}}" class="btn btn-success btn-block " data-toggle='tooltip' title="Next"  >
+		{% else %}
 		<a href="step?step={{curr_step|add:1}}&all_vars=0;mode={{curr_mode}}#play.{{next_line}}" class="btn btn-success btn-block " data-toggle='tooltip' title="Next"  >
+		{% endif %}
 			<i class="fa fa-angle-double-right fl"></i>
 		</a>
 		<a href="step?step={{curr_step|add:'-1'}}&all_vars=0;mode={{curr_mode}}#play.{{prev_line}}" class="btn btn-success btn-block " data-toggle='tooltip' title="Previous Step"  >

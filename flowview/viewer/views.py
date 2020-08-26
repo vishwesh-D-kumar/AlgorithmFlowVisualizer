@@ -145,7 +145,8 @@ def show_step(request):
 		'curr_output':curr_output,
 		'next_line':next_line,
 		'prev_line':prev_line,
-		'curr_mode':curr_mode})
+		'curr_mode':curr_mode,
+		'max_step':max_step})
 
 
 
