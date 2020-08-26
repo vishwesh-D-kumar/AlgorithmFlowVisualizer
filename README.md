@@ -83,6 +83,14 @@ assuming the value of i+1 is 20 , j-1 is 32 , lets say , the corresponding stack
 ```
 l(i+1,j-1)|line 72| args {'x':20,'y':32}
 ```
+Corresponding to every return : we have a bubble containing the following attached to the stack entry to be popped
+
+1. Return value of the function call
+
+2. Conditional evaluated to get to return statement. This is exceptionally helpful in visualizing recursive dp algorithms, where the base case used can be seen corresponding to stack popped.
+
+As can be seen in the image shown as a demo: the condtional used is ``` i >= n or i < 0 or j >= m or j < 0: ```
+With a return value of False
 
 * Variable Tracing :
 
