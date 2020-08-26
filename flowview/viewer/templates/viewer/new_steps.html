@@ -99,6 +99,7 @@
 			</tbody>
 			</table>
 			{% else %}
+				{{ tree_images }}
 				{% for img in tree_images %}
 			<!-- <div> -->
 				{% if forloop.counter|add:"-1"|divisibleby:"2" %}
@@ -109,11 +110,12 @@
 					<img src="{% static ''|add:img %}" style="width: 20vm"></img>
 				</div>
 				{% endif %}
+
+			<!-- </div> -->
+		{% endfor %}
 				{% if not tree_images|length|divisibleby:"2" %}
 					</div>
 				{% endif %}
-			<!-- </div> -->
-		{% endfor %}
 			{% endif %}
 
 		

@@ -34,6 +34,15 @@ python3 flowview/manage.py runserver >log
 
 * You can also keep a config json file handy , which would avoid the hassle of reentering the same 
 
+
+## For a demo 
+
+ enter : "config2.json"  in the config json path textbox to see the visualization of an inorder traversal 
+
+ enter : "config1.json" and see a multi file depth frst search being visualized 
+
+ enter "config3.json" to see a Add 2 Numbers in a linked list
+
 Configuration of the json file :
 
 Fields :
