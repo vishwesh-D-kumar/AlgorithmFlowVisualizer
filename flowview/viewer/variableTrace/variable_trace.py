@@ -286,6 +286,15 @@ class LocalsTracer:
     #     self.variables.append(new_var)
 
     def add(self, var):
+        cmp_name = var.name
+        if type(var)!= VisualTree and type(var)!=FullVisualTree and var.attr :
+            cmp_name+="."+var.attr
+        for var_stored in self.variables:
+            stored_name = var_stored.name
+            if type(var_stored)!= VisualTree and type(var_stored)!=FullVisualTree and var_stored.attr:
+                stored_name+="."+var_stored.attr
+            if stored_name==cmp_name:
+                return
         self.variables.append(var)
 
     def check(self, frame):

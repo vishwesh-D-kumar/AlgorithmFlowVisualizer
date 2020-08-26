@@ -88,14 +88,11 @@ l(i+1,j-1)|line 72| args {'x':20,'y':32}
 
 ![demo_vars](variable_demo.png)
 
-
-* Tree Visualizations : 
-
-![demo_trees](tree_demo.png)
-
 Steps to mark variables for variable tracing 
     
+
 ```python
+
 # Normal Variables :
 
 x = 0 # watchvar x
@@ -103,6 +100,28 @@ x = 0 # watchvar x
 # Attributes of classes 
 
 node.neighbours = [node1,node2] # watchvar node.neighbours
+```
+
+
+Once a variable is marked for tracing, it will be traced through all function calls that are made : provided either of the two conditions are satisfied 
+
+* The variable is mutable 
+
+* The variable is passed as an argument to the function call
+
+* The object the variable is bound to , is passed as an argument to the call
+
+
+
+
+* Tree Visualizations : 
+
+![demo_trees](tree_demo.png)
+
+Steps to mark trees for visualizations , and adding referrers
+    
+```python
+
 class Node:
     def __init__(self, val):
         self.val = val

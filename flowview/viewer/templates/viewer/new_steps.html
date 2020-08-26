@@ -2,7 +2,6 @@
 <head><link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
-	<script src="{% static 'themes/prism.js' %}"></script>
 
 	<link href="{% static 'themes/prism-material-dark.css' %}" rel="stylesheet" />
 		<style type="text/css">
@@ -101,13 +100,20 @@
 			</table>
 			{% else %}
 				{% for img in tree_images %}
-		<div class="h-100 expandable">
-			<div>
+			<!-- <div> -->
+				{% if forloop.counter|add:"-1"|divisibleby:"2" %}
+				<div>
 			<img src="{% static ''|add:img %}"></img>
 		<!-- <img src="tree.png"></img> -->
-			</div>
-		</div>
+				{% else %}
+					<img src="{% static ''|add:img %}"></img>
+				</div>
+				{% endif %}
+			<!-- </div> -->
 		{% endfor %}
+			{% endif %}
+			{% if not tree_images|length|divisibleby:"2" %}
+				</div>
 			{% endif %}
 		
 		</div>
@@ -163,6 +169,8 @@
 
 	</script>
 	{% endif %}
+
+<script src="{% static 'themes/prism.js' %}"></script>
 <script>
 	function windowReset() {
 
