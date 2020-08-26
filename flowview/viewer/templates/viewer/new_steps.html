@@ -37,7 +37,7 @@
 	<div class="d-flex justify-content-between">
 		<div>
 		<h5 class="card-title text-warning">Source Code :  {{ file }}</h5>
-		<div id="code_div w-50">
+		<div id="code_div w-50" style="width: 50vw">
 <pre class = 'left-sec' data-line="{{curr_line}}" id="play">{% for line in source_code %}{% if forloop.counter == curr_line %}<code class ="language-python" id='curr_exec_line'>{{ line }}</code>{% else %}<code class ="language-python" id='curr_exec_line'>{{ line }}</code>{% endif %}
 {% endfor %}
 </pre>
@@ -52,10 +52,10 @@
 		<div class="right-sec w-50">
 			{% if curr_mode == 1 %}
 			<h5 class="card-title text-warning"> Runtime Flowchart</h5>
-			<object  type = "image/svg+xml" id = 'flowchart_image' data="{% static ''|add:flowchart_images %}"></object>
+			<object  type = "image/svg+xml" id = 'flowchart_image' data="{% static ''|add:flowchart_images %}" style="width: 40vm"></object>
 			{% elif curr_mode == 2 %}
 			<h5 class="card-title text-warning"> Current Call Stack</h5>
-			<img src="{% static ''|add:stack_images %}"></img>
+			<img src="{% static ''|add:stack_images %}" style="width: 40vw"></img>
 			{% elif curr_mode == 3 %}
 			<h5 class="card-title text-warning"> All Variables</h5>
 			<table class = "table  table-dark table-bordered">
@@ -103,10 +103,10 @@
 			<!-- <div> -->
 				{% if forloop.counter|add:"-1"|divisibleby:"2" %}
 				<div>
-			<img src="{% static ''|add:img %}"></img>
+			<img src="{% static ''|add:img %}" style="width: 20vm"></img>
 		<!-- <img src="tree.png"></img> -->
 				{% else %}
-					<img src="{% static ''|add:img %}"></img>
+					<img src="{% static ''|add:img %}" style="width: 20vm"></img>
 				</div>
 				{% endif %}
 				{% if not tree_images|length|divisibleby:"2" %}
