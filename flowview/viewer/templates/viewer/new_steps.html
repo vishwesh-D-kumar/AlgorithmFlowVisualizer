@@ -71,7 +71,7 @@
 			{% for name,value  in all_vars %}
 			<tr>
 				<th scope="row">{{ name }}</th>
-				<td>{{ value }}</td> 
+				<td><pre><span style="color:white;">{{ value }}</span></pre></td> 
 			</tr>
 			{% endfor %}
 			</tbody>
@@ -92,8 +92,8 @@
 			{% for name,prev,new,line,file  in var_changes %}
 			<tr>
 				<th scope="row">{{ name }}</th>
-				<td>{{ prev }}</td> 
-				<td>{{ new }}</td>
+				<td><pre><span style="color:white;">{{ prev }}</span></pre></td> 
+				<td><pre><span style="color:white;">{{ new }}</span></pre></td>
 			</tr>
 			{% endfor %}
 			</tbody>

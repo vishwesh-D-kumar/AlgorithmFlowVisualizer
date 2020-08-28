@@ -157,7 +157,7 @@ class StackVisualizer:
 
         elif event == "return":
             if self.stack:
-                return_condition = self.calls_tracer.lines_conditional_map[frame.f_lineno]
+                return_condition = self.calls_tracer.lines_conditional_map.get(frame.f_lineno,"No Test")
                 self.render(arg, return_condition)
                 print(self.stack.pop(), "popped with return", arg)
                 print("return condition used ", return_condition)

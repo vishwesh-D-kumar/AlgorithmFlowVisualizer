@@ -1,3 +1,4 @@
 astor
 graphviz
 django
+texttable

@@ -10,6 +10,7 @@ import copy
 import abc
 from ..variableTrace.treevisualize import VisualTree, FullVisualTree
 from pprint import pprint
+module_type = type(sys)
 # from treevisualize import VisualTree, FullVisualTree
 ALLOWED_EVENTS = {"call", "line", "return"}
 DISALLOWED_FUNC_NAMES = {"<genexpr>", "<listcomp>", "<dictcomp>", "<setcomp>"}
@@ -19,7 +20,7 @@ STDLIB_DIR = Path(abc.__file__).parent
 
 
 class Variable:
-    __slots__ = ['name', 'deepcopy_val', 'val', 'attr', 'history', 'prev', 'is_global', 'obj_val']
+    __slots__ = ['name', 'deepcopy_val', 'val', 'attr', 'history', 'prev', 'is_global', 'obj_val','is_module']
 
     def __init__(self, name, val, attr, obj):
         self.name = name
@@ -30,6 +31,8 @@ class Variable:
         self.history = []
         self.prev = None  # Pointer to the previous Variable, if any
         self.is_global = False
+        self.is_module = (type(self.obj_val)==module_type)
+
 
     def check(self, frame, prev_line):
 
@@ -82,6 +85,8 @@ def get_val(name, attr, f_locals):
 
 
 def get_variable_val(var: Variable, f_locals):
+    if var.is_module:
+        return getattr(var.obj_val,var.attr),var.obj_val
     return get_val(var.name, var.attr, f_locals)
 
 

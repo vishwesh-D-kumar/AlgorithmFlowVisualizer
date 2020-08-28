@@ -7,6 +7,7 @@ from .variableTrace.variable_trace import go_file
 from .flowgen.connect import FlowGen,OutputRecorder
 from pprint import pformat,pprint
 import json
+from texttable import Texttable
 # w = go([
 #     [1,0],
 #     [1,1]
@@ -42,11 +43,13 @@ def run_tracer(request):
 	# global source_code
 	global output_recorder
 	global max_step
+	global file_source_code_map
 	step = 1
 	file = request.POST['file']
 	func = request.POST['func']
 	config_json = request.POST['config']
 	include_files = []
+	file_source_code_map = {}
 	if config_json:
 		with open(config_json,'r+') as f:
 			config = json.loads(f.read())
@@ -87,6 +90,32 @@ def get_source_code(file):
 		source_code = f.read().split('\n')
 		file_source_code_map[file] = source_code
 		return source_code
+def render_matrices(matr):
+	print(matr)
+	if len(matr)==0:
+		return str(matr)
+	max_len = 0
+	has_nesting = True
+	
+	for row in matr:
+		if type(row)==list:
+			max_len = max(max_len,len(row))
+		else:
+			has_nesting = False
+	table = Texttable(0)
+	table.set_chars(['-','|','+','-'])
+	table.set_cols_dtype(['t']*(max_len))
+
+	if not has_nesting:
+		table.add_row(matr)
+	else:
+		new_matr = []
+		for row in matr:
+			if len(row)<max_len:
+				row.extend(['']*(max_len-len(row)))
+			new_matr.append(row)
+		table.add_rows(new_matr)
+	return table.draw()
 
 def show_step(request):
 	#TODO add multi file tracing /source showing
@@ -99,6 +128,27 @@ def show_step(request):
 	# if var_changes:
 	# 	show_all_vars = False
 	all_vars = var_Tracer.final_dict[step]['vars']
+	new_all_vars = []
+	for name,vari in all_vars:
+		if type(vari)==list:
+			new_all_vars.append((name,render_matrices(vari)))
+
+		else:
+			new_all_vars.append((name,vari))
+	all_vars = new_all_vars
+	new_var_changes = []
+	for name,prev,new,line,file in var_changes:
+		if type(prev)==list:
+			prev = render_matrices(prev)
+		if type(new)==list:
+			new = render_matrices(new)
+		new_var_changes.append((name,prev,new,line,file))
+	var_changes = new_var_changes
+
+
+
+
+
 	tree_images = var_Tracer.final_dict[step]['images']
 	stack_images = stack_Tracer.final_dict[step]['images'].split(to_cutoff)[1]
 	new_imgs = []
