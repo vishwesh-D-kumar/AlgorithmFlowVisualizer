@@ -107,6 +107,8 @@ class Tracer:
         self.step = 1
         self.prev_file =file
         self.stdlib_cache = {}
+        self.global_tracer_file = {file:self.global_tracer}
+        self.module_vars = []
 
     def new_frame(self, frame):
         passed_locals = []
@@ -115,12 +117,11 @@ class Tracer:
             self.local_tracers_stack.append(new_tracer)
             return
         old_tracer = self.local_tracers_stack[-1]
-
-        for var in old_tracer.variables:
-            var: Variable
-            if var.is_global:
-                continue
-
+        variables_to_check = old_tracer.variables
+        curr_file = os.path.abspath(frame.f_code.co_filename)
+        if self.prev_file !=curr_file:
+            variables_to_check+=self.global_tracer.variables
+        for var in variables_to_check:
             if is_mutable(var.val) or is_mutable(var.obj_val):
                 for name_new in frame.f_locals:
                     if frame.f_locals[name_new] is var.val or frame.f_locals[name_new] is var.obj_val:
@@ -142,10 +143,18 @@ class Tracer:
         self.local_tracers_stack.append(new_tracer)
         # Transfer Locals that are transferred with calls (Mutable only)
 
+    def set_global_tracer(self,file):
+        file = os.path.abspath(file)
+        if file not in self.global_tracer_file:
+            self.global_tracer_file[file] = LocalsTracer(None, -1) 
+        self.global_tracer= self.global_tracer_file[file]
+            
+
     def trace(self, frame, event, arg):
 
         if not self.check_in_path(frame):
             return
+        self.set_global_tracer(self.prev_file)
         # print(frame.f_lineno,frame.f_code.co_filename,self.include_files)
         self.final_dict[self.step] = {'line':self.prev_line,'changes':[],'images':[],'file':self.prev_file,'vars':[],'event':event}
         if event == "call":
@@ -165,6 +174,17 @@ class Tracer:
         self.changes.extend(local_changes)
 
         for var, type_var in globals_found:
+            print(type_var,var.name,"#$%")
+            if var.is_module:
+                if type_var:
+                    s = type_var
+                    type_var, referrer_name = s
+                    for module_var in self.module_vars:
+                        if referrer_name == module_var.name and type_var == type(module_var):
+                            module_var.add_referrer(var)
+                            break
+                self.module_vars.append(var) # check if already there
+                continue
             if type_var:
                 s = type_var
                 type_var, referrer_name = s
@@ -185,12 +205,33 @@ class Tracer:
                 self.final_dict[self.step]['changes'].append(eve)
 
         self.changes.extend(global_changes)
+        module_changes = []
+        weights = {VisualTree:1,FullVisualTree:2}
+        self.module_vars.sort(key = lambda x:weights.get(type(x),0))
+        for var in self.module_vars:
+            change = var.check(frame, self.prev_line)
+            if change:
+                module_changes.append(change)
 
-        for var in curr_local_tracer.variables+self.global_tracer.variables:
-            if type(var)==VisualTree or type(var)==FullVisualTree:
-                continue
-            variable_rep = var.name if var.attr is None else var.name+"."+var.attr
-            self.final_dict[self.step]['vars'].append((variable_rep,var.deepcopy_val))
+        self.changes.extend(module_changes)
+        for eve in module_changes:
+            if type(eve) == str:
+                self.final_dict[self.step]['images'].append(eve)
+            else:
+                self.final_dict[self.step]['changes'].append(eve)
+        if event=="call":
+            for var in self.global_tracer.variables+self.module_vars:
+                if type(var)==VisualTree or type(var)==FullVisualTree:
+                    continue
+                variable_rep = var.name if var.attr is None else var.name+"."+var.attr
+                self.final_dict[self.step]['vars'].append((variable_rep,var.deepcopy_val))
+
+        else:
+            for var in curr_local_tracer.variables+self.global_tracer.variables+self.module_vars:
+                if type(var)==VisualTree or type(var)==FullVisualTree:
+                    continue
+                variable_rep = var.name if var.attr is None else var.name+"."+var.attr
+                self.final_dict[self.step]['vars'].append((variable_rep,var.deepcopy_val))
 
         self.prev_line = frame.f_lineno
         self.prev_file = os.path.abspath(frame.f_code.co_filename)
@@ -396,7 +437,7 @@ class LocalsTracer:
                             f = True
                             break
                     if not f:
-                        globals_found.append((Variable(name, val, attr, obj), (var_type, referrer_name)))
+                        globals_found.append((Variable(name, val, attr, obj), (treetype, referrer_name)))
 
             else:
                 new_var = Variable(name, val, attr, obj)

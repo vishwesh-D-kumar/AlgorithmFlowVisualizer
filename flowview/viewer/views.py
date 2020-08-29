@@ -65,8 +65,9 @@ def run_tracer(request):
 		include_files.append(os.path.abspath(file))
 	flowchart_generator = FlowGen(file,func,include_files)
 	flowchart_generator.generate_flowchart()
-	# return HttpResponse(f'<pre>{pformat(flowchart_generator.final_dict)}</pre>')
 	var_Tracer =  go_file(file= file,func = func,include_files = include_files)
+	# return HttpResponse(f'<pre>{pformat(var_Tracer.final_dict)}</pre>')
+
 	stack_Tracer = go(file=file,func = func,include_files=include_files)
 
 	output_recorder  = OutputRecorder(file,func,include_files)
@@ -104,11 +105,13 @@ def render_matrices(matr):
 			has_nesting = False
 	table = Texttable(0)
 	table.set_chars(['-','|','+','-'])
-	table.set_cols_dtype(['t']*(max_len))
+	
 
 	if not has_nesting:
+		table.set_cols_dtype(['t']*(len(matr)))
 		table.add_row(matr)
 	else:
+		table.set_cols_dtype(['t']*(max_len))
 		new_matr = []
 		for row in matr:
 			if len(row)<max_len:

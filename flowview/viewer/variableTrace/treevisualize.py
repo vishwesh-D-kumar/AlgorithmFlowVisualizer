@@ -49,6 +49,7 @@ class VisualTree:
         self.deepcopy_head = self.copy_tree(self.root_node)
         self.is_global = False
         self.step_count = 0
+        self.is_module = False
         # self.graph.node('somehash',label="Link",_attributes={'URL': 'https://github.com/vishwesh-D-kumar/AlgorithmFlowVisualizer/blob/master/LEGEND.svg','pos':'-1000,-1000!'})
         # node.attr
 
@@ -59,7 +60,7 @@ class VisualTree:
 
         copy_node = DeepCopyNode()
         try:
-            copy_node.val = copy.deepcopy(getattr(root, self.val))  # Allowing for deepcopying of values
+            copy_node.val = copy.deepcopy(getattr(root, self.val,None))  # Allowing for deepcopying of values
         except:
             # TODO : lessen except clause
             copy_node.val = getattr(root, self.val)
@@ -77,16 +78,16 @@ class VisualTree:
                 self.node_count += 1
                 self.graph.node(str(self.node_count), label=var.name, _attributes={'shape': 'doublecircle','fillcolor':'lightblue4'})
                 self.graph.edge(str(self.node_count), str(parentnum), "Points To")
-        if getattr(curr_node, self.left) is not None:
-            self.graph.node(str(self.node_count + 1), str(getattr(getattr(curr_node, self.left), self.val)))
+        if getattr(curr_node, self.left,None) is not None:
+            self.graph.node(str(self.node_count + 1), str(getattr(getattr(curr_node, self.left,None), self.val)))
             self.graph.edge(str(parentnum),str(self.node_count + 1), label=self.left)
             self.node_count += 1
-            self.traverseTree(getattr(curr_node, self.left))
-        if getattr(curr_node, self.right) is not None:
-            self.graph.node(str(self.node_count + 1), str(getattr(getattr(curr_node, self.right), self.val)))
+            self.traverseTree(getattr(curr_node, self.left,None))
+        if getattr(curr_node, self.right,None) is not None:
+            self.graph.node(str(self.node_count + 1), str(getattr(getattr(curr_node, self.right,None), self.val)))
             self.graph.edge(str(parentnum),str(self.node_count + 1), label=self.right)
             self.node_count += 1
-            self.traverseTree(getattr(curr_node, self.right))
+            self.traverseTree(getattr(curr_node, self.right,None))
 
     # def get_referer_obj(self, referer):
     #     return referer[1].f_locals.get(referer[0])
@@ -163,6 +164,7 @@ class FullVisualTree:
         # self.deepcopy_head = self.copy_tree(self.root_node)
         self.is_global = False
         self.step_count = 0
+        self.is_module = False
     def copy_tree(self, root):
         if root is None:
             return None
@@ -227,18 +229,23 @@ class FullVisualTree:
         filename = f'{output_dir}/tree/{self.name}{step_count}.svg'
         step_count += 1
         return filename
-
+    def add_referrer(self,var):
+        print("REFERRER ADDED", "$%")
+        for var_there in self.references:
+            if var.name == var_there.name:
+                return 
+        self.references.append(var)
     def traverseTree(self, root):
         # print(type(self))
         self.graph.node(str(self.node_count), str(getattr(root, self.val)))
         # print(self.graph.source)
         parentnum = self.node_count
 
-        for name, watcher in self.references:
-            if watcher is root:
+        for var in self.references:
+            if var.val is root:
                 self.node_count += 1
-                self.graph.node(str(self.node_count), name)
-                self.graph.edge(str(self.node_count), str(parentnum))
+                self.graph.node(str(self.node_count), var.name)
+                self.graph.edge(str(self.node_count), str(parentnum),_attributes={'shape': 'doublecircle','fillcolor':'lightblue4'})
 
         for v in getattr(root, self.child):
             self.node_count += 1

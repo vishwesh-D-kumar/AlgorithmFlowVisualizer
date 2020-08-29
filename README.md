@@ -1,13 +1,18 @@
+
 # Algorithm flow Visualizer
 
 
 Welcome to Algorithm Flow Visualizer ! 
 
-The flowchart visualizer attempts to do the following : Given a function to visualize , it breaks it down into every step of its.
+The visualizer attempts to do the following : Given a function to visualize , it breaks it down into every step of its.
 
 It adds visualizations for stack trace ,and visualizations of data structures like trees.
-It alse shows the control flow jumps being made with every step . This aims to give the programmer a great deal of help in 
+It alse shows the control flow jumps,ina flowchart esque manner being made with every step . This aims to give the programmer a great deal of help in 
 visualizing the flow of a program.
+
+
+
+
 
 
 ### Current Installation instructions
@@ -22,6 +27,9 @@ sudo apt-get install graphviz
 ### Current Runtime instructions of the webapp:
 
 * To see how to mark variables for tracing via interactive comments: See bottom
+
+* Webapp has been tested on Google Chrome/and on Edge. Firefox support unavailable due to no support for inline tag.
+
 
 
 ``` 
@@ -120,7 +128,7 @@ node.neighbours = [node1,node2] # watchvar node.neighbours
 ```
 
 
-Once a variable is marked for tracing, it will be traced through all function calls that are made : provided either of the two conditions are satisfied 
+Once a variable is marked for tracing, it will be traced through all function calls that are made : provided either of the three conditions are satisfied 
 
 * The variable is mutable 
 
@@ -190,17 +198,36 @@ class FullNode:
    btree : type of tree of variable
    root_ref : name of variable to watch for
 
+* Marking the module variables 
+  * Lets say you have a variable for a module to mark for tracing : as shown in [this file](demo_files/demo1.py) : helper is the module, and DEBUG is the variable
+  
+  * Heres the way to go about it : 
+    ``` import helper```
+    
+    Mark variable for tracing , during runtime 
+    ``` helper.DEBUG # watchvar helper.DEBUG```
+By default , all variable that are attached to modules, will be shown throughout the trace, on all files shown.
+* How multi file support works
+  * In order to look for modules, the current directory of the provided file is added to the syspath, for python to look through. 
+  * Something trivial but important to mention, make sure relative imports are structured in a way that the current working directory is the directory of the file.
+
+
+* Additional: 
+  * Arrays are visualized as as  ascii texttables .
+
 Important Limitations :
 
 * The attribute based tracing works cannot to be extended to multiple levels of attributes (as in , attributes of attributes cant be marked for tracing) of the referenced object :
- ie : it wont work for comments like ```watchvar self.x.y```.
+ ie : it wont work for comments like ```# watchvar self.x.y```.
 * Do not use multiline expressions while making function calls
 ``` go([[1,2,3],
           [1,2,3]])
           # will raise an error
     go([[1,2,3],[1,2,3]]) # won't raise an error
 ```
-* Multiexpression Lines are not supported  of the sort ```rec(i,j) = rec(i-1,j-1) + rec(i-2,j-2)```.
+
+
+* Multiexpression Lines are not supported  of the sort ```rec(i,j) = rec(i-1,j-1) + rec(i-2,j-2)```\ ```if x:return y```.
 One function call per line is supported. Calls of these sort can be broken down into
 
 ``` 
@@ -208,6 +235,11 @@ One function call per line is supported. Calls of these sort can be broken down 
     s2 = rec(i-1,j-1)
     rec(i,j) = s1 + s2
 ```
+* This is meant to visualize algorithms, try to use it on small data , to get the feel, rather than running it on extremely huge variables (arrays with 10^5 elements like ) 
+
+* Use of ```global```  keyword is not supported . 
+
+* Deletion of variables marked for tracing is not supported(ie , removal from memory).They will show up with the last value noted afterwards still.
 
 For control flow graph visualizations: 
 

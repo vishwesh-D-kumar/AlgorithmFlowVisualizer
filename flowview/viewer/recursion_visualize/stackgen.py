@@ -162,8 +162,12 @@ class StackVisualizer:
                 print(self.stack.pop(), "popped with return", arg)
                 print("return condition used ", return_condition)
         else:
-            self.final_dict[self.step] = {'line':self.prev_line,'images':self.prev_image,'return':False}
-            self.step +=1
+            if self.prev_event=="return":
+                self.render()
+            else:
+                self.final_dict[self.step] = {'line':self.prev_line,'images':self.prev_image,'return':False}
+                self.step +=1
+
         curr_file = frame.f_code.co_filename.replace('\\', '/')
         curr_file = os.path.abspath(curr_file)
         if event == "call":
