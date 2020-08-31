@@ -46,7 +46,7 @@ class VisualTree:
         self.val = kwargs.pop('val')
         self.left = kwargs.pop('left')
         self.right = kwargs.pop('right')
-        self.deepcopy_head = self.copy_tree(self.root_node)
+        # self.deepcopy_head = self.copy_tree(self.root_node)
         self.is_global = False
         self.step_count = 0
         self.is_module = False
@@ -66,8 +66,8 @@ class VisualTree:
             copy_node.val = getattr(root, self.val)
 
         # getattr(root,self.val),getattr(root,self.left),getattr(root,self.right))
-        copy_node.left = self.copy_tree(getattr(root, self.left))
-        copy_node.right = self.copy_tree(getattr(root, self.right))
+        copy_node.left = self.copy_tree(getattr(root, self.left,Node))
+        copy_node.right = self.copy_tree(getattr(root, self.right,Node))
         return copy_node
 
     def traverseTree(self, curr_node):

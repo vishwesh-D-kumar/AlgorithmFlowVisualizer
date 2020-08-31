@@ -28,7 +28,7 @@ sudo apt-get install graphviz
 
 * To see how to mark variables for tracing via interactive comments: See bottom
 
-* Webapp has been tested on Google Chrome/and on Edge. Firefox support unavailable due to no support for inline tag.
+* Webapp has been tested on Google Chrome/and on Edge. Firefox support unavailable due to no support for inline tag in element.ScrollIntoView()
 
 
 
@@ -40,7 +40,7 @@ python3 flowview/manage.py runserver >log
     
 * Enter path to file and function to run
 
-* You can also keep a config json file handy , which would avoid the hassle of reentering the same 
+* You can also keep a config json file handy , which would avoid the hassle of reentering the same . This also allows you to mark files for tracing ,as shown
 
 
 ## For a demo 
@@ -62,10 +62,11 @@ Fields :
 }
 ```
 included files is a list of all files you want to include. This is to avoid the debugger going into all files that the program visits , potentially saving the programmer a lot of time , and the debugger a lot of computations.
+Use of absolute paths is recommended , else it can be made relative to the repository directory.
 
 If included files is left empty : It will not ignore any files.
 
-A sample [config](config1.json) is provided.
+Sample [configs](config1.json) [are](config2.json) are [provided](config3.json)
 
 A look at how to use all options of the debugger, listed at the rightmost part of the page. Just hover over the option to see what clicking the icon leads to !
 
@@ -127,14 +128,24 @@ x = 0 # watchvar x
 node.neighbours = [node1,node2] # watchvar node.neighbours
 ```
 
+* Additional ! : 
 
-Once a variable is marked for tracing, it will be traced through all function calls that are made : provided either of the three conditions are satisfied 
+  Once a variable is marked for tracing, it will be traced through all function calls that are made : provided either of the three conditions are satisfied 
 
-* The variable is mutable 
+  * The variable is mutable 
 
-* The variable is passed as an argument to the function call
+  * The variable is passed as an argument to the function call
 
-* The object the variable is bound to , is passed as an argument to the call
+  * The object the variable is bound to , is passed as an argument to the call.
+
+    That is : lets say self.dp is marked for tracing in the file [demo2.py](demo_files/demo2.py)  in demo demonstrated in [config1](config1.json). If either self, dp are passed as arguments to the call ,the variable will continue to be traced under the new name it is passed as in the function call.
+    
+    This is especially helpful to avoid remarking of variables in every function seperately.
+    
+    Post every  function return, for variables that have been marked , the variable changes are shown. 
+
+    Limitation:
+    Use cases where this fails : when multiple variables are pointing to the same object, the first one being marked for tracing is passed.
 
 
 
@@ -158,12 +169,27 @@ class FullNode:
         self.children = []
 # Visualizing BinaryTrees:
   root = Node(2) # watchvar btree:left:right:val root
-# Adding a referrer to the binary tree : only for binary trees
+# Adding a referrer to the binary tree 
    root_ref = root # watchvar ref:root:btree root_ref
+
 # Visualizing trees with N nodes:
  root = FullNode(1) # watchvar tree:children:data root
+# Adding a referrer to  tree with N nodes 
+root_ref = root # watchvar ref:root:tree root_ref  
    
-   
+#Additional : Marking singly linked Lists for tracing this , similiar to the syntax for binary tree tracing
+class ListNode:
+    def __init__(self,val):
+        self.next = None
+        self.val = val
+
+
+# Mark linkedlist for visualisation
+node = ListNode(1) # watchvar btree:null:next:val node
+ref_node = node # watchvar ref:node:btree ref_node
+            
+            
+            
      
 ```
    Important parameters to note above
@@ -180,7 +206,8 @@ class FullNode:
    ``` getattr(root,'left')``` -> gives object to the left node
    
    ``` getattr(root,'right')``` -> gives object to the right node
-   If you change the attribute , from 'left' to lets say 'node1', then the comment attached would change 
+
+   If you change the attribute to its left pointer , from 'left' to lets say 'node1', then the comment attached would change 
    accordingly : ```# watchvar btree:node1:right:val root```
    
    Similarly:
@@ -197,7 +224,14 @@ class FullNode:
    root : name of variable tree to refer to 
    btree : type of tree of variable
    root_ref : name of variable to watch for
+    
+Similiarly , for the additional Linked List visualization:
 
+    * ```# watchvar btree:null:next:val node```
+        parameter 'null '  is always marked as  'null', to show there being no second pointer
+        next: is the attr name of pointer to the next node in the list .  
+        val: is the attribute that stores the data of the node.
+    
 * Marking the module variables 
   * Lets say you have a variable for a module to mark for tracing : as shown in [this file](demo_files/demo1.py) : helper is the module, and DEBUG is the variable
   
@@ -206,14 +240,14 @@ class FullNode:
     
     Mark variable for tracing , during runtime 
     ``` helper.DEBUG # watchvar helper.DEBUG```
-By default , all variable that are attached to modules, will be shown throughout the trace, on all files shown.
+By default , all variable that are attached to modules, will be shown throughout the trace, on all files run through,and all lines,once defined.
 * How multi file support works
   * In order to look for modules, the current directory of the provided file is added to the syspath, for python to look through. 
   * Something trivial but important to mention, make sure relative imports are structured in a way that the current working directory is the directory of the file.
 
 
 * Additional: 
-  * Arrays are visualized as as  ascii texttables .
+  * Arrays are visualized as as  ascii texttables .This simple method allows for seemless rendering , and not having the overhead.
 
 Important Limitations :
 
@@ -249,4 +283,22 @@ This [PR](https://github.com/coetaur0/staticfg/pull/13) has been sent also , con
 
 [UPDATE] The above PR has been merged into master of StatiCfg !
 
- 
+
+Things Completed : 
+
+* Runtime flowchart esque  visualizations 
+
+* Stack trace generation
+
+* Variable tracing marked through interactive comments
+
+* Visualization of Binary Trees , Trees with N nodes , Visualization of arrays(using texttable)
+
+Future of this project :
+
+* Cutting down on runtime 
+
+* Shifting to a js based approach instead of output in python ,allowing for animations of svgs
+
+* Support for global and del keywords
+

@@ -23,12 +23,20 @@ from texttable import Texttable
 # flowchart_generator.generate_flowchart('png',True)
 # print()
 step = 1
+to_cutoff = 'flowview/viewer/static'
 source_code = []
 file_source_code_map = {}
 
 # logging_file = open('var_debug_log.txt','a+')
 def dbg(s):
 	logging_file.write(s)
+def view_flowchart(request):
+	step = int(request.GET['step'])
+	flowchart_image = flowchart_generator.final_dict[step]['images'].split('viewer/static')[1]
+	return render(request,'viewer/view_flowchart.html',
+		context={
+		'flowchart_image':flowchart_image
+		})
 def index(request):
 	return render(request,'viewer/index.html')
 	# pass dict context to pass whatver you want to 
@@ -123,7 +131,6 @@ def render_matrices(matr):
 def show_step(request):
 	#TODO add multi file tracing /source showing
 	# return render(request,'viewer/steps.html',context={'source_code':source_code})
-	to_cutoff = 'flowview/viewer/static'
 	step = int(request.GET['step'])
 	curr_mode = int(request.GET['mode'])
 	show_all_vars = int(request.GET['all_vars'])

@@ -17,6 +17,9 @@
 		.left-sec::-webkit-scrollbar {
 		  display: none;
 		}
+		.right-sec-top{
+			width: 40vw;
+		}
 		.right-sec{
 			height: 90vh;
 			overflow-y: auto;
@@ -37,7 +40,7 @@
 	<div class="d-flex justify-content-between">
 		<div>
 		<h5 class="card-title text-warning">Source Code :  {{ file }}</h5>
-		<div id="code_div w-50" style="width: 50vw">
+		<div id="code_div" style="width: 50vw">
 <pre class = 'left-sec' data-line="{{curr_line}}" id="play">{% for line in source_code %}{% if forloop.counter == curr_line %}<code class ="language-python" id='curr_exec_line'>{{ line }}</code>{% else %}<code class ="language-python" id='curr_exec_line'>{{ line }}</code>{% endif %}
 {% endfor %}
 </pre>
@@ -49,12 +52,17 @@
 			</div>
 		</div>
 		</div>
-		<div class="right-sec w-50">
+		<div class="right-sec-top">
 			{% if curr_mode == 1 %}
-			<h5 class="card-title text-warning"> Runtime Flowchart</h5>
-			<object  type = "image/svg+xml" id = 'flowchart_image' data="{% static ''|add:flowchart_images %}" style="width: 40vm"></object>
+			<h5 class="card-title text-warning"> Runtime Flowchart			<a class="text-link" href="view_flowchart?step={{curr_step}}"> [Click here for a full image]</a></h5>
+
 			{% elif curr_mode == 2 %}
 			<h5 class="card-title text-warning"> Current Call Stack</h5>
+			{% endif %}
+		<div class="right-sec">
+			{% if curr_mode == 1 %}
+			<object  type = "image/svg+xml" id = 'flowchart_image' data="{% static ''|add:flowchart_images %}" style="max-width: 80vw"></object>
+			{% elif curr_mode == 2 %}
 			<img src="{% static ''|add:stack_images %}" style="width: 40vw"></img>
 			{% elif curr_mode == 3 %}
 			<h5 class="card-title text-warning"> All Variables</h5>
@@ -119,7 +127,7 @@
 
 		
 		</div>
-
+	</div>
 	<div class="float-right">
 		<a href="step?step={{curr_step}}&all_vars=0;mode=1#play.{{curr_line}}" class="btn btn-primary btn-block" data-toggle='tooltip' title="Flowchart" >
 			<i class="fa fa-arrows-v fa-lg"></i>
@@ -141,8 +149,17 @@
 		{% endif %}
 			<i class="fa fa-angle-double-right fl"></i>
 		</a>
+		{% if curr_step == 2 %}
+		<a href="step?step={{curr_step}}&all_vars=0;mode={{curr_mode}}#play.{{curr_line}}" class="btn btn-success btn-block " data-toggle='tooltip' title="Previous Step"  >
+			<i class="fa fa-angle-double-left fl"></i>
+		</a>
+		{% else %}
 		<a href="step?step={{curr_step|add:'-1'}}&all_vars=0;mode={{curr_mode}}#play.{{prev_line}}" class="btn btn-success btn-block " data-toggle='tooltip' title="Previous Step"  >
 			<i class="fa fa-angle-double-left fl"></i>
+		</a>
+		{% endif %}
+		<a href="/viewer" class="btn btn-success btn-block " data-toggle='tooltip' title="Home"  >
+			<i class="fa fa-home fl"></i>
 		</a>
 
 	</div>
