@@ -111,10 +111,10 @@
 			<!-- <div> -->
 				{% if forloop.counter|add:"-1"|divisibleby:"2" %}
 				<div>
-			<img src="{% static ''|add:img %}" style="width: 20vm"></img>
+			<img src="{% static ''|add:img %}" style="max-height: 40vh max-width: 20vw"></img>
 		<!-- <img src="tree.png"></img> -->
 				{% else %}
-					<img src="{% static ''|add:img %}" style="width: 20vm"></img>
+					<img src="{% static ''|add:img %}" style="max-height:40vw max-width: 20vw"></img>
 				</div>
 				{% endif %}
 
