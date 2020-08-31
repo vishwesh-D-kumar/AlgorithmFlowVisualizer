@@ -19,10 +19,15 @@ visualizing the flow of a program.
 
 Requires python 3.6 or higher, due to use of f-strings
 
+
+
 ```
 pip3 install - r requirements.txt
-sudo apt-get install graphviz
+sudo apt-get install graphviz 
 ```
+For installation of graphviz  on other systems,above is for ubuntu: 
+
+[https://graphviz.gitlab.io/download/](https://graphviz.gitlab.io/download/)
 
 ### Current Runtime instructions of the webapp:
 
@@ -66,7 +71,7 @@ Use of absolute paths is recommended , else it can be made relative to the repos
 
 If included files is left empty : It will not ignore any files.
 
-Sample [configs](config1.json) [are](config2.json) are [provided](config3.json)
+Sample [configs](config1.json) [are](config2.json) [provided](config3.json)
 
 A look at how to use all options of the debugger, listed at the rightmost part of the page. Just hover over the option to see what clicking the icon leads to !
 
@@ -148,6 +153,8 @@ node.neighbours = [node1,node2] # watchvar node.neighbours
     Use cases where this fails : when multiple variables are pointing to the same object, the first one being marked for tracing is passed.
 
 
+
+To have a look at samples for below shown tree visualizations and linked list visualizations , have a look at [demo_kth_smallest.py](demo_kth_smallest.py) and [add2numbers.py](add2numbers.py)
 
 
 * Tree Visualizations : 
